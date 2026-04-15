@@ -728,10 +728,23 @@ export default function AdariCommandCenter() {
   const [view, setView] = useState("overview");
   const [time, setTime] = useState(new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }));
   const today = new Date().toLocaleDateString("en-US", { weekday: "long", month: "long", day: "numeric", year: "numeric" });
+  const [igData, setIgData] = useState(null);
+  const [igLoading, setIgLoading] = useState(true);
+
   useEffect(() => {
     const t = setInterval(() => setTime(new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })), 30000);
     return () => clearInterval(t);
   }, []);
+
+  useEffect(() => {
+    fetch('/api/sync/instagram')
+      .then(r => r.json())
+      .then(d => { setIgData(d); setIgLoading(false); })
+      .catch(() => setIgLoading(false));
+  }, []);
+
+  const igProfile = igData?.profile;
+  const igMedia = igData?.media ?? [];
   const activeClient = CLIENTS.find(c => view === `client:${c.id}`);
 
   const TABS: { id: string; label: string; color?: string; avatar?: string }[] = [
