@@ -1,72 +1,29 @@
-import { NextResponse } from "next/server";
-
-const ACCESS_TOKEN = process.env.INSTAGRAM_ACCESS_TOKEN;
-const ACCOUNT_ID = process.env.INSTAGRAM_ACCOUNT_ID;
+import { NextResponse } from 'next/server';
 
 export async function GET() {
+  const token = process.env.INSTAGRAM_ACCESS_TOKEN;
+
+  if (!token) {
+    return NextResponse.json({ error: 'No Instagram token configured' }, { status: 500 });
+  }
+
   try {
-    if (!ACCESS_TOKEN || !ACCOUNT_ID) {
-      return NextResponse.json(
-        {
-          ok: false,
-          error: "Missing env vars",
-          hasAccessToken: !!ACCESS_TOKEN,
-          hasAccountId: !!ACCOUNT_ID,
-        },
-        { status: 500 }
-      );
-    }
+    const profileRes = await fetch(
+      `https://graph.instagram.com/me?fields=id,username,account_type,media_count,followers_count,profile_picture_url&access_token=${token}`
+    );
+    const profile = await profileRes.json();
 
-    const profileUrl =
-      `https://graph.instagram.com/me` +
-      `?fields=user_id,username&access_token=${encodeURIComponent(ACCESS_TOKEN)}`;
-
-    const mediaUrl =
-      `https://graph.instagram.com/me/media` +
-      `?fields=id,caption,media_type,media_url,timestamp&access_token=${encodeURIComponent(ACCESS_TOKEN)}`;
-
-    const [profileRes, mediaRes] = await Promise.all([
-      fetch(profileUrl, { cache: "no-store" }),
-      fetch(mediaUrl, { cache: "no-store" }),
-    ]);
-
-    const profileText = await profileRes.text();
-    const mediaText = await mediaRes.text();
-
-    let profile: unknown = null;
-    let media: unknown = null;
-
-    try {
-      profile = JSON.parse(profileText);
-    } catch {
-      profile = { raw: profileText };
-    }
-
-    try {
-      media = JSON.parse(mediaText);
-    } catch {
-      media = { raw: mediaText };
-    }
+    const mediaRes = await fetch(
+      `https://graph.instagram.com/me/media?fields=id,caption,media_type,timestamp,like_count,comments_count,media_url,thumbnail_url,permalink&limit=20&access_token=${token}`
+    );
+    const media = await mediaRes.json();
 
     return NextResponse.json({
-      ok: true,
-      env: {
-        hasAccessToken: true,
-        hasAccountId: true,
-        accountId: ACCOUNT_ID,
-      },
-      profileStatus: profileRes.status,
-      mediaStatus: mediaRes.status,
       profile,
-      media,
+      media: media.data ?? [],
     });
-  } catch (error) {
-    return NextResponse.json(
-      {
-        ok: false,
-        error: error instanceof Error ? error.message : "Unknown server error",
-      },
-      { status: 500 }
-    );
+  } catch (err) {
+    console.error('Instagram sync error:', err);
+    return NextResponse.json({ error: 'Failed to fetch Instagram data' }, { status: 500 });
   }
 }
