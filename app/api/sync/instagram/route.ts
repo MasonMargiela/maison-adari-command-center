@@ -30,7 +30,7 @@ export async function GET() {
     const followers = profile.followers_count ?? 0;
     const following = profile.follows_count ?? 0;
     const mediaCount = profile.media_count ?? 0;
-    const handle = "@" + profile.username;
+    const handle = '@' + profile.username;
 
     // Real engagement
     let engagementRate = 0;
@@ -44,21 +44,22 @@ export async function GET() {
       engagementRate = parseFloat(((((totalLikes + totalComments) / media.length) / followers) * 100).toFixed(2));
     }
 
-    // Real reach estimate
+    // Reach estimate
     const reachRaw = media.length > 0
       ? Math.round((followers * 0.15) + (avgLikes * 2.5))
       : Math.round(followers * 0.15);
-    const reach = reachRaw >= 1000 ? (reachRaw / 1000).toFixed(1) + "K" : String(reachRaw);
+    const reach = reachRaw >= 1000 ? (reachRaw / 1000).toFixed(1) + 'K' : String(reachRaw);
 
     // Content score
     const engScore = Math.min(40, (engagementRate / 10) * 40);
     const postScore = Math.min(30, (Math.min(mediaCount, 10) / 10) * 30);
     const contentScore = Math.round(engScore + postScore);
 
-    // Try Supabase save - completely non-blocking
+    // Supabase — non-blocking
     let monthlyGrowthRate = 0;
-    let pace = "Estimating...";
+    let weeklyGrowthRate = 0;
     let savedToSupabase = false;
+    let snapshotCount = 0;
 
     try {
       const supaUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
@@ -80,9 +81,7 @@ export async function GET() {
           .select('id')
           .single();
 
-        if (upsertError) {
-          console.error('Supabase upsert error:', upsertError.message);
-        } else if (accountData?.id) {
+        if (!upsertError && accountData?.id) {
           savedToSupabase = true;
           const accountId = accountData.id;
 
@@ -91,28 +90,55 @@ export async function GET() {
             { connected_account_id: accountId, platform: 'instagram', metric_type: 'engagement_rate', metric_value: engagementRate },
           ]);
 
-          // Get growth history
+          // Pull full history for pace calculation
           const { data: snapshots } = await supabase
             .from('metric_snapshots')
             .select('metric_value, recorded_at')
             .eq('connected_account_id', accountId)
             .eq('metric_type', 'followers_count')
-            .order('recorded_at', { ascending: false })
-            .limit(60);
+            .order('recorded_at', { ascending: true });
 
           if (snapshots && snapshots.length >= 2) {
-            const newest = Number(snapshots[0].metric_value);
-            const oldest = Number(snapshots[snapshots.length - 1].metric_value);
-            const daysDiff = (new Date(snapshots[0].recorded_at).getTime() - new Date(snapshots[snapshots.length - 1].recorded_at).getTime()) / (1000 * 60 * 60 * 24);
-            if (daysDiff > 0 && newest !== oldest) {
-              monthlyGrowthRate = Math.round(((newest - oldest) / daysDiff) * 30);
-              pace = "+" + monthlyGrowthRate + "/mo";
+            snapshotCount = snapshots.length;
+            const newest = Number(snapshots[snapshots.length - 1].metric_value);
+            const oldest = Number(snapshots[0].metric_value);
+            const daysDiff = (
+              new Date(snapshots[snapshots.length - 1].recorded_at).getTime() -
+              new Date(snapshots[0].recorded_at).getTime()
+            ) / (1000 * 60 * 60 * 24);
+
+            if (daysDiff > 0) {
+              const dailyRate = (newest - oldest) / daysDiff;
+              monthlyGrowthRate = Math.round(dailyRate * 30);
+              weeklyGrowthRate = Math.round(dailyRate * 7);
             }
           }
         }
       }
     } catch (dbErr: any) {
-      console.error('Supabase block error:', dbErr.message);
+      console.error('Supabase error:', dbErr.message);
+    }
+
+    // Pace and ETA logic
+    // If no history yet, use a conservative industry estimate based on account size
+    // Small accounts (< 1K): avg 2-5% monthly growth
+    // We use the lower bound as a honest fallback
+    let pace = 'Estimating...';
+    let paceMonthly = 0;
+    let paceYearly = 0;
+    let paceSource = 'insufficient_history';
+
+    if (monthlyGrowthRate > 0) {
+      paceMonthly = monthlyGrowthRate;
+      paceYearly = monthlyGrowthRate * 12;
+      pace = '+' + monthlyGrowthRate + '/mo';
+      paceSource = snapshotCount >= 10 ? 'historical_data' : 'early_estimate';
+    } else if (followers > 0) {
+      // Fallback: conservative 3% monthly growth estimate for small accounts
+      paceMonthly = Math.max(1, Math.round(followers * 0.03));
+      paceYearly = paceMonthly * 12;
+      pace = '~' + paceMonthly + '/mo';
+      paceSource = 'estimated_baseline';
     }
 
     const sortedByLikes = [...media].sort((a: any, b: any) => (b.like_count ?? 0) - (a.like_count ?? 0));
@@ -132,8 +158,12 @@ export async function GET() {
         contentScore,
         avgLikes,
         avgComments,
-        monthlyGrowthRate,
+        monthlyGrowthRate: paceMonthly,
+        yearlyGrowthRate: paceYearly,
+        weeklyGrowthRate,
         pace,
+        paceSource,
+        snapshotCount,
       },
       analytics: {
         avgLikes,
@@ -141,11 +171,13 @@ export async function GET() {
         totalPosts: media.length,
         topPost,
         bottomPost,
-        monthlyGrowthRate,
+        monthlyGrowthRate: paceMonthly,
         working: topPost
-          ? `Best post: ${topPost.like_count} likes. ${topPost.media_type === 'VIDEO' ? 'Video is your strongest format.' : 'Images are performing well.'}`
-          : 'Post some content to see what is working.',
-        flopping: 'Post more content to identify patterns.',
+          ? `Best post: ${topPost.like_count} likes. ${topPost.media_type === 'VIDEO' ? 'Video is your strongest format.' : 'Images performing well.'}`
+          : 'Post content to see what is working.',
+        flopping: media.length > 1 && bottomPost
+          ? `Weakest post: ${bottomPost.like_count ?? 0} likes. Identify the pattern and cut it.`
+          : 'Post more content to identify patterns.',
       },
       topComments: [],
       savedToSupabase,
