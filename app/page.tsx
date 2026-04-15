@@ -640,17 +640,17 @@ const ClientView = ({ client, igProfile, igData }) => {
           <div style={{ fontSize: 18, fontWeight: 700, fontFamily: "'Fraunces',serif", color: P.ink }}>{client.name}</div>
           <div style={{ fontSize: 11, color: P.inkSoft }}>{client.role}</div>
           <div style={{ display: "flex", gap: 6, marginTop: 6, flexWrap: "wrap" }}>
-            <Tag color={client.colorDeep} bg={client.colorSoft}>{igProfile ? igProfile.followers_count?.toLocaleString() + " followers" : client.totalFollowers.toLocaleString() + " followers"}</Tag>
-            <Tag color={P.sageDeep} bg={P.sageSoft}>{igProfile ? "@" + igProfile.username : "↑ " + client.weeklyGrowth + " this week"}</Tag>
+            <Tag color={client.colorDeep} bg={client.colorSoft}>{igProfile && igProfile.followers_count != null ? igProfile.followers_count.toLocaleString() + " followers" : client.totalFollowers.toLocaleString() + " followers"}</Tag>
+            <Tag color={P.sageDeep} bg={P.sageSoft}>{igProfile && igProfile.username ? "@" + igProfile.username : "↑ " + client.weeklyGrowth + " this week"}</Tag>
           </div>
         </div>
         <Ring val={client.contentScore} color={client.colorDeep} size={50} />
       </div>
 
       <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: 9, marginBottom: 0 }}>
-        <Tile label="Total Reach" value={client.totalReach} color={client.color} />
-        <Tile label="Avg Engagement" value={client.engagement} color={client.color} />
+        <Tile label="Total Followers" value={igProfile ? (igProfile.followers_count ?? 0).toLocaleString() : client.totalFollowers.toLocaleString()} sub={igProfile ? "live ✓" : "mock"} color={client.color} />
         <Tile label="Accounts" value={String(client.accounts.length)} color={client.color} />
+        <Tile label="Following" value={igProfile ? (igProfile.follows_count ?? 0).toLocaleString() : "—"} sub={igProfile ? "live ✓" : "—"} color={client.color} />
       </div>
 
       <SH>Best Times to Post</SH>
@@ -659,11 +659,19 @@ const ClientView = ({ client, igProfile, igData }) => {
       </div>
 
       <SH>Follower Goals · Progress</SH>
-      {client.goals.map((g, i) => (
-        <GoalBar key={i} {...g} 
-          current={igProfile && g.label.includes("Instagram") ? (igProfile.followers_count ?? g.current) : g.current}
-        />
-      ))}
+      {client.goals.map((g, i) => {
+        const realCurrent = igProfile && g.label.includes("Instagram") 
+          ? (igProfile.followers_count ?? g.current) 
+          : g.current;
+        const realPace = igProfile && g.label.includes("Instagram") ? "track your weekly growth to see pace" : g.pace;
+        const monthsLeft = igProfile && g.label.includes("Instagram") && igProfile.followers_count
+          ? Math.ceil((g.goal - igProfile.followers_count) / Math.max(g.pace, 1))
+          : null;
+        const estDate = monthsLeft 
+          ? new Date(Date.now() + monthsLeft * 30 * 24 * 60 * 60 * 1000).toLocaleDateString("en-US", { month: "short", year: "numeric" })
+          : g.projDate;
+        return <GoalBar key={i} {...g} current={realCurrent} projDate={estDate} />;
+      })}
 
       <SH children={`${client.accounts.length} Connected Accounts`} />
       {client.accounts.map((acc, idx) => {
@@ -688,7 +696,7 @@ const ClientView = ({ client, igProfile, igData }) => {
                 <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: 8, marginBottom: 4 }}>
                   <Tile label="Reach" value={acc.reach >= 1000 ? (acc.reach / 1000).toFixed(0) + "K" : String(acc.reach)} color={acc.color} />
                   <Tile label="Engagement" value={acc.engagement} color={acc.color} />
-                  <Tile label={igProfile && acc.platform === "Instagram" ? "Posts (Live)" : "Followers"} value={igProfile && acc.platform === "Instagram" ? String(igProfile.media_count) : acc.followers >= 1000 ? (acc.followers / 1000).toFixed(1) + "K" : String(acc.followers)} sub={igProfile && acc.platform === "Instagram" ? `@${igProfile.username}` : undefined} color={acc.color} />
+                  <Tile label="Followers" value={igProfile && acc.platform === "Instagram" && igProfile.followers_count != null ? igProfile.followers_count.toLocaleString() : acc.followers >= 1000 ? (acc.followers / 1000).toFixed(1) + "K" : String(acc.followers)} sub={igProfile && acc.platform === "Instagram" ? "live ✓" : undefined} color={acc.color} />
                 </div>
 
                 {acc.milestones && (
