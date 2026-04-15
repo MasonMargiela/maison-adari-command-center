@@ -521,9 +521,10 @@ const CLIENTS = [
 ];
 
 const PROSPECTS = [
-  { name: 'The Patty Lab', handle: '@thepattylabburgers', followers: '3.2K', foodScore: 9.7, socialScore: 1.3, heat: 9.4, lastPost: '6 days ago', note: 'Highest food score ever logged. Near-zero social with a product that could go viral in one video. Reach out today.', color: P.sage, colorSoft: P.sageSoft },
-  { name: 'Fuego Birria Tacos', handle: '@fuegobirriatacosofficial', followers: '12.4K', foodScore: 9.2, socialScore: 2.1, heat: 8.8, lastPost: '3 days ago', note: 'Food is legitimately top-tier SoCal birria. Zero content strategy. Perfect AFE candidate.', color: P.peach, colorSoft: P.peachSoft },
+  { name: 'The Patty Lab', handle: '@thepattylabburgers', followers: '3.2K', foodScore: 9.7, socialScore: 1.3, heat: 9.4, lastPost: '6 days ago', note: 'Highest food score ever logged. Best burger photography seen organically. Near-zero social with a product that could go viral in one video. Reach out today.', color: P.sage, colorSoft: P.sageSoft },
+  { name: 'Fuego Birria Tacos', handle: '@fuegobirriatacosofficial', followers: '12.4K', foodScore: 9.2, socialScore: 2.1, heat: 8.8, lastPost: '3 days ago', note: 'Food is legitimately top-tier SoCal birria. Zero content strategy. Posts are blurry, no hooks. Perfect AFE candidate.', color: P.peach, colorSoft: P.peachSoft },
   { name: 'Niku Niku Ramen', handle: '@nikunikulaofficial', followers: '8.1K', foodScore: 8.4, socialScore: 3.8, heat: 7.2, lastPost: 'Yesterday', note: 'Posting consistently but hook-less. Massive organic upside untapped.', color: P.lavender, colorSoft: P.lavSoft },
+  { name: 'Ume Matcha Bar', handle: '@umematchabar', followers: '5.6K', foodScore: 8.1, socialScore: 4.2, heat: 6.8, lastPost: '2 days ago', note: 'Strong aesthetic, female-skewing audience. First potential beverage client. Matcha content trending — 2 months behind the wave.', color: P.butter, colorSoft: P.butterSoft },
 ];
 
 
@@ -874,6 +875,9 @@ const OverviewTab = ({ igMetrics, igLoading, igGoal, handleSetIgGoal, today }: a
 
 // ── INSTAGRAM ACCOUNT VIEW ─────────────────────────────────────────────────
 const IGAccountView = ({ acc, igData, igGoal, setIgGoal }: { acc: any; igData: any; igGoal: number; setIgGoal: (v: number) => void }) => {
+  const [timePeriod, setTimePeriod] = useState('week');
+  const [goalPlatform, setGoalPlatform] = useState('instagram');
+
   const metrics = igData?.metrics;
   const media = igData?.media ?? [];
   const analytics = igData?.analytics;
@@ -885,17 +889,56 @@ const IGAccountView = ({ acc, igData, igGoal, setIgGoal }: { acc: any; igData: a
   const engagement = isLive ? metrics.engagementRate.toFixed(1) + '%' : acc.engagement;
   const handle = isLive ? metrics.handle : acc.handle;
   const paceMonthly = metrics?.monthlyGrowthRate ?? 0;
+  const paceYearly = metrics?.yearlyGrowthRate ?? paceMonthly * 12;
   const paceSource = metrics?.paceSource ?? 'insufficient_history';
   const pace = metrics?.pace ?? 'Estimating...';
-  const estDate = calcEstDate(followers, igGoal, paceMonthly);
   const contentScore = metrics?.contentScore ?? 0;
   const posts = isLive && media.length > 0 ? media : acc.posts;
   const working = analytics?.working ?? acc.working;
   const flopping = analytics?.flopping ?? acc.flopping;
 
+  // Weekly delta — for Mason use 0 since we don't have historical yet
+  const weeklyDelta = paceMonthly > 0 ? Math.round(paceMonthly / 4.33) : 0;
+  const { value: deltaVal, label: deltaLabel } = applyTimePeriod(weeklyDelta, timePeriod);
+
+  // Pace by selected period
+  const paceByPeriod = {
+    sec: paceMonthly > 0 ? (paceMonthly / (30 * 24 * 3600)).toFixed(5) : '0',
+    min: paceMonthly > 0 ? (paceMonthly / (30 * 24 * 60)).toFixed(4) : '0',
+    day: paceMonthly > 0 ? (paceMonthly / 30).toFixed(2) : '0',
+    week: paceMonthly > 0 ? (paceMonthly / 4.33).toFixed(1) : '0',
+    month: String(paceMonthly),
+    year: String(paceYearly),
+  } as Record<string, string>;
+
+  const paceLabels: Record<string, string> = {
+    sec: 'followers/sec', min: 'followers/min', day: 'followers/day',
+    week: 'followers/wk', month: 'followers/mo', year: 'followers/yr',
+  };
+
+  // ETA based on selected period rate
+  const currentPeriodRate = parseFloat(paceByPeriod[timePeriod] ?? '0');
+  const monthlyFromPeriod = timePeriod === 'sec' ? currentPeriodRate * 30 * 24 * 3600
+    : timePeriod === 'min' ? currentPeriodRate * 30 * 24 * 60
+    : timePeriod === 'day' ? currentPeriodRate * 30
+    : timePeriod === 'week' ? currentPeriodRate * 4.33
+    : timePeriod === 'month' ? currentPeriodRate
+    : currentPeriodRate / 12;
+  const estDate = calcEstDate(followers, igGoal, Math.round(monthlyFromPeriod));
+
+  // Pie chart slices
+  const pieSlices = [
+    { value: followers, color: acc.colorDeep, label: 'Instagram' },
+    { value: 0, color: P.skyDeep, label: 'TikTok' },
+  ];
+
+  // Mock sparkline data for engagement (will be real once historical data builds)
+  const engagementHistory = [0, 0, 0, 0, 0, 0, isLive ? metrics.engagementRate : 0];
+  const reachHistory = [0, 0, 0, 0, 0, 0, isLive ? parseFloat(metrics.reach ?? '0') : 0];
+
   return (
     <div>
-      {/* Account header */}
+      {/* Account header with handle and content score */}
       <div style={{ background: P.white, border: `1px solid ${P.border}`, borderRadius: 14, padding: '14px 16px', marginBottom: 12, display: 'flex', alignItems: 'center', gap: 10 }}>
         <div style={{ width: 36, height: 36, borderRadius: 9, background: acc.colorSoft, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 16, flexShrink: 0 }}>{acc.icon}</div>
         <div style={{ flex: 1 }}>
@@ -908,39 +951,121 @@ const IGAccountView = ({ acc, igData, igGoal, setIgGoal }: { acc: any; igData: a
         <Ring val={contentScore} color={acc.colorDeep} size={46} />
       </div>
 
-      {/* Core metrics */}
-      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 8, marginBottom: 4 }}>
-        <StatCard label="Followers" value={fmtNum(followers)} sub={isLive ? 'live ✓' : 'mock'} accent={acc.color} live={isLive} />
-        <StatCard label="Following" value={following != null ? fmtNum(following) : '—'} sub={isLive ? 'live ✓' : '—'} accent={acc.color} live={isLive} />
-        <StatCard label="Reach (est.)" value={reach} sub={isLive ? 'derived from live data' : 'mock'} accent={acc.color} live={isLive} />
-        <StatCard label="Engagement" value={engagement} sub={isLive ? 'live calculation' : 'mock'} accent={acc.color} live={isLive} />
+      {/* Followers with pie chart */}
+      <div style={{ background: P.white, border: `1px solid ${P.border}`, borderRadius: 14, padding: '14px 15px', marginBottom: 8, borderTop: `2.5px solid ${acc.color}` }}>
+        <div style={{ display: 'flex', alignItems: 'flex-start', gap: 12 }}>
+          <div style={{ flex: 1 }}>
+            <div style={{ fontSize: 9, color: P.inkFaint, textTransform: 'uppercase', letterSpacing: '0.12em', fontFamily: F.mono, marginBottom: 4, display: 'flex', alignItems: 'center', gap: 5 }}>
+              Followers {isLive && <LiveDot color={P.sageDeep} />}
+            </div>
+            <div style={{ fontSize: 22, fontWeight: 700, fontFamily: F.display, color: P.ink, letterSpacing: '-0.02em' }}>{fmtNum(followers)}</div>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 5, marginTop: 4 }}>
+              <span style={{ fontSize: 12, color: deltaVal >= 0 ? P.sageDeep : P.roseDeep, fontWeight: 600 }}>{deltaVal >= 0 ? '↑' : '↓'} {deltaVal >= 0 ? '+' : ''}{fmtNum(Math.abs(deltaVal))}</span>
+              <span style={{ fontSize: 10, color: P.inkFaint }}>{deltaLabel}</span>
+            </div>
+            {/* Time period switcher */}
+            <div style={{ display: 'flex', background: P.card, border: `1px solid ${P.border}`, borderRadius: 20, padding: 2, gap: 1, marginTop: 8, width: 'fit-content' }}>
+              {TIME_PERIODS.map(tp => (
+                <button key={tp.id} onClick={() => setTimePeriod(tp.id)}
+                  style={{ background: timePeriod === tp.id ? P.ink : 'none', color: timePeriod === tp.id ? P.white : P.inkSoft, border: 'none', borderRadius: 16, padding: '3px 7px', fontSize: 9, fontWeight: 600, cursor: 'pointer', fontFamily: F.mono, transition: 'all 0.15s' }}>
+                  {tp.label}
+                </button>
+              ))}
+            </div>
+          </div>
+          {/* Pie chart */}
+          <div>
+            <div style={{ fontSize: 9, color: P.inkFaint, fontFamily: F.mono, marginBottom: 6, textTransform: 'uppercase', letterSpacing: '0.1em' }}>By Platform</div>
+            <PieChart slices={pieSlices} size={72} />
+          </div>
+        </div>
       </div>
 
-      {/* Follower goal */}
+      {/* Engagement + Reach with mini sparklines */}
+      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 8, marginBottom: 8 }}>
+        <div style={{ background: P.white, border: `1px solid ${P.border}`, borderRadius: 14, padding: '12px 13px', borderTop: `2.5px solid ${acc.color}` }}>
+          <div style={{ fontSize: 9, color: P.inkFaint, textTransform: 'uppercase', letterSpacing: '0.12em', fontFamily: F.mono, marginBottom: 4 }}>Engagement</div>
+          <div style={{ fontSize: 18, fontWeight: 700, fontFamily: F.display, color: P.ink }}>{engagement}</div>
+          {isLive && <div style={{ fontSize: 9, color: P.sageDeep, fontFamily: F.mono, marginBottom: 6 }}>live ✓</div>}
+          <Spark data={engagementHistory.length > 1 ? engagementHistory : [0, 0, 0, 0, 0, 0, 0]} color={acc.color} h={28} />
+        </div>
+        <div style={{ background: P.white, border: `1px solid ${P.border}`, borderRadius: 14, padding: '12px 13px', borderTop: `2.5px solid ${acc.color}` }}>
+          <div style={{ fontSize: 9, color: P.inkFaint, textTransform: 'uppercase', letterSpacing: '0.12em', fontFamily: F.mono, marginBottom: 4 }}>Reach (est.)</div>
+          <div style={{ fontSize: 18, fontWeight: 700, fontFamily: F.display, color: P.ink }}>{reach}</div>
+          {isLive && <div style={{ fontSize: 9, color: P.sageDeep, fontFamily: F.mono, marginBottom: 6 }}>derived ✓</div>}
+          <Spark data={[0, 0, 0, 0, 0, 0, isLive ? parseFloat(String(metrics.reach).replace('K','')) || 1 : 1]} color={acc.color} h={28} />
+        </div>
+        {following != null && (
+          <div style={{ background: P.white, border: `1px solid ${P.border}`, borderRadius: 14, padding: '12px 13px', borderTop: `2.5px solid ${acc.color}` }}>
+            <div style={{ fontSize: 9, color: P.inkFaint, textTransform: 'uppercase', letterSpacing: '0.12em', fontFamily: F.mono, marginBottom: 4 }}>Following</div>
+            <div style={{ fontSize: 18, fontWeight: 700, fontFamily: F.display, color: P.ink }}>{fmtNum(following)}</div>
+            {isLive && <div style={{ fontSize: 9, color: P.sageDeep, fontFamily: F.mono }}>live ✓</div>}
+          </div>
+        )}
+        <div style={{ background: P.white, border: `1px solid ${P.border}`, borderRadius: 14, padding: '12px 13px', borderTop: `2.5px solid ${acc.color}` }}>
+          <div style={{ fontSize: 9, color: P.inkFaint, textTransform: 'uppercase', letterSpacing: '0.12em', fontFamily: F.mono, marginBottom: 4 }}>Posts</div>
+          <div style={{ fontSize: 18, fontWeight: 700, fontFamily: F.display, color: P.ink }}>{isLive ? metrics.mediaCount : acc.posts?.length ?? 0}</div>
+          {isLive && <div style={{ fontSize: 9, color: P.sageDeep, fontFamily: F.mono }}>live ✓</div>}
+        </div>
+      </div>
+
+      {/* Pace cards — update with time period */}
+      <div style={{ background: P.card, border: `1px solid ${P.border}`, borderRadius: 13, padding: '12px 14px', marginBottom: 8 }}>
+        <div style={{ fontSize: 9, color: P.inkFaint, fontFamily: F.mono, marginBottom: 10, textTransform: 'uppercase', letterSpacing: '0.1em' }}>Growth Pace</div>
+        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 8, marginBottom: 10 }}>
+          <div>
+            <div style={{ fontSize: 9, color: P.inkFaint, fontFamily: F.mono, marginBottom: 3 }}>{paceLabels[timePeriod]?.toUpperCase()}</div>
+            <div style={{ fontSize: 20, fontWeight: 700, fontFamily: F.display, color: P.ink }}>
+              {paceMonthly > 0 ? (parseFloat(paceByPeriod[timePeriod] ?? '0') >= 0 ? '+' : '') + paceByPeriod[timePeriod] : '—'}
+            </div>
+            <div style={{ fontSize: 9, color: paceSource === 'historical_data' ? P.sageDeep : P.inkFaint, fontFamily: F.mono, marginTop: 2 }}>
+              {paceSource === 'historical_data' ? 'tracked ✓' : paceSource === 'early_estimate' ? 'early data' : 'est. baseline'}
+            </div>
+          </div>
+          <div>
+            <div style={{ fontSize: 9, color: P.inkFaint, fontFamily: F.mono, marginBottom: 3 }}>EST. GOAL DATE</div>
+            <div style={{ fontSize: 14, fontWeight: 700, fontFamily: F.display, color: P.ink }}>{paceMonthly > 0 ? estDate : '—'}</div>
+            <div style={{ fontSize: 9, color: P.inkFaint, fontFamily: F.mono, marginTop: 2 }}>at this {timePeriod} rate</div>
+          </div>
+        </div>
+        {/* Time period switcher for pace */}
+        <div style={{ display: 'flex', background: P.white, border: `1px solid ${P.border}`, borderRadius: 20, padding: 2, gap: 1 }}>
+          {TIME_PERIODS.map(tp => (
+            <button key={tp.id} onClick={() => setTimePeriod(tp.id)}
+              style={{ background: timePeriod === tp.id ? acc.colorDeep : 'none', color: timePeriod === tp.id ? P.white : P.inkSoft, border: 'none', borderRadius: 16, padding: '4px 0', fontSize: 9, fontWeight: 600, cursor: 'pointer', fontFamily: F.mono, flex: 1, transition: 'all 0.15s' }}>
+              {tp.label}
+            </button>
+          ))}
+        </div>
+      </div>
+
+      {/* Follower goal with platform toggle */}
       <SH>Follower Goal</SH>
+      <div style={{ display: 'flex', alignItems: 'center', gap: 7, marginBottom: 8 }}>
+        <div style={{ display: 'flex', background: P.card, border: `1px solid ${P.border}`, borderRadius: 14, padding: 2, gap: 1 }}>
+          {['instagram', 'tiktok'].map(pl => (
+            <button key={pl} onClick={() => setGoalPlatform(pl)}
+              style={{ background: goalPlatform === pl ? acc.colorDeep : 'none', color: goalPlatform === pl ? P.white : P.inkSoft, border: 'none', borderRadius: 11, padding: '3px 10px', fontSize: 9, fontWeight: 600, cursor: 'pointer', fontFamily: F.mono, textTransform: 'uppercase' }}>
+              {pl === 'instagram' ? 'IG' : 'TikTok'}
+            </button>
+          ))}
+        </div>
+        <div style={{ fontSize: 10, color: P.inkSoft }}>goal target:</div>
+        <input type="number" value={igGoal}
+          onChange={e => { const v = parseInt(e.target.value); if (v > 0) setIgGoal(v); }}
+          style={{ width: 80, border: `1px solid ${P.border}`, borderRadius: 7, padding: '4px 8px', fontSize: 12, fontFamily: F.mono, background: P.white, color: P.ink, textAlign: 'right' }}
+        />
+      </div>
       <GoalBar
-        label="Instagram Followers"
+        label={goalPlatform === 'instagram' ? 'Instagram Followers' : 'TikTok Followers'}
         current={followers}
         goal={igGoal}
         color={acc.color}
         colorSoft={acc.colorSoft}
-        pace={pace}
+        pace={paceMonthly > 0 ? pace : 'Estimating...'}
         paceSource={paceSource}
-        estDate={estDate}
-        onGoalChange={setIgGoal}
+        estDate={paceMonthly > 0 ? estDate : 'Need more history'}
       />
-      {paceMonthly > 0 && (
-        <div style={{ background: P.card, border: `1px solid ${P.border}`, borderRadius: 11, padding: '10px 13px', display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 8, marginBottom: 4 }}>
-          <div>
-            <div style={{ fontSize: 9, color: P.inkFaint, fontFamily: F.mono, marginBottom: 3 }}>MONTHLY PACE</div>
-            <div style={{ fontSize: 15, fontWeight: 700, fontFamily: F.display, color: P.ink }}>+{paceMonthly}/mo</div>
-          </div>
-          <div>
-            <div style={{ fontSize: 9, color: P.inkFaint, fontFamily: F.mono, marginBottom: 3 }}>YEARLY PACE</div>
-            <div style={{ fontSize: 15, fontWeight: 700, fontFamily: F.display, color: P.ink }}>+{metrics?.yearlyGrowthRate ?? paceMonthly * 12}/yr</div>
-          </div>
-        </div>
-      )}
 
       {/* Posts */}
       {posts.length > 0 && (
@@ -959,7 +1084,7 @@ const IGAccountView = ({ acc, igData, igGoal, setIgGoal }: { acc: any; igData: a
         </div>
       )}
 
-      <SH>What's Working · What's Flopping</SH>
+      <SH>{"What's Working · What's Flopping"}</SH>
       <WW working={working} flopping={flopping} />
 
       {acc.topComments?.length > 0 && (
@@ -975,15 +1100,189 @@ const IGAccountView = ({ acc, igData, igGoal, setIgGoal }: { acc: any; igData: a
   );
 };
 
+// ── GENERIC ACCOUNT VIEW (Matt and non-live accounts) ──────────────────────
+const GenericAccountView = ({ acc, goal, setGoal }: { acc: any; goal: number; setGoal: (v: number) => void }) => {
+  const [timePeriod, setTimePeriod] = useState('week');
+  const [goalPlatform, setGoalPlatform] = useState(acc.platform.toLowerCase());
+
+  const weeklyDelta = parseInt((acc.followerDelta ?? '+0').replace('+', '').replace(',', '')) || 0;
+  const { value: deltaVal, label: deltaLabel } = applyTimePeriod(weeklyDelta, timePeriod);
+
+  const paceMonthly = Math.round(weeklyDelta * 4.33);
+  const paceYearly = paceMonthly * 12;
+
+  const paceByPeriod = {
+    sec: paceMonthly > 0 ? (paceMonthly / (30 * 24 * 3600)).toFixed(5) : '0',
+    min: paceMonthly > 0 ? (paceMonthly / (30 * 24 * 60)).toFixed(4) : '0',
+    day: paceMonthly > 0 ? (paceMonthly / 30).toFixed(1) : '0',
+    week: String(weeklyDelta),
+    month: String(paceMonthly),
+    year: String(paceYearly),
+  } as Record<string, string>;
+
+  const paceLabels: Record<string, string> = {
+    sec: 'followers/sec', min: 'followers/min', day: 'followers/day',
+    week: 'followers/wk', month: 'followers/mo', year: 'followers/yr',
+  };
+
+  const estDate = calcEstDate(acc.followers, goal, paceMonthly);
+
+  const pieSlices = [
+    { value: acc.followers, color: acc.colorDeep, label: acc.platform },
+  ];
+
+  // Mock sparklines using weekly delta extrapolated
+  const mockHistory = Array.from({ length: 7 }, (_, i) => Math.max(0, acc.followers - weeklyDelta * (6 - i)));
+
+  return (
+    <div>
+      {/* Account header */}
+      <div style={{ background: P.white, border: `1px solid ${P.border}`, borderRadius: 14, padding: '14px 16px', marginBottom: 12, display: 'flex', alignItems: 'center', gap: 10 }}>
+        <div style={{ width: 36, height: 36, borderRadius: 9, background: acc.colorSoft, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 16, flexShrink: 0 }}>{acc.icon}</div>
+        <div style={{ flex: 1 }}>
+          <div style={{ fontSize: 13, fontWeight: 600, color: P.ink }}>{acc.platform}</div>
+          <div style={{ fontSize: 11, color: P.inkSoft }}>{acc.handle}</div>
+        </div>
+        <Ring val={0} color={acc.colorDeep} size={46} />
+      </div>
+
+      {/* Followers with pie chart */}
+      <div style={{ background: P.white, border: `1px solid ${P.border}`, borderRadius: 14, padding: '14px 15px', marginBottom: 8, borderTop: `2.5px solid ${acc.color}` }}>
+        <div style={{ display: 'flex', alignItems: 'flex-start', gap: 12 }}>
+          <div style={{ flex: 1 }}>
+            <div style={{ fontSize: 9, color: P.inkFaint, textTransform: 'uppercase', letterSpacing: '0.12em', fontFamily: F.mono, marginBottom: 4 }}>Followers</div>
+            <div style={{ fontSize: 22, fontWeight: 700, fontFamily: F.display, color: P.ink, letterSpacing: '-0.02em' }}>{fmtNum(acc.followers)}</div>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 5, marginTop: 4 }}>
+              <span style={{ fontSize: 12, color: deltaVal >= 0 ? P.sageDeep : P.roseDeep, fontWeight: 600 }}>{deltaVal >= 0 ? '↑' : '↓'} {deltaVal >= 0 ? '+' : ''}{fmtNum(Math.abs(deltaVal))}</span>
+              <span style={{ fontSize: 10, color: P.inkFaint }}>{deltaLabel}</span>
+            </div>
+            <div style={{ display: 'flex', background: P.card, border: `1px solid ${P.border}`, borderRadius: 20, padding: 2, gap: 1, marginTop: 8, width: 'fit-content' }}>
+              {TIME_PERIODS.map(tp => (
+                <button key={tp.id} onClick={() => setTimePeriod(tp.id)}
+                  style={{ background: timePeriod === tp.id ? P.ink : 'none', color: timePeriod === tp.id ? P.white : P.inkSoft, border: 'none', borderRadius: 16, padding: '3px 7px', fontSize: 9, fontWeight: 600, cursor: 'pointer', fontFamily: F.mono, transition: 'all 0.15s' }}>
+                  {tp.label}
+                </button>
+              ))}
+            </div>
+          </div>
+          <div>
+            <div style={{ fontSize: 9, color: P.inkFaint, fontFamily: F.mono, marginBottom: 6, textTransform: 'uppercase', letterSpacing: '0.1em' }}>By Platform</div>
+            <PieChart slices={pieSlices} size={72} />
+          </div>
+        </div>
+      </div>
+
+      {/* Engagement + Reach with sparklines */}
+      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 8, marginBottom: 8 }}>
+        <div style={{ background: P.white, border: `1px solid ${P.border}`, borderRadius: 14, padding: '12px 13px', borderTop: `2.5px solid ${acc.color}` }}>
+          <div style={{ fontSize: 9, color: P.inkFaint, textTransform: 'uppercase', letterSpacing: '0.12em', fontFamily: F.mono, marginBottom: 4 }}>Engagement</div>
+          <div style={{ fontSize: 18, fontWeight: 700, fontFamily: F.display, color: P.ink }}>{acc.engagement}</div>
+          <div style={{ fontSize: 9, color: P.inkFaint, fontFamily: F.mono, marginBottom: 6 }}>mock</div>
+          <Spark data={mockHistory.map(() => parseFloat(acc.engagement ?? '0'))} color={acc.color} h={28} />
+        </div>
+        <div style={{ background: P.white, border: `1px solid ${P.border}`, borderRadius: 14, padding: '12px 13px', borderTop: `2.5px solid ${acc.color}` }}>
+          <div style={{ fontSize: 9, color: P.inkFaint, textTransform: 'uppercase', letterSpacing: '0.12em', fontFamily: F.mono, marginBottom: 4 }}>Reach</div>
+          <div style={{ fontSize: 18, fontWeight: 700, fontFamily: F.display, color: P.ink }}>{acc.reach >= 1000 ? fmtNum(acc.reach) : String(acc.reach)}</div>
+          <div style={{ fontSize: 9, color: P.inkFaint, fontFamily: F.mono, marginBottom: 6 }}>mock</div>
+          <Spark data={mockHistory.map(() => acc.reach / 1000)} color={acc.color} h={28} />
+        </div>
+      </div>
+
+      {/* Pace cards */}
+      <div style={{ background: P.card, border: `1px solid ${P.border}`, borderRadius: 13, padding: '12px 14px', marginBottom: 8 }}>
+        <div style={{ fontSize: 9, color: P.inkFaint, fontFamily: F.mono, marginBottom: 10, textTransform: 'uppercase', letterSpacing: '0.1em' }}>Growth Pace</div>
+        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 8, marginBottom: 10 }}>
+          <div>
+            <div style={{ fontSize: 9, color: P.inkFaint, fontFamily: F.mono, marginBottom: 3 }}>{paceLabels[timePeriod]?.toUpperCase()}</div>
+            <div style={{ fontSize: 20, fontWeight: 700, fontFamily: F.display, color: P.ink }}>
+              +{paceByPeriod[timePeriod] ?? '0'}
+            </div>
+            <div style={{ fontSize: 9, color: P.inkFaint, fontFamily: F.mono, marginTop: 2 }}>mock data</div>
+          </div>
+          <div>
+            <div style={{ fontSize: 9, color: P.inkFaint, fontFamily: F.mono, marginBottom: 3 }}>EST. GOAL DATE</div>
+            <div style={{ fontSize: 14, fontWeight: 700, fontFamily: F.display, color: P.ink }}>{estDate}</div>
+            <div style={{ fontSize: 9, color: P.inkFaint, fontFamily: F.mono, marginTop: 2 }}>at this {timePeriod} rate</div>
+          </div>
+        </div>
+        <div style={{ display: 'flex', background: P.white, border: `1px solid ${P.border}`, borderRadius: 20, padding: 2, gap: 1 }}>
+          {TIME_PERIODS.map(tp => (
+            <button key={tp.id} onClick={() => setTimePeriod(tp.id)}
+              style={{ background: timePeriod === tp.id ? acc.colorDeep : 'none', color: timePeriod === tp.id ? P.white : P.inkSoft, border: 'none', borderRadius: 16, padding: '4px 0', fontSize: 9, fontWeight: 600, cursor: 'pointer', fontFamily: F.mono, flex: 1, transition: 'all 0.15s' }}>
+              {tp.label}
+            </button>
+          ))}
+        </div>
+      </div>
+
+      {/* Goal */}
+      <SH>Follower Goal</SH>
+      <div style={{ display: 'flex', alignItems: 'center', gap: 7, marginBottom: 8 }}>
+        <div style={{ fontSize: 10, color: P.inkSoft }}>goal target:</div>
+        <input type="number" value={goal}
+          onChange={e => { const v = parseInt(e.target.value); if (v > 0) setGoal(v); }}
+          style={{ width: 80, border: `1px solid ${P.border}`, borderRadius: 7, padding: '4px 8px', fontSize: 12, fontFamily: F.mono, background: P.white, color: P.ink, textAlign: 'right' }}
+        />
+      </div>
+      <GoalBar
+        label={acc.platform + ' Followers'}
+        current={acc.followers}
+        goal={goal}
+        color={acc.color}
+        colorSoft={acc.colorSoft}
+        pace={'+' + paceMonthly + '/mo'}
+        paceSource="estimated_baseline"
+        estDate={estDate}
+      />
+
+      {/* Posts */}
+      {acc.posts?.length > 0 && (
+        <>
+          <SH>Recent Posts</SH>
+          {acc.posts.map((p: any, i: number) => (
+            <PostCard key={i} post={p} accent={acc.color} accentSoft={acc.colorSoft} accentDeep={acc.colorDeep} />
+          ))}
+        </>
+      )}
+
+      <SH>{"What's Working · What's Flopping"}</SH>
+      <WW working={acc.working} flopping={acc.flopping} />
+
+      {acc.topComments?.length > 0 && (
+        <>
+          <SH>Top Comments</SH>
+          {acc.topComments.map((c: any, i: number) => <CmtCard key={i} c={c} accent={acc.colorDeep} accentSoft={acc.colorSoft} />)}
+        </>
+      )}
+
+      <SH>AI Strategic Insight</SH>
+      <AIInsight text={acc.insight} platform={acc.platform} />
+    </div>
+  );
+};
+
+
 // ── CLIENT VIEW ────────────────────────────────────────────────────────────
 const ClientView = ({ client, igData, igGoal, setIgGoal }: { client: any; igData: any; igGoal: number; setIgGoal: (v: number) => void }) => {
   const [openAcc, setOpenAcc] = useState(0);
+  const [mattGoals, setMattGoals] = useState<Record<string, number>>(() => {
+    if (typeof window !== 'undefined') {
+      try { return JSON.parse(localStorage.getItem('matt_goals') ?? '{}'); } catch { return {}; }
+    }
+    return {};
+  });
+
   const metrics = igData?.metrics;
   const isMason = client.id === 'mason';
-
   const displayFollowers = isMason && metrics ? metrics.followers : client.totalFollowers;
   const displayHandle = isMason && metrics ? metrics.handle : null;
   const contentScore = isMason && metrics ? metrics.contentScore : client.contentScore;
+
+  const setMattGoal = (platform: string, v: number) => {
+    const updated = { ...mattGoals, [platform]: v };
+    setMattGoals(updated);
+    if (typeof window !== 'undefined') localStorage.setItem('matt_goals', JSON.stringify(updated));
+  };
 
   return (
     <div>
@@ -1039,32 +1338,12 @@ const ClientView = ({ client, igData, igGoal, setIgGoal }: { client: any; igData
               <div style={{ padding: '14px 15px' }}>
                 {isMason && acc.platform === 'Instagram'
                   ? <IGAccountView acc={acc} igData={igData} igGoal={igGoal} setIgGoal={setIgGoal} />
-                  : (
-                    <div>
-                      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 8, marginBottom: 4 }}>
-                        <StatCard label="Followers" value={fmtNum(acc.followers)} sub="mock" accent={acc.color} />
-                        <StatCard label="Reach" value={acc.reach >= 1000 ? fmtNum(acc.reach) : String(acc.reach)} sub="mock" accent={acc.color} />
-                        <StatCard label="Engagement" value={acc.engagement} sub="mock" accent={acc.color} />
-                        <StatCard label="Posts" value={String(acc.posts?.length ?? 0)} sub="mock" accent={acc.color} />
-                      </div>
-                      {acc.posts?.length > 0 && (
-                        <>
-                          <SH>Recent Posts</SH>
-                          {acc.posts.map((p: any, i: number) => <PostCard key={i} post={p} accent={acc.color} accentSoft={acc.colorSoft} accentDeep={acc.colorDeep} />)}
-                        </>
-                      )}
-                      <SH>What's Working · What's Flopping</SH>
-                      <WW working={acc.working} flopping={acc.flopping} />
-                      {acc.topComments?.length > 0 && (
-                        <>
-                          <SH>Top Comments</SH>
-                          {acc.topComments.map((c: any, i: number) => <CmtCard key={i} c={c} accent={acc.colorDeep} accentSoft={acc.colorSoft} />)}
-                        </>
-                      )}
-                      <SH>AI Strategic Insight</SH>
-                      <AIInsight text={acc.insight} platform={acc.platform} />
-                    </div>
-                  )}
+                  : <GenericAccountView
+                      acc={acc}
+                      goal={mattGoals[acc.platform] ?? (acc.platform === 'TikTok' ? 100000 : 10000)}
+                      setGoal={(v: number) => setMattGoal(acc.platform, v)}
+                    />
+                }
               </div>
             )}
           </div>
@@ -1073,6 +1352,7 @@ const ClientView = ({ client, igData, igGoal, setIgGoal }: { client: any; igData
     </div>
   );
 };
+
 
 // ── REACH DATA ─────────────────────────────────────────────────────────────
 const REACH_DATA = [12, 18, 14, 22, 19, 28, 31, 26, 38, 42, 35, 51, 48, 63, 71, 58, 82, 94, 87, 110, 103, 128, 141, 163];
@@ -1191,26 +1471,42 @@ export default function AdariCommandCenter() {
         {view === 'spots' && <ReturnToSpot />}
 
         {/* TRENDS */}
+        {/* TRENDS */}
         {view === 'trends' && (
           <div>
-            <div style={{ background: P.sageSoft, border: `1px solid ${P.sage}`, borderRadius: 15, padding: '14px 16px', marginBottom: 16 }}>
+            <div style={{ background: P.sageSoft, border: `1px solid ${P.sage}`, borderRadius: 16, padding: '14px 16px', marginBottom: 16 }}>
               <div style={{ fontSize: 9, letterSpacing: '0.15em', textTransform: 'uppercase', color: P.sageDeep, fontFamily: F.mono, marginBottom: 6 }}>Trend Radar · SoCal Food · Before the Hype</div>
-              <p style={{ fontSize: 12, color: P.sageDeep, lineHeight: 1.65, margin: 0 }}>These are rising before they hit mainstream. Film first and own the SEO before the crowds arrive.</p>
+              <p style={{ fontSize: 12, color: P.sageDeep, lineHeight: 1.65, margin: 0 }}>These are rising before they hit mainstream. Film these first and you own the SEO before the crowds arrive.</p>
             </div>
+            <SH>TikTok Search — Rising Fast</SH>
             {[
-              { rank: 1, name: 'Korean BBQ Tacos LA', meta: 'TikTok Search · +840% this week · SoCal geo', tag: '🔥 Film now', tc: P.sageDeep, tb: P.sageSoft },
-              { rank: 2, name: 'Birria Ramen Fusion', meta: 'TikTok + IG · +620% · Under the radar', tag: '🔥 Film now', tc: P.sageDeep, tb: P.sageSoft },
-              { rank: 3, name: 'LA Smash Burger hidden gem', meta: 'Google Trends · +410% · Accelerating', tag: '↑ Rising', tc: P.butterDeep, tb: P.butterSoft },
-              { rank: 4, name: 'Thai Tea Ice Cream rolls', meta: 'TikTok FYP · +290% · Just cresting', tag: '↑ Rising', tc: P.butterDeep, tb: P.butterSoft },
-              { rank: 5, name: 'Wagyu Beef Dumplings', meta: 'IG Explore · +180% · Building', tag: '👁 Watch', tc: P.skyDeep, tb: P.skySoft },
+              { rank: 1, name: 'Korean BBQ Tacos LA', meta: 'TikTok Search · +840% this week · SoCal geo', tag: '🔥 Film now', tagColor: P.sageDeep, tagBg: P.sageSoft },
+              { rank: 2, name: 'Birria Ramen Fusion', meta: 'TikTok + IG · +620% · Under the radar', tag: '🔥 Film now', tagColor: P.sageDeep, tagBg: P.sageSoft },
+              { rank: 3, name: 'LA Smash Burger hidden gem', meta: 'Google Trends · +410% · Accelerating', tag: '↑ Rising', tagColor: P.butterDeep, tagBg: P.butterSoft },
+              { rank: 4, name: 'Thai Tea Ice Cream rolls', meta: 'TikTok FYP · +290% · Just cresting', tag: '↑ Rising', tagColor: P.butterDeep, tagBg: P.butterSoft },
+              { rank: 5, name: 'Wagyu Beef Dumplings', meta: 'IG Explore · +180% · Building momentum', tag: '👁 Watch', tagColor: P.skyDeep, tagBg: P.skySoft },
             ].map((t, i) => (
-              <div key={i} style={{ background: P.white, border: `1px solid ${P.border}`, borderRadius: 12, padding: '10px 13px', marginBottom: 7, display: 'flex', alignItems: 'center', gap: 9 }}>
-                <div style={{ fontSize: 12, fontWeight: 700, color: P.inkFaint, width: 20, fontFamily: F.mono }}>{t.rank}</div>
-                <div style={{ flex: 1 }}>
+              <div key={i} style={{ background: P.white, border: `1px solid ${P.border}`, borderRadius: 12, padding: '11px 14px', marginBottom: 8, display: 'flex', alignItems: 'center', gap: 10 }}>
+                <div style={{ fontSize: 13, fontWeight: 700, color: P.inkFaint, width: 22, fontFamily: F.mono }}>{t.rank}</div>
+                <div style={{ flex: 1, minWidth: 0 }}>
                   <div style={{ fontSize: 13, fontWeight: 600, color: P.ink }}>{t.name}</div>
                   <div style={{ fontSize: 10, color: P.inkSoft, marginTop: 2 }}>{t.meta}</div>
                 </div>
-                <Tag color={t.tc} bg={t.tb}>{t.tag}</Tag>
+                <Tag color={t.tagColor} bg={t.tagBg}>{t.tag}</Tag>
+              </div>
+            ))}
+            <SH>Google Trends · Food &amp; Drink · California</SH>
+            {[
+              { q: 'Best birria near me', meta: 'Google Search · past 7 days · LA+OC', pct: '+890%' },
+              { q: 'Torrance ramen restaurant', meta: 'Google Search · past 7 days · South Bay', pct: '+340%' },
+              { q: 'matcha dessert Los Angeles', meta: 'Google Search · stable trending', pct: '+120%' },
+            ].map((t, i) => (
+              <div key={i} style={{ background: P.white, border: `1px solid ${P.border}`, borderRadius: 12, padding: '11px 14px', marginBottom: 8, display: 'flex', alignItems: 'center', gap: 10 }}>
+                <div style={{ flex: 1 }}>
+                  <div style={{ fontSize: 13, fontWeight: 500, color: P.ink }}>{t.q}</div>
+                  <div style={{ fontSize: 10, color: P.inkSoft, marginTop: 2 }}>{t.meta}</div>
+                </div>
+                <div style={{ fontSize: 12, color: P.sageDeep, fontWeight: 700 }}>{t.pct}</div>
               </div>
             ))}
           </div>
@@ -1219,23 +1515,76 @@ export default function AdariCommandCenter() {
         {/* COMPETITORS */}
         {view === 'compete' && (
           <div>
-            <div style={{ background: P.lavSoft, border: `1px solid ${P.lavender}`, borderRadius: 15, padding: '14px 16px', marginBottom: 16 }}>
+            <div style={{ background: P.lavSoft, border: `1px solid ${P.lavender}`, borderRadius: 16, padding: '14px 16px', marginBottom: 16 }}>
               <div style={{ fontSize: 9, letterSpacing: '0.15em', textTransform: 'uppercase', color: P.lavDeep, fontFamily: F.mono, marginBottom: 6 }}>Competitor Intelligence</div>
-              <p style={{ fontSize: 12, color: P.lavDeep, lineHeight: 1.65, margin: 0 }}>Transform their hooks, topics, and angles into your niche. Compete smart, not against.</p>
+              <p style={{ fontSize: 12, color: P.lavDeep, lineHeight: 1.65, margin: 0 }}>{"Don't copy them. Transform their hooks, topics, and angles into your niche. Compete with them, not against them — and when the time is right, collab."}</p>
             </div>
             {[
-              { name: 'LAtryGuy', handle: '@latryguy · 960K YouTube', initials: 'LA', color: P.sage, play: 'LAtryGuy is LA-wide. Matt is hyperlocal South Bay + OC. Own that lane. Their audience asks for spots outside their radius — you\'re already there.' },
-              { name: "Jack's Dining Room", handle: '@jacksdiningroom · 2.3M TikTok', initials: 'JD', color: P.rose, play: 'Jack does NYC. You do SoCal. His Korean fried chicken at 1.2M — film the best Korean fried chicken in Torrance this week and ride the wave he created.' },
-              { name: 'Gareth Eats', handle: '@garetheats · 750K YouTube · San Diego', initials: 'GE', color: P.butter, play: 'Gareth owns San Diego. You own South Bay and OC. The overlap is the 405 corridor. Pitch: \'LA vs SD [food] — who wins?\'' },
-            ].map((comp, i) => (
-              <div key={i} style={{ background: P.white, border: `1px solid ${P.border}`, borderRadius: 14, padding: '15px', marginBottom: 12 }}>
-                <div style={{ display: 'flex', alignItems: 'center', gap: 9, marginBottom: 11 }}>
-                  <div style={{ width: 36, height: 36, borderRadius: 9, background: `${comp.color}40`, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 12, fontWeight: 700, color: P.ink, flexShrink: 0 }}>{comp.initials}</div>
-                  <div>
-                    <div style={{ fontSize: 13, fontWeight: 700, fontFamily: F.display }}>{comp.name}</div>
-                    <div style={{ fontSize: 10, color: P.inkSoft }}>{comp.handle}</div>
+              {
+                name: 'LAtryGuy', handle: '@latryguy · 960K YouTube · 287K IG', avatarBg: P.sageSoft, avatarColor: P.sageDeep, initials: 'LA',
+                hooks: ["'Best [food] in South LA'", "'Hidden gem in [city]'", "'Nobody talks about this spot'"],
+                comments: [
+                  { text: 'You should cover the Korean BBQ taco spot on Olympic — been asking for months', likes: 341, note: 'opportunity alert' },
+                  { text: "What's the best fried chicken in Inglewood? Cover that next", likes: 218, note: 'unserved demand' },
+                ],
+                play: "LAtryGuy is LA-wide. Matt is hyperlocal South Bay + OC. Own that lane. Their audience is asking for spots outside their usual radius — you're already there.",
+                collab: 'Collab ready?', color: P.sage, colorSoft: P.sageSoft, colorDeep: P.sageDeep,
+              },
+              {
+                name: "Jack's Dining Room", handle: '@jacksdiningroom · 2.3M TikTok · 3M IG', avatarBg: P.roseSoft, avatarColor: P.roseDeep, initials: 'JD',
+                hooks: ["'This place did 200+ sandwiches after my video'", "'The restaurant that opened 8 locations'"],
+                filming: [
+                  { name: 'NYC Korean fried chicken', meta: 'Posted 2 days ago · 1.2M views' },
+                  { name: 'Hidden dumpling spot, Flushing', meta: 'Posted 5 days ago · 880K views' },
+                ],
+                play: 'Jack does NYC. You do SoCal. Same energy, different coast. His Korean fried chicken video is at 1.2M — film the best Korean fried chicken in Torrance or OC this week and ride the algorithm wave he just created.',
+                collab: 'Dream collab', color: P.rose, colorSoft: P.roseSoft, colorDeep: P.roseDeep,
+              },
+              {
+                name: 'Gareth Eats', handle: '@garetheats · 750K YouTube · San Diego', avatarBg: P.butterSoft, avatarColor: P.butterDeep, initials: 'GE',
+                play: "Gareth owns San Diego. You own South Bay and OC. The overlap is the 405 corridor — film a joint 'LA vs SD [food]' video. Pitch: 'Same food, different county — who wins?'",
+                collab: 'SD collab opp', color: P.butter, colorSoft: P.butterSoft, colorDeep: P.butterDeep,
+              },
+            ].map((comp: any, i) => (
+              <div key={i} style={{ background: P.white, border: `1px solid ${P.border}`, borderRadius: 16, padding: '16px', marginBottom: 14 }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 12 }}>
+                  <div style={{ width: 38, height: 38, borderRadius: 10, background: comp.avatarBg, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 13, fontWeight: 700, color: comp.avatarColor, flexShrink: 0 }}>{comp.initials}</div>
+                  <div style={{ flex: 1 }}>
+                    <div style={{ fontSize: 14, fontWeight: 700, fontFamily: F.display }}>{comp.name}</div>
+                    <div style={{ fontSize: 11, color: P.inkSoft }}>{comp.handle}</div>
                   </div>
+                  <Tag color={comp.colorDeep} bg={comp.colorSoft}>{comp.collab}</Tag>
                 </div>
+                {comp.hooks && (
+                  <>
+                    <SH>Their Hooks — Transform for Your Niche</SH>
+                    <div style={{ display: 'flex', flexWrap: 'wrap', gap: 5, marginBottom: 4 }}>
+                      {comp.hooks.map((h: string, j: number) => <Tag key={j} color={comp.colorDeep} bg={comp.colorSoft}>{h}</Tag>)}
+                    </div>
+                  </>
+                )}
+                {comp.comments && (
+                  <>
+                    <SH>Demand in Their Comments — Your Opportunity</SH>
+                    {comp.comments.map((c: any, j: number) => (
+                      <div key={j} style={{ background: comp.colorSoft, borderRadius: 10, padding: '10px 12px', marginBottom: 7 }}>
+                        <div style={{ fontSize: 12, color: P.inkMid, fontStyle: 'italic' }}>"{c.text}"</div>
+                        <div style={{ fontSize: 10, color: comp.colorDeep, marginTop: 5 }}>♥ {c.likes} · {c.note}</div>
+                      </div>
+                    ))}
+                  </>
+                )}
+                {comp.filming && (
+                  <>
+                    <SH>What They're Filming This Week</SH>
+                    {comp.filming.map((f: any, j: number) => (
+                      <div key={j} style={{ display: 'flex', justifyContent: 'space-between', padding: '8px 0', borderBottom: j < comp.filming.length - 1 ? `1px solid ${P.borderLight}` : 'none' }}>
+                        <div style={{ fontSize: 12, color: P.ink }}>{f.name}</div>
+                        <div style={{ fontSize: 11, color: P.sageDeep }}>{f.meta}</div>
+                      </div>
+                    ))}
+                  </>
+                )}
                 <AIInsight text={comp.play} platform={comp.name} />
               </div>
             ))}
@@ -1245,40 +1594,40 @@ export default function AdariCommandCenter() {
         {/* PROSPECTS */}
         {view === 'prospects' && (
           <div>
-            <div style={{ background: P.butterSoft, border: `1px solid ${P.butter}`, borderRadius: 15, padding: '14px 16px', marginBottom: 16 }}>
+            <div style={{ background: P.butterSoft, border: `1px solid ${P.butter}`, borderRadius: 16, padding: '14px 16px', marginBottom: 16 }}>
               <div style={{ fontSize: 9, letterSpacing: '0.15em', textTransform: 'uppercase', color: P.butterDeep, fontFamily: F.mono, marginBottom: 6 }}>Burner Account · Active · SoCal</div>
-              <p style={{ fontSize: 13, color: P.inkMid, lineHeight: 1.75, margin: 0 }}>Monitoring 47 accounts in LA, OC, and San Diego. 3 high-priority prospects this week.</p>
+              <p style={{ fontSize: 13, color: P.inkMid, lineHeight: 1.75, margin: 0 }}>Monitoring 47 accounts in LA, OC, and San Diego. 4 high-priority prospects surfaced this week — sorted by Heat Score.</p>
             </div>
-            {PROSPECTS.map((p, i) => (
-              <div key={i} style={{ background: P.white, border: `1px solid ${P.border}`, borderLeft: `4px solid ${p.color}`, borderRadius: 13, padding: '14px', marginBottom: 11 }}>
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 7 }}>
+            {[...PROSPECTS].sort((a: any, b: any) => b.heat - a.heat).map((p: any, i: number) => (
+              <div key={i} style={{ background: P.white, border: `1px solid ${P.border}`, borderLeft: `4px solid ${p.color}`, borderRadius: 14, padding: '15px', marginBottom: 12 }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 8 }}>
                   <div>
-                    <div style={{ fontSize: 14, fontWeight: 700, fontFamily: F.display }}>{p.name}</div>
-                    <div style={{ fontSize: 10, color: P.inkSoft }}>{p.handle} · {p.followers} · {p.lastPost}</div>
+                    <div style={{ fontSize: 15, fontWeight: 700, fontFamily: F.display }}>{p.name}</div>
+                    <div style={{ fontSize: 11, color: P.inkSoft, marginTop: 2 }}>{p.handle} · {p.followers} followers · {p.lastPost}</div>
                   </div>
                   <div style={{ textAlign: 'right' }}>
-                    <div style={{ fontSize: 9, color: P.inkFaint, fontFamily: F.mono }}>Heat</div>
-                    <div style={{ fontSize: 22, fontWeight: 800, fontFamily: F.display, color: p.color }}>{p.heat}</div>
+                    <div style={{ fontSize: 9, color: P.inkFaint, fontFamily: F.mono, marginBottom: 4 }}>Heat Score</div>
+                    <div style={{ fontSize: 24, fontWeight: 800, fontFamily: F.display, color: p.color }}>{p.heat}</div>
                   </div>
                 </div>
                 <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 8, marginBottom: 10 }}>
                   <div>
-                    <div style={{ fontSize: 9, color: P.inkFaint, fontFamily: F.mono, marginBottom: 3 }}>Food Quality</div>
+                    <div style={{ fontSize: 9, color: P.inkFaint, fontFamily: F.mono, marginBottom: 4 }}>Food Quality</div>
                     <div style={{ display: 'flex', gap: 6, alignItems: 'center' }}>
                       <MiniBar val={p.foodScore} max={10} color={P.sageDeep} />
-                      <span style={{ fontSize: 11, fontWeight: 700, color: P.sageDeep }}>{p.foodScore}</span>
+                      <span style={{ fontSize: 11, fontWeight: 700, color: P.sageDeep, fontFamily: F.display }}>{p.foodScore}</span>
                     </div>
                   </div>
                   <div>
-                    <div style={{ fontSize: 9, color: P.inkFaint, fontFamily: F.mono, marginBottom: 3 }}>Social</div>
+                    <div style={{ fontSize: 9, color: P.inkFaint, fontFamily: F.mono, marginBottom: 4 }}>Social Presence</div>
                     <div style={{ display: 'flex', gap: 6, alignItems: 'center' }}>
                       <MiniBar val={p.socialScore} max={10} color={P.roseDeep} />
-                      <span style={{ fontSize: 11, fontWeight: 700, color: P.roseDeep }}>{p.socialScore}</span>
+                      <span style={{ fontSize: 11, fontWeight: 700, color: P.roseDeep, fontFamily: F.display }}>{p.socialScore}</span>
                     </div>
                   </div>
                 </div>
-                <div style={{ fontSize: 12, color: P.inkMid, lineHeight: 1.7, marginBottom: 11 }}>{p.note}</div>
-                <button style={{ background: p.colorSoft, border: `1px solid ${p.color}`, borderRadius: 20, padding: '7px 16px', color: P.ink, fontSize: 11, fontWeight: 600, cursor: 'pointer' }}>Reach Out via Maison Adari →</button>
+                <div style={{ fontSize: 12, color: P.inkMid, lineHeight: 1.7, marginBottom: 12 }}>{p.note}</div>
+                <button style={{ background: p.colorSoft, border: `1px solid ${p.color}`, borderRadius: 20, padding: '8px 18px', color: P.ink, fontSize: 12, fontWeight: 600, cursor: 'pointer', fontFamily: F.body }}>Reach Out via Maison Adari →</button>
               </div>
             ))}
           </div>
@@ -1287,52 +1636,87 @@ export default function AdariCommandCenter() {
         {/* REVENUE */}
         {view === 'revenue' && (
           <div>
-            <div style={{ background: P.dark, borderRadius: 16, padding: '18px 20px', marginBottom: 16 }}>
+            <div style={{ background: P.dark, borderRadius: 18, padding: '20px', marginBottom: 18 }}>
               <div style={{ fontSize: 9, letterSpacing: '0.15em', textTransform: 'uppercase', color: P.darkMuted, fontFamily: F.mono, marginBottom: 12 }}>✦ Agency Revenue · Maison Adari</div>
-              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 9 }}>
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10 }}>
                 {[
-                  { label: 'Billed This Month', val: '$0', sub: '0 active clients', color: P.sage },
-                  { label: 'Pipeline Value', val: '$2,400', sub: '3 prospects identified', color: P.lavender },
-                  { label: 'Projected (1 Client)', val: '$800/mo', sub: 'Standard AFE rate', color: P.butter },
-                  { label: 'Monthly Target', val: '$5,000', sub: '6 clients @ $800', color: P.rose },
+                  { label: 'Billed This Month', value: '$0', sub: '0 active clients', color: P.sage },
+                  { label: 'Pipeline Value', value: '$2,400', sub: '4 prospects identified', color: P.lavender },
+                  { label: 'Projected (1 Client)', value: '$800/mo', sub: 'Standard AFE rate', color: P.butter },
+                  { label: 'Monthly Target', value: '$5,000', sub: '6 clients @ $800', color: P.rose },
                 ].map((s, i) => (
-                  <div key={i} style={{ background: P.darkCard, border: `1px solid ${P.darkBorder}`, borderRadius: 12, padding: '13px', borderTop: `2px solid ${s.color}` }}>
-                    <div style={{ fontSize: 9, color: P.darkMuted, textTransform: 'uppercase', letterSpacing: '0.1em', fontFamily: F.mono, marginBottom: 4 }}>{s.label}</div>
-                    <div style={{ fontSize: 18, fontWeight: 700, fontFamily: F.display, color: P.darkText }}>{s.val}</div>
-                    <div style={{ fontSize: 10, color: P.darkMuted, marginTop: 3 }}>{s.sub}</div>
+                  <div key={i} style={{ background: P.darkCard, border: `1px solid ${P.darkBorder}`, borderRadius: 13, padding: '14px', borderTop: `3px solid ${s.color}` }}>
+                    <div style={{ fontSize: 9, color: P.darkMuted, textTransform: 'uppercase', letterSpacing: '0.09em', fontFamily: F.mono, marginBottom: 4 }}>{s.label}</div>
+                    <div style={{ fontSize: 20, fontWeight: 700, fontFamily: F.display, color: P.darkText }}>{s.value}</div>
+                    <div style={{ fontSize: 11, color: P.darkMuted, marginTop: 3 }}>{s.sub}</div>
                   </div>
                 ))}
               </div>
+              <div style={{ marginTop: 16 }}>
+                <div style={{ fontSize: 9, color: P.darkMuted, fontFamily: F.mono, marginBottom: 6 }}>Progress to $5K/mo Target</div>
+                <div style={{ background: P.darkBorder, borderRadius: 99, height: 8 }}>
+                  <div style={{ background: P.sage, height: 8, width: '0%', borderRadius: 99 }} />
+                </div>
+                <div style={{ fontSize: 11, color: P.darkMuted, marginTop: 6, fontStyle: 'italic' }}>First client unlocks the flywheel. Everything after is momentum.</div>
+              </div>
             </div>
+            <SH>Pricing Tiers</SH>
+            {[
+              { tier: 'Starter', price: '$500/mo', desc: '2 posts/week, monthly report, basic analytics', color: P.sage },
+              { tier: 'Growth', price: '$800/mo', desc: '4 posts/week, weekly report, competitor analysis, hook strategy', color: P.lavender },
+              { tier: 'Pro', price: '$1,200/mo', desc: 'Daily content, live dashboard access, creator DM agent, full AFE deployment', color: P.rose },
+            ].map((t, i) => (
+              <div key={i} style={{ background: P.white, border: `1px solid ${P.border}`, borderLeft: `4px solid ${t.color}`, borderRadius: 13, padding: '14px 16px', marginBottom: 10 }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 5 }}>
+                  <div style={{ fontSize: 14, fontWeight: 700, fontFamily: F.display }}>{t.tier}</div>
+                  <div style={{ fontSize: 14, fontWeight: 700, fontFamily: F.display, color: t.color }}>{t.price}</div>
+                </div>
+                <div style={{ fontSize: 12, color: P.inkMid }}>{t.desc}</div>
+              </div>
+            ))}
           </div>
         )}
 
         {/* AFE ENGINE */}
         {view === 'engine' && (
           <div>
-            <div style={{ background: P.lavSoft, border: `1px solid ${P.lavender}`, borderRadius: 16, padding: '16px 18px', marginBottom: 20 }}>
-              <div style={{ fontSize: 9, letterSpacing: '0.15em', textTransform: 'uppercase', color: P.lavDeep, fontFamily: F.mono, marginBottom: 7 }}>The Adari Food Engine</div>
-              <div style={{ fontSize: 14, fontFamily: F.display, color: P.ink, lineHeight: 1.75, fontStyle: 'italic' }}>
-                "We don't post content. We engineer virality. Every frame, hook, and caption is built to make the food so compelling it forces the viewer to act."
-              </div>
+            <div style={{ background: P.lavSoft, border: `1px solid ${P.lavender}`, borderRadius: 18, padding: '18px 20px', marginBottom: 22 }}>
+              <div style={{ fontSize: 9, letterSpacing: '0.15em', textTransform: 'uppercase', color: P.lavDeep, fontFamily: F.mono, marginBottom: 8 }}>The Adari Food Engine</div>
+              <div style={{ fontSize: 15, fontFamily: F.display, color: P.ink, lineHeight: 1.75, fontStyle: 'italic' }}>{"We don't post content. We engineer virality. Every frame, hook, and caption is built to make the food so compelling it forces the viewer to act — visit, share, or remember."}</div>
             </div>
             {[
-              { step: '01', label: 'Identify', desc: 'Burner account surfaces restaurants with exceptional food and underdeveloped social.', color: P.lavender },
-              { step: '02', label: 'Outreach', desc: 'Value-first cold call + tailored DM. We lead with what we see, not what we sell.', color: P.rose },
-              { step: '03', label: 'Analyze', desc: 'Apify scrapes top hooks in their niche. We identify psychology triggers and content gaps.', color: P.peach },
-              { step: '04', label: 'Execute', desc: 'Weekly short-form content built purely off data. Nothing random, nothing guessed.', color: P.sage },
-              { step: '05', label: 'Report', desc: 'Live dashboard showing growth, winners, top comments, and milestone tracking.', color: P.butter },
-              { step: '06', label: 'Scale', desc: 'Creator DM agent handles inbound, qualifies by niche, and books to calendar automatically.', color: P.sky },
-            ].map((s, i) => (
-              <div key={s.step} style={{ display: 'flex', gap: 12, marginBottom: 12 }}>
+              { step: '01', label: 'Identify', desc: 'Burner account surfaces restaurants with exceptional food and underdeveloped social. We find the gap before someone else does.', color: P.lavender, colorDeep: P.lavDeep },
+              { step: '02', label: 'Outreach', desc: 'Value-first cold call + tailored DM. We lead with what we see, not what we sell.', color: P.rose, colorDeep: P.roseDeep },
+              { step: '03', label: 'Analyze', desc: 'Apify scrapes top hooks in their niche. We identify psychology triggers, content gaps, and exactly where the algorithm is rewarding.', color: P.peach, colorDeep: P.peachDeep },
+              { step: '04', label: 'Execute', desc: 'Weekly short-form content built purely off data. Nothing random, nothing guessed.', color: P.sage, colorDeep: P.sageDeep },
+              { step: '05', label: 'Report', desc: 'Live dashboard showing client growth, winners, top comments, and milestone tracking updated every 24 hours.', color: P.butter, colorDeep: P.butterDeep },
+              { step: '06', label: 'Scale', desc: "Creator DM agent handles inbound, qualifies by niche + follower count, and books slots to the client's calendar automatically.", color: P.sky, colorDeep: P.skyDeep },
+            ].map((s: any, i) => (
+              <div key={s.step} style={{ display: 'flex', gap: 13, marginBottom: 14 }}>
                 <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
-                  <div style={{ width: 32, height: 32, borderRadius: '50%', background: s.color, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 9, fontFamily: F.mono, color: P.ink, fontWeight: 500, flexShrink: 0 }}>{s.step}</div>
-                  {i < 5 && <div style={{ width: 1, flex: 1, background: P.borderLight, marginTop: 4, minHeight: 14 }} />}
+                  <div style={{ width: 34, height: 34, borderRadius: '50%', background: s.color, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 9, fontFamily: F.mono, color: P.ink, fontWeight: 500, flexShrink: 0 }}>{s.step}</div>
+                  {i < 5 && <div style={{ width: 2, flex: 1, background: P.borderLight, marginTop: 4, minHeight: 16 }} />}
                 </div>
-                <div style={{ background: P.white, border: `1px solid ${P.border}`, borderRadius: 12, padding: '12px 14px', flex: 1 }}>
-                  <div style={{ fontSize: 13, fontWeight: 700, color: P.ink, fontFamily: F.display, marginBottom: 4 }}>{s.label}</div>
-                  <div style={{ fontSize: 12, color: P.inkMid, lineHeight: 1.7 }}>{s.desc}</div>
+                <div style={{ background: P.white, border: `1px solid ${P.border}`, borderRadius: 13, padding: '13px 15px', flex: 1 }}>
+                  <div style={{ fontSize: 14, fontWeight: 700, color: s.colorDeep, fontFamily: F.display, marginBottom: 5 }}>{s.label}</div>
+                  <div style={{ fontSize: 13, color: P.inkMid, lineHeight: 1.7 }}>{s.desc}</div>
                 </div>
+              </div>
+            ))}
+            <SH children="Agent Ideas to Build" sub="What Maison Adari should deploy next" />
+            {[
+              { title: 'Creator DM Agent', desc: 'Monitors incoming DMs, checks follower count + niche fit, auto-responds with rate card and dates. Books to calendar.', tag: 'High Value', color: P.sage },
+              { title: 'Menu Drop Scheduler', desc: "When a restaurant drops a new item, generates 3 hook variations, selects the data-winner, and queues for posting.", tag: 'Time-Saving', color: P.lavender },
+              { title: 'Review Aggregator', desc: "Pulls Yelp + Google reviews weekly, surfaces best quotes for captions, flags negative sentiment before it's a PR issue.", tag: 'Reputation', color: P.butter },
+              { title: 'Missed Call VAPI Agent', desc: "Answers calls when the owner can't. Takes orders, answers hours/location, logs everything to a daily digest.", tag: 'Revenue', color: P.rose },
+              { title: 'Hook A/B Tester', desc: 'Posts two versions with different hooks, tracks reach in the first 2 hours, boosts the winner automatically.', tag: 'Growth', color: P.sky },
+            ].map((idea: any, i) => (
+              <div key={i} style={{ background: P.white, border: `1px solid ${P.border}`, borderLeft: `3px solid ${idea.color}`, borderRadius: 13, padding: '13px 15px', marginBottom: 10 }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 5 }}>
+                  <div style={{ fontSize: 13, fontWeight: 600, color: P.ink }}>{idea.title}</div>
+                  <Tag color={idea.color} bg={`${idea.color}25`}>{idea.tag}</Tag>
+                </div>
+                <div style={{ fontSize: 12, color: P.inkMid, lineHeight: 1.7 }}>{idea.desc}</div>
               </div>
             ))}
           </div>
