@@ -527,7 +527,7 @@ const CLIENTS = [
     contentScore: 78, totalFollowers: 6060, totalReach: "16.2K", engagement: "2.8%", weeklyGrowth: "+46",
     goals: [
       { label: "Instagram 10K", current: 4820, goal: 10000, color: P.rose, colorSoft: P.roseSoft, pace: 120, projDate: "Jan 2027" },
-      { label: "TikTok 5K", current: 1240, goal: 5000, color: P.sky, colorSoft: P.skySoft, pace: 55, projDate: "Aug 2027" },
+      { label: "TikTok 5K", current: 0, goal: 5000, color: P.sky, colorSoft: P.skySoft, pace: 0, projDate: "Connect TikTok to track" },
     ],
     bestTimes: ["Tues 6–8pm", "Fri 11am–1pm", "Sun 7–9pm"],
     accounts: [
@@ -649,7 +649,7 @@ const ClientView = ({ client, igProfile, igData }) => {
 
       <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: 9, marginBottom: 0 }}>
         <Tile label="IG Followers" value={igProfile && igProfile.followers_count != null ? igProfile.followers_count.toLocaleString() : "loading..."} sub={igProfile ? "live ✓" : "mock"} color={client.color} />
-        <Tile label="Accounts" value={String(client.accounts.length)} color={client.color} />
+        <Tile label="Connected" value={igProfile && client.id === "mason" ? "1 IG" : String(client.accounts.length)} color={client.color} />
         <Tile label="IG Following" value={igProfile && igProfile.follows_count != null ? igProfile.follows_count.toLocaleString() : "loading..."} sub={igProfile ? "live ✓" : "mock"} color={client.color} />
       </div>
 
