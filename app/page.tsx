@@ -547,6 +547,7 @@ const CLIENTS = [
         ],
         working: "Process reveal carousels avg 112 saves — 4× your baseline. Contrarian takes on restaurant marketing drive DMs directly.",
         flopping: "Static posts without text overlay hook lose 60% of potential reach before the algorithm pushes them.",
+        liveWorking: true,
       },
       {
         platform: "TikTok", icon: "🎵", handle: "@masonadari",
@@ -627,7 +628,7 @@ const PROSPECTS = [
 ];
 
 // ── CLIENT VIEW ───────────────────────────────────────────────────────────
-const ClientView = ({ client, igProfile }) => {
+const ClientView = ({ client, igProfile, igData }) => {
   const [openAcc, setOpenAcc] = useState(0);
   return (
     <div>
@@ -639,8 +640,8 @@ const ClientView = ({ client, igProfile }) => {
           <div style={{ fontSize: 18, fontWeight: 700, fontFamily: "'Fraunces',serif", color: P.ink }}>{client.name}</div>
           <div style={{ fontSize: 11, color: P.inkSoft }}>{client.role}</div>
           <div style={{ display: "flex", gap: 6, marginTop: 6, flexWrap: "wrap" }}>
-            <Tag color={client.colorDeep} bg={client.colorSoft}>{igProfile ? `@${igProfile.username}` : client.totalFollowers.toLocaleString() + " followers"}</Tag>
-            <Tag color={P.sageDeep} bg={P.sageSoft}>↑ {client.weeklyGrowth} this week</Tag>
+            <Tag color={client.colorDeep} bg={client.colorSoft}>{igProfile ? igProfile.followers_count?.toLocaleString() + " followers" : client.totalFollowers.toLocaleString() + " followers"}</Tag>
+            <Tag color={P.sageDeep} bg={P.sageSoft}>{igProfile ? "@" + igProfile.username : "↑ " + client.weeklyGrowth + " this week"}</Tag>
           </div>
         </div>
         <Ring val={client.contentScore} color={client.colorDeep} size={50} />
@@ -658,7 +659,11 @@ const ClientView = ({ client, igProfile }) => {
       </div>
 
       <SH>Follower Goals · Progress</SH>
-      {client.goals.map((g, i) => <GoalBar key={i} {...g} />)}
+      {client.goals.map((g, i) => (
+        <GoalBar key={i} {...g} 
+          current={igProfile && g.label.includes("Instagram") ? (igProfile.followers_count ?? g.current) : g.current}
+        />
+      ))}
 
       <SH children={`${client.accounts.length} Connected Accounts`} />
       {client.accounts.map((acc, idx) => {
@@ -707,10 +712,20 @@ const ClientView = ({ client, igProfile }) => {
                 {acc.posts.map((p, i) => <PostCard key={i} post={p} accent={acc.color} accentSoft={acc.colorSoft} accentDeep={acc.colorDeep} />)}
 
                 <SH>What's Working · What's Flopping</SH>
-                <WW working={acc.working} flopping={acc.flopping} />
+                <WW 
+                  working={igProfile && acc.platform === "Instagram" && igData?.analytics?.working ? igData.analytics.working : acc.working} 
+                  flopping={igProfile && acc.platform === "Instagram" && igData?.analytics?.flopping ? igData.analytics.flopping : acc.flopping} 
+                />
 
                 <SH>Top Comments</SH>
-                {acc.topComments.map((c, i) => <CmtCard key={i} c={c} accent={acc.colorDeep} accentSoft={acc.colorSoft} />)}
+                {igProfile && acc.platform === "Instagram" && igData?.topComments?.length > 0 
+                  ? igData.topComments.map((c, i) => (
+                      <CmtCard key={i} c={{ user: "@" + c.username, text: c.text, likes: c.like_count ?? 0, platform: "Instagram" }} accent={acc.colorDeep} accentSoft={acc.colorSoft} />
+                    ))
+                  : acc.topComments.length > 0 
+                    ? acc.topComments.map((c, i) => <CmtCard key={i} c={c} accent={acc.colorDeep} accentSoft={acc.colorSoft} />)
+                    : <div style={{ fontSize: 12, color: P.inkSoft, padding: "12px 0", fontStyle: "italic" }}>No comments yet — post some content to see top comments here.</div>
+                }
 
                 <SH>AI Strategic Insight</SH>
                 <AIInsight text={acc.insight} platform={acc.platform} />
@@ -831,8 +846,8 @@ export default function AdariCommandCenter() {
                 </div>
               </Tile>
               <Tile label="Prospects Found" value="4" sub="via burner account" color={P.butter} />
-              <Tile label="Mason Engagement" value="3.2%" sub="↑ from 2.8% last week" color={P.rose} />
-              {igProfile && <Tile label="Mason IG (Live)" value={igProfile.username} sub={`${igProfile.media_count} posts · live data`} color={P.lavender} />}
+              <Tile label="Mason Followers" value={igProfile ? igProfile.followers_count?.toLocaleString() ?? "—" : "370"} sub={igProfile ? "live · @" + igProfile.username : "loading..."} color={P.rose} />
+              {igProfile && <Tile label="Mason Following" value={igProfile.follows_count?.toLocaleString() ?? "—"} sub="live data ✓" color={P.lavender} />}
             </div>
 
             <SH>This Week's Top Content</SH>
@@ -856,7 +871,7 @@ export default function AdariCommandCenter() {
           </div>
         )}
 
-        {activeClient && <ClientView client={activeClient} igProfile={activeClient.id === "mason" ? igProfile : null} />}
+        {activeClient && <ClientView client={activeClient} igProfile={activeClient.id === "mason" ? igProfile : null} igData={activeClient.id === "mason" ? igData : null} />}
 
         {view === "globe" && <GlobeFeed />}
         {view === "live" && <LiveStudio />}
