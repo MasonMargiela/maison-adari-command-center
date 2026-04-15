@@ -526,6 +526,258 @@ const PROSPECTS = [
   { name: 'Niku Niku Ramen', handle: '@nikunikulaofficial', followers: '8.1K', foodScore: 8.4, socialScore: 3.8, heat: 7.2, lastPost: 'Yesterday', note: 'Posting consistently but hook-less. Massive organic upside untapped.', color: P.lavender, colorSoft: P.lavSoft },
 ];
 
+// ── PIE CHART ─────────────────────────────────────────────────────────────
+const PieChart = ({ slices, size = 80 }: { slices: { value: number; color: string; label: string }[]; size?: number }) => {
+  const total = slices.reduce((s, sl) => s + sl.value, 0);
+  if (total === 0) return (
+    <div style={{ width: size, height: size, borderRadius: '50%', background: P.borderLight, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 9, color: P.inkFaint, textAlign: 'center', flexShrink: 0 }}>No data</div>
+  );
+  let cumAngle = -90;
+  const cx = size / 2, cy = size / 2, r = size / 2 - 4;
+  const paths = slices.map(sl => {
+    const startAngle = cumAngle;
+    const angle = (sl.value / total) * 360;
+    cumAngle += angle;
+    const endAngle = cumAngle;
+    const startRad = (startAngle * Math.PI) / 180;
+    const endRad = (endAngle * Math.PI) / 180;
+    const x1 = cx + r * Math.cos(startRad);
+    const y1 = cy + r * Math.sin(startRad);
+    const x2 = cx + r * Math.cos(endRad);
+    const y2 = cy + r * Math.sin(endRad);
+    const largeArc = angle > 180 ? 1 : 0;
+    return { d: `M ${cx} ${cy} L ${x1} ${y1} A ${r} ${r} 0 ${largeArc} 1 ${x2} ${y2} Z`, color: sl.color, label: sl.label, value: sl.value, pct: Math.round((sl.value / total) * 100) };
+  });
+  return (
+    <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+      <svg width={size} height={size} style={{ flexShrink: 0 }}>
+        {paths.map((p, i) => <path key={i} d={p.d} fill={p.color} opacity={0.85} />)}
+        <circle cx={cx} cy={cy} r={r * 0.45} fill={P.white} />
+      </svg>
+      <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
+        {paths.filter(p => p.value > 0).map((p, i) => (
+          <div key={i} style={{ display: 'flex', alignItems: 'center', gap: 5 }}>
+            <div style={{ width: 7, height: 7, borderRadius: '50%', background: p.color, flexShrink: 0 }} />
+            <div style={{ fontSize: 10, color: P.inkMid }}>{p.label}</div>
+            <div style={{ fontSize: 10, color: P.inkFaint, fontFamily: F.mono }}>{p.pct}%</div>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+};
+
+// ── PERSON SUMMARY CARD ────────────────────────────────────────────────────
+const PersonCard = ({ name, avatar, color, colorSoft, colorDeep, accounts, contentScore, engagement, liveMetrics, timePeriod }: any) => {
+  const totalFollowers = accounts.reduce((s: number, a: any) => s + (a.followers ?? 0), 0);
+  const weeklyDelta = accounts.reduce((s: number, a: any) => {
+    const d = parseInt((a.followerDelta ?? '+0').replace('+', '').replace(',', ''));
+    return s + (isNaN(d) ? 0 : d);
+  }, 0);
+
+  const deltaLabels: Record<string, string> = { week: 'this week', month: 'this month', day: 'today', year: 'this year' };
+  const deltaMultipliers: Record<string, number> = { week: 1, month: 4.3, day: 0.14, year: 52, min: 0.001, sec: 0.00001 };
+  const multiplier = deltaMultipliers[timePeriod] ?? 1;
+  const displayDelta = Math.round(weeklyDelta * multiplier);
+
+  const pieSlices = accounts.map((a: any, i: number) => ({
+    value: a.followers ?? 0,
+    color: i === 0 ? colorDeep : (i === 1 ? color : P.butterDeep),
+    label: a.platform,
+  }));
+
+  const displayFollowers = name === 'Mason' && liveMetrics ? liveMetrics.followers : totalFollowers;
+  const displayScore = name === 'Mason' && liveMetrics ? liveMetrics.contentScore : contentScore;
+  const displayEngagement = name === 'Mason' && liveMetrics ? liveMetrics.engagementRate.toFixed(1) + '%' : engagement;
+
+  return (
+    <div style={{ background: P.white, border: `1px solid ${P.border}`, borderRadius: 15, padding: '15px', marginBottom: 10 }}>
+      {/* Header */}
+      <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 12 }}>
+        <div style={{ width: 36, height: 36, borderRadius: 10, background: colorSoft, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 16, fontWeight: 700, color: colorDeep, fontFamily: F.display, flexShrink: 0 }}>{avatar}</div>
+        <div style={{ flex: 1 }}>
+          <div style={{ fontSize: 13, fontWeight: 700, fontFamily: F.display, color: P.ink }}>{name}</div>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 5, marginTop: 2 }}>
+            <span style={{ fontSize: 16, fontWeight: 700, fontFamily: F.display, color: P.ink }}>{fmtNum(displayFollowers)}</span>
+            <span style={{ fontSize: 11, color: P.sageDeep, fontWeight: 600 }}>↑ +{fmtNum(displayDelta)}</span>
+            <span style={{ fontSize: 10, color: P.inkFaint }}>{deltaLabels[timePeriod] ?? 'this week'}</span>
+          </div>
+        </div>
+        <Ring val={displayScore} color={colorDeep} size={42} />
+      </div>
+
+      {/* Follower source pie */}
+      <div style={{ marginBottom: 12 }}>
+        <div style={{ fontSize: 9, color: P.inkFaint, fontFamily: F.mono, marginBottom: 7, textTransform: 'uppercase', letterSpacing: '0.12em' }}>Followers by Platform</div>
+        <PieChart slices={pieSlices} size={72} />
+      </div>
+
+      {/* Stats row */}
+      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 7 }}>
+        <div style={{ background: colorSoft, borderRadius: 9, padding: '9px 10px' }}>
+          <div style={{ fontSize: 9, color: P.inkFaint, fontFamily: F.mono, marginBottom: 3, textTransform: 'uppercase', letterSpacing: '0.1em' }}>Engagement</div>
+          <div style={{ fontSize: 15, fontWeight: 700, fontFamily: F.display, color: P.ink }}>{displayEngagement}</div>
+          {name === 'Mason' && liveMetrics && <div style={{ fontSize: 9, color: P.sageDeep, marginTop: 2, fontFamily: F.mono }}>live ✓</div>}
+        </div>
+        <div style={{ background: colorSoft, borderRadius: 9, padding: '9px 10px' }}>
+          <div style={{ fontSize: 9, color: P.inkFaint, fontFamily: F.mono, marginBottom: 3, textTransform: 'uppercase', letterSpacing: '0.1em' }}>Accounts</div>
+          <div style={{ fontSize: 15, fontWeight: 700, fontFamily: F.display, color: P.ink }}>{accounts.length}</div>
+          <div style={{ fontSize: 9, color: P.inkFaint, marginTop: 2, fontFamily: F.mono }}>{accounts.map((a: any) => a.platform).join(' · ')}</div>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+// ── OVERVIEW TAB ───────────────────────────────────────────────────────────
+const TIME_PERIODS = [
+  { id: 'sec', label: 'sec' },
+  { id: 'min', label: 'min' },
+  { id: 'day', label: 'day' },
+  { id: 'week', label: 'wk' },
+  { id: 'month', label: 'mo' },
+  { id: 'year', label: 'yr' },
+];
+
+const OverviewTab = ({ igMetrics, igLoading, igGoal, handleSetIgGoal, today }: any) => {
+  const [timePeriod, setTimePeriod] = useState('week');
+
+  // Mason accounts with live data override
+  const masonAccounts = [
+    { platform: 'Instagram', followers: igMetrics?.followers ?? 370, followerDelta: '+0' },
+    { platform: 'TikTok', followers: 0, followerDelta: '+0' },
+  ];
+
+  const mattAccounts = [
+    { platform: 'TikTok', followers: 48200, followerDelta: '+194' },
+    { platform: 'Instagram', followers: 5300, followerDelta: '+44' },
+  ];
+
+  return (
+    <div>
+      {/* Morning briefing */}
+      <div style={{ background: P.lavSoft, border: `1px solid ${P.lavender}`, borderRadius: 15, padding: '14px 16px', marginBottom: 14 }}>
+        <div style={{ fontSize: 9, letterSpacing: '0.15em', textTransform: 'uppercase', color: P.lavDeep, fontFamily: F.mono, marginBottom: 6 }}>📰 Morning Briefing · {today}</div>
+        <div style={{ fontSize: 13, color: P.inkMid, lineHeight: 1.8, fontFamily: F.display, fontStyle: 'italic' }}>
+          {igMetrics
+            ? `Mason's Instagram live at ${fmtNum(igMetrics.followers)} followers. ${igMetrics.paceSource === 'historical_data' ? `Growing ${igMetrics.pace} from tracked history.` : 'Growth tracking building — pace sharpens as history accumulates.'} Matt's Ramen video at 41K views. Korean BBQ tacos trending on TikTok Search in SoCal — nobody has filmed it yet.`
+            : "Matt's Ramen video hit 41K views in 18 hours. Korean BBQ tacos spiking on TikTok Search — nobody has filmed it yet."
+          }
+        </div>
+      </div>
+
+      {/* Time period switcher */}
+      <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 12 }}>
+        <div style={{ fontSize: 10, color: P.inkSoft, fontFamily: F.mono }}>Growth period:</div>
+        <div style={{ display: 'flex', background: P.card, border: `1px solid ${P.border}`, borderRadius: 20, padding: 2, gap: 1 }}>
+          {TIME_PERIODS.map(tp => (
+            <button key={tp.id} onClick={() => setTimePeriod(tp.id)}
+              style={{ background: timePeriod === tp.id ? P.ink : 'none', color: timePeriod === tp.id ? P.white : P.inkSoft, border: 'none', borderRadius: 16, padding: '4px 9px', fontSize: 10, fontWeight: 600, cursor: 'pointer', fontFamily: F.mono, transition: 'all 0.15s' }}>
+              {tp.label}
+            </button>
+          ))}
+        </div>
+      </div>
+
+      {/* Person cards side by side */}
+      <PersonCard
+        name="Mason"
+        avatar="M"
+        color={P.lavender}
+        colorSoft={P.lavSoft}
+        colorDeep={P.lavDeep}
+        accounts={masonAccounts}
+        contentScore={igMetrics?.contentScore ?? 0}
+        engagement={igMetrics ? igMetrics.engagementRate.toFixed(1) + '%' : '0%'}
+        liveMetrics={igMetrics}
+        timePeriod={timePeriod}
+      />
+      <PersonCard
+        name="Macros Wit Matt"
+        avatar="B"
+        color={P.sage}
+        colorSoft={P.sageSoft}
+        colorDeep={P.sageDeep}
+        accounts={mattAccounts}
+        contentScore={94}
+        engagement="6.1%"
+        liveMetrics={null}
+        timePeriod={timePeriod}
+      />
+
+      {/* Combined reach chart */}
+      <div style={{ background: P.white, border: `1px solid ${P.border}`, borderRadius: 14, padding: '14px 16px', marginBottom: 10 }}>
+        <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 8 }}>
+          <div>
+            <div style={{ fontSize: 9, color: P.inkFaint, textTransform: 'uppercase', letterSpacing: '0.12em', fontFamily: F.mono }}>Combined Reach</div>
+            <div style={{ fontSize: 20, fontWeight: 700, fontFamily: F.display, color: P.ink, marginTop: 2 }}>163K <span style={{ fontSize: 11, color: P.sageDeep, fontWeight: 400 }}>↑ 22% this week</span></div>
+          </div>
+          <Tag color={igMetrics ? P.sageDeep : P.inkFaint} bg={igMetrics ? P.sageSoft : P.card}>{igMetrics ? '🟢 IG Live' : 'mock'}</Tag>
+        </div>
+        <Spark data={REACH_DATA} color={P.lavDeep} h={44} />
+      </div>
+
+      {/* IG goal */}
+      {igMetrics && (
+        <>
+          <SH>Instagram Goal</SH>
+          <GoalBar
+            label="Mason · Instagram Followers"
+            current={igMetrics.followers}
+            goal={igGoal}
+            color={P.rose}
+            colorSoft={P.roseSoft}
+            pace={igMetrics.pace}
+            paceSource={igMetrics.paceSource}
+            estDate={calcEstDate(igMetrics.followers, igGoal, igMetrics.monthlyGrowthRate)}
+            onGoalChange={handleSetIgGoal}
+          />
+        </>
+      )}
+
+      {/* Connect accounts CTA */}
+      <div style={{ background: P.dark, borderRadius: 14, padding: '15px 17px', marginBottom: 10 }}>
+        <div style={{ fontSize: 9, color: P.darkMuted, fontFamily: F.mono, letterSpacing: '0.14em', textTransform: 'uppercase', marginBottom: 10 }}>Connect More Accounts</div>
+        {[
+          { label: "Matt's Instagram", handle: '@macroswitmat', icon: '📸', connected: false, color: P.peach },
+          { label: "Matt's TikTok", handle: '@macroswitmat', icon: '🎵', connected: false, color: P.sage },
+          { label: "Mason's TikTok", handle: '@masonadari', icon: '🎵', connected: false, color: P.sky },
+        ].map((acc, i) => (
+          <div key={i} style={{ display: 'flex', alignItems: 'center', gap: 9, padding: '9px 0', borderBottom: i < 2 ? `1px solid ${P.darkBorder}` : 'none' }}>
+            <span style={{ fontSize: 16 }}>{acc.icon}</span>
+            <div style={{ flex: 1 }}>
+              <div style={{ fontSize: 12, color: P.darkText }}>{acc.label}</div>
+              <div style={{ fontSize: 10, color: P.darkMuted }}>{acc.handle}</div>
+            </div>
+            <a href="/connect" style={{ background: `${acc.color}20`, border: `1px solid ${acc.color}50`, borderRadius: 20, padding: '5px 12px', color: acc.color, fontSize: 10, fontWeight: 600, cursor: 'pointer', textDecoration: 'none', fontFamily: F.mono }}>Connect →</a>
+          </div>
+        ))}
+      </div>
+
+      {/* Top content */}
+      <SH>Top Content This Week</SH>
+      {[
+        { creator: 'Macros Wit Matt', platform: 'TikTok', caption: 'BEST Ramen in LA (not Daikokuya)', likes: 41200, color: P.sage },
+        { creator: 'Macros Wit Matt', platform: 'TikTok', caption: 'This birria spot literally changed my life fr', likes: 28400, color: P.sage },
+      ].map((p, i) => (
+        <div key={i} style={{ background: P.white, border: `1px solid ${P.border}`, borderRadius: 11, padding: '10px 13px', marginBottom: 7, display: 'flex', gap: 9, alignItems: 'center' }}>
+          <div style={{ width: 7, height: 7, borderRadius: '50%', background: p.color, flexShrink: 0 }} />
+          <div style={{ flex: 1, minWidth: 0 }}>
+            <div style={{ fontSize: 12, color: P.ink, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{p.caption}</div>
+            <div style={{ fontSize: 10, color: P.inkSoft, marginTop: 2 }}>{p.creator} · {p.platform} · {fmtNum(p.likes)} likes</div>
+          </div>
+          <span>🔥</span>
+        </div>
+      ))}
+
+      <SH children="Why We Do This" sub="Real comments. Real people." />
+      {CLIENTS.find(c => c.id === 'matt')!.accounts[0].topComments.map((c: any, i: number) => (
+        <CmtCard key={i} c={c} accent={P.sageDeep} accentSoft={P.sageSoft} />
+      ))}
+    </div>
+  );
+};
+
 // ── INSTAGRAM ACCOUNT VIEW ─────────────────────────────────────────────────
 const IGAccountView = ({ acc, igData, igGoal, setIgGoal }: { acc: any; igData: any; igGoal: number; setIgGoal: (v: number) => void }) => {
   const metrics = igData?.metrics;
@@ -821,90 +1073,13 @@ export default function AdariCommandCenter() {
 
         {/* OVERVIEW */}
         {view === 'overview' && (
-          <div>
-            {/* Morning briefing */}
-            <div style={{ background: P.lavSoft, border: `1px solid ${P.lavender}`, borderRadius: 16, padding: '15px 17px', marginBottom: 16 }}>
-              <div style={{ fontSize: 9, letterSpacing: '0.15em', textTransform: 'uppercase', color: P.lavDeep, fontFamily: F.mono, marginBottom: 7 }}>📰 Morning Briefing · {today}</div>
-              <div style={{ fontSize: 13, color: P.inkMid, lineHeight: 1.8, fontFamily: F.display, fontStyle: 'italic' }}>
-                {igMetrics
-                  ? `Mason's Instagram is live at ${fmtNum(igMetrics.followers)} followers. Reach estimated at ${igMetrics.reach}. ${igMetrics.paceSource === 'historical_data' ? `Growing at ${igMetrics.pace} based on tracked history.` : 'Growth tracking has started — pace will sharpen as more data accumulates.'} Matt's Ramen video at 41K views remains the highest-performing piece of content this year. Korean BBQ tacos trending on TikTok Search in SoCal — nobody has filmed it yet.`
-                  : "Matt's Ramen video hit 41K views in 18 hours — best organic run of the year. Korean BBQ tacos spiking on TikTok Search in SoCal — nobody has filmed it yet."
-                }
-              </div>
-            </div>
-
-            {/* Cross-platform summary */}
-            <div style={{ background: P.white, border: `1px solid ${P.border}`, borderRadius: 15, padding: '15px 17px', marginBottom: 12 }}>
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 10 }}>
-                <div>
-                  <div style={{ fontSize: 9, color: P.inkFaint, textTransform: 'uppercase', letterSpacing: '0.12em', fontFamily: F.mono }}>Combined Reach · All Platforms</div>
-                  <div style={{ fontSize: 22, fontWeight: 700, fontFamily: F.display, color: P.ink, marginTop: 3 }}>
-                    {igLoading ? 'Loading...' : igMetrics ? igMetrics.reach : '163K'}
-                    <span style={{ fontSize: 12, color: P.sageDeep, fontWeight: 400, marginLeft: 8 }}>
-                      {igMetrics ? '↑ live data' : '↑ 22% this week'}
-                    </span>
-                  </div>
-                </div>
-                <Tag color={igMetrics ? P.sageDeep : P.inkSoft} bg={igMetrics ? P.sageSoft : P.card}>
-                  {igMetrics ? '🟢 Instagram Live' : 'Connecting...'}
-                </Tag>
-              </div>
-              <Spark data={REACH_DATA} color={P.lavDeep} h={48} />
-            </div>
-
-            {/* Combined platform stats */}
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 9, marginBottom: 4 }}>
-              <StatCard label="Mason · IG Followers" value={igLoading ? '...' : fmtNum(igMetrics?.followers ?? 370)} sub={igMetrics ? 'live ✓' : 'loading'} accent={P.lavender} live={!!igMetrics} />
-              <StatCard label="Matt · TikTok Followers" value="48.2K" sub="mock — connect TikTok" accent={P.sage} />
-              <StatCard label="IG Engagement" value={igMetrics ? igMetrics.engagementRate.toFixed(1) + '%' : '—'} sub={igMetrics ? 'live calculation' : 'loading'} accent={P.rose} live={!!igMetrics} />
-              <StatCard label="Content Score" accent={P.butter}>
-                <div style={{ display: 'flex', alignItems: 'center', gap: 9, marginTop: 5 }}>
-                  <Ring val={igMetrics?.contentScore ?? 0} color={P.butterDeep} size={44} />
-                  <div style={{ fontSize: 10, color: P.inkSoft, lineHeight: 1.5 }}>{igMetrics ? 'Derived from live data' : 'Awaiting data'}</div>
-                </div>
-              </StatCard>
-            </div>
-
-            {/* IG goal summary */}
-            {igMetrics && (
-              <>
-                <SH>Instagram Goal · Quick View</SH>
-                <GoalBar
-                  label="Followers to 10K"
-                  current={igMetrics.followers}
-                  goal={igGoal}
-                  color={P.rose}
-                  colorSoft={P.roseSoft}
-                  pace={igMetrics.pace}
-                  paceSource={igMetrics.paceSource}
-                  estDate={calcEstDate(igMetrics.followers, igGoal, igMetrics.monthlyGrowthRate)}
-                  onGoalChange={handleSetIgGoal}
-                />
-              </>
-            )}
-
-            {/* Top content this week */}
-            <SH>This Week's Top Content</SH>
-            {[
-              { creator: 'Macros Wit Matt', platform: 'TikTok', caption: 'BEST Ramen in LA (not Daikokuya)', likes: 41200, saves: 3800, color: P.sage },
-              { creator: 'Macros Wit Matt', platform: 'TikTok', caption: 'This birria spot literally changed my life fr', likes: 28400, saves: 2100, color: P.sage },
-            ].map((p, i) => (
-              <div key={i} style={{ background: P.white, border: `1px solid ${P.border}`, borderRadius: 12, padding: '10px 13px', marginBottom: 7, display: 'flex', gap: 9, alignItems: 'center' }}>
-                <div style={{ width: 7, height: 7, borderRadius: '50%', background: p.color, flexShrink: 0 }} />
-                <div style={{ flex: 1, minWidth: 0 }}>
-                  <div style={{ fontSize: 12, color: P.ink, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{p.caption}</div>
-                  <div style={{ fontSize: 10, color: P.inkSoft, marginTop: 2 }}>{p.creator} · {p.platform} · {fmtNum(p.likes)} likes</div>
-                </div>
-                <span>🔥</span>
-              </div>
-            ))}
-
-            {/* Why we do this */}
-            <SH children="Why We Do This" sub="Real comments. Real people. Real impact." />
-            {CLIENTS.find(c => c.id === 'matt')!.accounts[0].topComments.map((c, i) => (
-              <CmtCard key={i} c={c} accent={P.sageDeep} accentSoft={P.sageSoft} />
-            ))}
-          </div>
+          <OverviewTab
+            igMetrics={igMetrics}
+            igLoading={igLoading}
+            igGoal={igGoal}
+            handleSetIgGoal={handleSetIgGoal}
+            today={today}
+          />
         )}
 
         {/* CLIENT VIEWS */}
