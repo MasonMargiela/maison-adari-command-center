@@ -15,13 +15,34 @@ const P = {
   dark: "#1a1612", darkCard: "#242018", darkBorder: "#3a342c",
 };
 
-type SparkProps = {
-  data: number[];
-  color?: string;
-  h?: number;
+// ── SPARKLINE ─────────────────────────────────────────────────────────────
+const Spark = ({ data, color, h = 44 }) => {
+  const ref = useRef(null);
+  const [w, setW] = useState(200);
+  useEffect(() => { if (ref.current) setW(ref.current.offsetWidth || 200); }, []);
+  const max = Math.max(...data), min = Math.min(...data);
+  const pts = data.map((v, i) => {
+    const x = (i / (data.length - 1)) * w;
+    const y = h - ((v - min) / (max - min || 1)) * (h - 6) - 3;
+    return `${x.toFixed(1)},${y.toFixed(1)}`;
+  }).join(" ");
+  const last = pts.split(" ").pop().split(",");
+  return (
+    <div ref={ref} style={{ width: "100%", height: h }}>
+      <svg width={w} height={h} style={{ overflow: "visible", display: "block" }}>
+        <defs>
+          <linearGradient id={`g${color.replace("#", "")}`} x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0%" stopColor={color} stopOpacity="0.22" />
+            <stop offset="100%" stopColor={color} stopOpacity="0" />
+          </linearGradient>
+        </defs>
+        <polygon points={`0,${h} ${pts} ${w},${h}`} fill={`url(#g${color.replace("#", "")})`} />
+        <polyline points={pts} fill="none" stroke={color} strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
+        <circle cx={last[0]} cy={last[1]} r="3.5" fill={color} />
+      </svg>
+    </div>
+  );
 };
-
-const Spark = ({ data, color, h = 44 }: SparkProps) => {
 
 // ── RING ──────────────────────────────────────────────────────────────────
 const Ring = ({ val, color, size = 52 }) => {
@@ -70,7 +91,7 @@ const Tag = ({ children, color = P.lavDeep, bg = P.lavSoft }) => (
 );
 
 // ── SECTION HEAD ──────────────────────────────────────────────────────────
-const SH = ({ children, sub }) => (
+const SH = ({ children, sub }: { children?: any; sub?: any }) => (
   <div style={{ marginTop: 24, marginBottom: 12 }}>
     <div style={{ fontSize: 10, letterSpacing: "0.15em", textTransform: "uppercase", color: P.inkFaint, fontFamily: "'DM Mono',monospace" }}>{children}</div>
     {sub && <div style={{ fontSize: 11, color: P.inkSoft, marginTop: 3 }}>{sub}</div>}
@@ -78,7 +99,7 @@ const SH = ({ children, sub }) => (
 );
 
 // ── STAT TILE ─────────────────────────────────────────────────────────────
-const Tile = ({ label, value, sub, color, children }) => (
+const Tile = ({ label, value, sub, color, children }: { label: any; value?: any; sub?: any; color: any; children?: any }) => (
   <div style={{ background: P.white, border: `1px solid ${P.border}`, borderRadius: 14, padding: "14px 16px", borderTop: `3px solid ${color}` }}>
     <div style={{ fontSize: 10, color: P.inkFaint, textTransform: "uppercase", letterSpacing: "0.09em", fontFamily: "'DM Mono',monospace", marginBottom: 4 }}>{label}</div>
     {value && <div style={{ fontSize: 22, fontWeight: 700, fontFamily: "'Fraunces',serif", color: P.ink, letterSpacing: "-0.02em", lineHeight: 1.15 }}>{value}</div>}
@@ -713,7 +734,7 @@ export default function AdariCommandCenter() {
   }, []);
   const activeClient = CLIENTS.find(c => view === `client:${c.id}`);
 
-  const TABS = [
+  const TABS: { id: string; label: string; color?: string; avatar?: string }[] = [
     { id: "overview", label: "Overview" },
     ...CLIENTS.map(c => ({ id: `client:${c.id}`, label: c.name, color: c.color, avatar: c.avatar })),
     { id: "globe", label: "🌍 Globe" },
