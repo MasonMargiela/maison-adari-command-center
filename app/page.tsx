@@ -628,7 +628,7 @@ const PROSPECTS = [
 ];
 
 // ── CLIENT VIEW ───────────────────────────────────────────────────────────
-const ClientView = ({ client, igProfile, igData }) => {
+const ClientView = ({ client, igProfile, igData, realFollowers, realEngagement, realReach, realContentScore, realHandle, realPace, realEstDate, igGoal, setIgGoal }: any) => {
   const [openAcc, setOpenAcc] = useState(0);
   return (
     <div>
@@ -640,17 +640,17 @@ const ClientView = ({ client, igProfile, igData }) => {
           <div style={{ fontSize: 18, fontWeight: 700, fontFamily: "'Fraunces',serif", color: P.ink }}>{client.name}</div>
           <div style={{ fontSize: 11, color: P.inkSoft }}>{client.role}</div>
           <div style={{ display: "flex", gap: 6, marginTop: 6, flexWrap: "wrap" }}>
-            <Tag color={client.colorDeep} bg={client.colorSoft}>{igProfile && igProfile.followers_count != null ? igProfile.followers_count.toLocaleString() + " IG followers" : client.totalFollowers.toLocaleString() + " followers"}</Tag>
-            <Tag color={P.sageDeep} bg={P.sageSoft}>{igProfile && igProfile.username ? "@" + igProfile.username : "↑ " + client.weeklyGrowth + " this week"}</Tag>
+            <Tag color={client.colorDeep} bg={client.colorSoft}>{client.id === "mason" && igProfile ? realFollowers.toLocaleString() + " IG followers" : client.totalFollowers.toLocaleString() + " followers"}</Tag>
+            <Tag color={P.sageDeep} bg={P.sageSoft}>{client.id === "mason" ? realHandle : "↑ " + client.weeklyGrowth + " this week"}</Tag>
           </div>
         </div>
-        <Ring val={client.contentScore} color={client.colorDeep} size={50} />
+        <Ring val={igProfile && client.id === "mason" ? realContentScore : client.contentScore} color={client.colorDeep} size={50} />
       </div>
 
       <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: 9, marginBottom: 0 }}>
-        <Tile label="IG Followers" value={igProfile && igProfile.followers_count != null ? igProfile.followers_count.toLocaleString() : "loading..."} sub={igProfile ? "live ✓" : "mock"} color={client.color} />
-        <Tile label="Connected" value={igProfile && client.id === "mason" ? "1 IG" : String(client.accounts.length)} color={client.color} />
-        <Tile label="IG Following" value={igProfile && igProfile.follows_count != null ? igProfile.follows_count.toLocaleString() : "loading..."} sub={igProfile ? "live ✓" : "mock"} color={client.color} />
+        <Tile label="Reach (est.)" value={client.id === "mason" ? realReach : client.totalReach} sub={client.id === "mason" && igProfile ? "live ✓" : "mock"} color={client.color} />
+        <Tile label="Engagement" value={client.id === "mason" ? (igProfile ? realEngagement.toFixed(1) + "%" : "—") : client.engagement} sub={client.id === "mason" && igProfile ? "live ✓" : "mock"} color={client.color} />
+        <Tile label="IG Followers" value={client.id === "mason" ? (igProfile ? realFollowers.toLocaleString() : "loading...") : client.totalFollowers.toLocaleString()} sub={client.id === "mason" && igProfile ? "live ✓" : "mock"} color={client.color} />
       </div>
 
       <SH>Best Times to Post</SH>
@@ -659,16 +659,45 @@ const ClientView = ({ client, igProfile, igData }) => {
       </div>
 
       <SH>Follower Goals · Progress</SH>
+      {client.id === "mason" && igProfile && (
+        <div style={{ background: P.lavSoft, border: `1px solid ${P.lavender}`, borderRadius: 13, padding: "12px 14px", marginBottom: 10, display: "flex", alignItems: "center", gap: 10 }}>
+          <div style={{ fontSize: 11, color: P.lavDeep, fontWeight: 600 }}>IG Goal:</div>
+          <input
+            type="number"
+            value={igGoal}
+            onChange={e => {
+              const v = parseInt(e.target.value);
+              if (v > 0) {
+                setIgGoal(v);
+                localStorage.setItem("ig_goal", String(v));
+              }
+            }}
+            style={{ border: `1px solid ${P.lavender}`, borderRadius: 8, padding: "5px 10px", fontSize: 13, fontFamily: "'DM Mono',monospace", width: 110, background: P.white, color: P.ink }}
+          />
+          <div style={{ fontSize: 11, color: P.inkSoft }}>followers target</div>
+        </div>
+      )}
       {client.goals.map((g, i) => {
-        const realFollowers = igProfile?.followers_count ?? 0;
-        const realCurrent = igProfile && g.label.includes("Instagram") ? realFollowers : g.current;
-        const monthsLeft = igProfile && g.label.includes("Instagram") && realFollowers > 0
-          ? Math.ceil((g.goal - realFollowers) / Math.max(g.pace, 1))
-          : null;
-        const estDate = monthsLeft 
-          ? new Date(Date.now() + monthsLeft * 30 * 24 * 60 * 60 * 1000).toLocaleDateString("en-US", { month: "short", year: "numeric" })
-          : g.projDate;
-        return <GoalBar key={i} {...g} current={realCurrent} projDate={estDate} />;
+        const isMasonIG = client.id === "mason" && igProfile && g.label.includes("Instagram");
+        const realCurrent = isMasonIG ? realFollowers : g.current;
+        const realGoal = isMasonIG ? igGoal : g.goal;
+        const estDate = isMasonIG ? realEstDate : g.projDate;
+        const paceLabel = isMasonIG ? realPace : ("+" + g.pace + "/mo pace");
+        return (
+          <div key={i} style={{ background: isMasonIG ? P.lavSoft : g.colorSoft, border: `1px solid ${isMasonIG ? P.lavender : g.color}40`, borderRadius: 14, padding: "14px 16px", marginBottom: 10 }}>
+            <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 6 }}>
+              <div style={{ fontSize: 12, fontWeight: 600, color: P.ink }}>{g.label}</div>
+              <div style={{ fontSize: 11, color: P.inkSoft }}>{realCurrent.toLocaleString()} / {realGoal.toLocaleString()}</div>
+            </div>
+            <div style={{ background: `${g.color}30`, borderRadius: 99, height: 8, marginBottom: 8, overflow: "hidden" }}>
+              <div style={{ background: g.color, height: 8, width: `${Math.min(100, (realCurrent / realGoal) * 100)}%`, borderRadius: 99 }} />
+            </div>
+            <div style={{ display: "flex", justifyContent: "space-between" }}>
+              <div style={{ fontSize: 10, color: P.inkSoft }}>{paceLabel}</div>
+              <div style={{ fontSize: 10, color: P.inkFaint }}>Est. {estDate}</div>
+            </div>
+          </div>
+        );
       })}
 
       <SH children={`${client.accounts.length} Connected Accounts`} />
@@ -680,7 +709,7 @@ const ClientView = ({ client, igProfile, igData }) => {
               <div style={{ width: 34, height: 34, borderRadius: 9, background: acc.colorSoft, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 16, flexShrink: 0 }}>{acc.icon}</div>
               <div style={{ textAlign: "left", flex: 1 }}>
                 <div style={{ fontSize: 13, fontWeight: 600, color: P.ink }}>{acc.platform}</div>
-                <div style={{ fontSize: 11, color: P.inkSoft }}>{acc.handle}</div>
+                <div style={{ fontSize: 11, color: P.inkSoft }}>{igProfile && acc.platform === "Instagram" ? realHandle : acc.handle}</div>
               </div>
               <div style={{ textAlign: "right" }}>
                 <div style={{ fontSize: 15, fontWeight: 700, fontFamily: "'Fraunces',serif", color: P.ink }}>{igProfile && acc.platform === "Instagram" ? ((igProfile.followers_count ?? 0).toLocaleString() + " followers") : acc.followers >= 1000 ? (acc.followers / 1000).toFixed(1) + "K" : acc.followers}</div>
@@ -692,9 +721,9 @@ const ClientView = ({ client, igProfile, igData }) => {
             {isOpen && (
               <div style={{ padding: "14px 16px" }}>
                 <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: 8, marginBottom: 4 }}>
-                  <Tile label="Followers" value={igProfile && acc.platform === "Instagram" ? (igProfile.followers_count ?? 0).toLocaleString() : acc.followers >= 1000 ? (acc.followers / 1000).toFixed(1) + "K" : String(acc.followers)} sub={igProfile && acc.platform === "Instagram" ? "live ✓" : "mock"} color={acc.color} />
-                  <Tile label="Posts" value={igProfile && acc.platform === "Instagram" ? String(igProfile.media_count ?? 0) : "—"} sub={igProfile && acc.platform === "Instagram" ? "live ✓" : "mock"} color={acc.color} />
-                  <Tile label="Following" value={igProfile && acc.platform === "Instagram" ? (igProfile.follows_count ?? 0).toLocaleString() : "—"} sub={igProfile && acc.platform === "Instagram" ? "live ✓" : "mock"} color={acc.color} />
+                  <Tile label="Followers" value={igProfile && acc.platform === "Instagram" ? realFollowers.toLocaleString() : acc.followers >= 1000 ? (acc.followers / 1000).toFixed(1) + "K" : String(acc.followers)} sub={igProfile && acc.platform === "Instagram" ? "live ✓" : "mock"} color={acc.color} />
+                  <Tile label="Engagement" value={igProfile && acc.platform === "Instagram" ? realEngagement.toFixed(1) + "%" : acc.engagement} sub={igProfile && acc.platform === "Instagram" ? "live ✓" : "mock"} color={acc.color} />
+                  <Tile label="Reach (est.)" value={igProfile && acc.platform === "Instagram" ? realReach : acc.reach >= 1000 ? (acc.reach / 1000).toFixed(0) + "K" : String(acc.reach)} sub={igProfile && acc.platform === "Instagram" ? "live ✓" : "mock"} color={acc.color} />
                 </div>
 
                 {acc.milestones && (
@@ -744,13 +773,59 @@ const ClientView = ({ client, igProfile, igData }) => {
   );
 };
 
+
+// ── REAL METRIC HELPERS ───────────────────────────────────────────────────
+function calcEngagement(profile: any, media: any[]): number {
+  if (!profile?.followers_count || profile.followers_count === 0) return 0;
+  if (media.length === 0) return 0;
+  const totalLikes = media.reduce((s: number, p: any) => s + (p.like_count ?? 0), 0);
+  const totalComments = media.reduce((s: number, p: any) => s + (p.comments_count ?? 0), 0);
+  const avgInteractions = (totalLikes + totalComments) / media.length;
+  return Math.min(99, parseFloat(((avgInteractions / profile.followers_count) * 100).toFixed(2)));
+}
+
+function calcReach(profile: any, media: any[]): string {
+  if (!profile?.followers_count) return "—";
+  if (media.length > 0) {
+    const totalLikes = media.reduce((s: number, p: any) => s + (p.like_count ?? 0), 0);
+    const est = Math.round((profile.followers_count * 0.15) + (totalLikes * 2.5));
+    return est >= 1000 ? (est / 1000).toFixed(1) + "K" : String(est);
+  }
+  const est = Math.round(profile.followers_count * 0.15);
+  return est >= 1000 ? (est / 1000).toFixed(1) + "K" : String(est);
+}
+
+function calcContentScore(profile: any, media: any[], monthlyGrowth: number): number {
+  if (!profile) return 0;
+  const followers = profile.followers_count ?? 0;
+  const engRate = calcEngagement(profile, media);
+  const engScore = Math.min(40, (engRate / 10) * 40);
+  const postScore = Math.min(30, (Math.min(media.length, 10) / 10) * 30);
+  const growthScore = Math.min(30, (Math.min(monthlyGrowth, 100) / 100) * 30);
+  return Math.round(engScore + postScore + growthScore);
+}
+
+function calcPaceAndDate(followers: number, goal: number, monthlyGrowth: number): { pace: string; estDate: string } {
+  if (monthlyGrowth <= 0) return { pace: "Estimating...", estDate: "Need more history" };
+  const monthsLeft = Math.ceil((goal - followers) / monthlyGrowth);
+  const estDate = new Date(Date.now() + monthsLeft * 30 * 24 * 60 * 60 * 1000)
+    .toLocaleDateString("en-US", { month: "short", year: "numeric" });
+  return { pace: "+" + monthlyGrowth + "/mo", estDate };
+}
+
 // ── MAIN ──────────────────────────────────────────────────────────────────
 export default function AdariCommandCenter() {
   const [view, setView] = useState("overview");
   const [time, setTime] = useState(new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }));
   const today = new Date().toLocaleDateString("en-US", { weekday: "long", month: "long", day: "numeric", year: "numeric" });
-  const [igData, setIgData] = useState(null);
+  const [igData, setIgData] = useState<any>(null);
   const [igLoading, setIgLoading] = useState(true);
+  const [igGoal, setIgGoal] = useState<number>(() => {
+    if (typeof window !== "undefined") {
+      return parseInt(localStorage.getItem("ig_goal") ?? "10000");
+    }
+    return 10000;
+  });
 
   useEffect(() => {
     const t = setInterval(() => setTime(new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })), 30000);
@@ -758,18 +833,30 @@ export default function AdariCommandCenter() {
   }, []);
 
   useEffect(() => {
-    fetch('/api/sync/instagram')
+    fetch("/api/sync/instagram")
       .then(r => r.json())
       .then(d => { setIgData(d); setIgLoading(false); })
       .catch(() => setIgLoading(false));
+    const interval = setInterval(() => {
+      fetch("/api/sync/instagram")
+        .then(r => r.json())
+        .then(d => setIgData(d))
+        .catch(() => {});
+    }, 300000);
+    return () => clearInterval(interval);
   }, []);
 
   const igProfile = igData?.profile;
-  const igMedia = igData?.media ?? [];
+  const igMedia: any[] = igData?.media ?? [];
+  const igMonthlyGrowth: number = igData?.analytics?.monthlyGrowthRate ?? 0;
 
-  // Override Mason's live data from real API
-  const masonLiveFollowers = igProfile?.media_count !== undefined ? igProfile.media_count : null;
-  const masonLiveUsername = igProfile?.username ?? "masonadari";
+  // Real derived metrics
+  const realEngagement = igProfile ? calcEngagement(igProfile, igMedia) : 0;
+  const realReach = igProfile ? calcReach(igProfile, igMedia) : "—";
+  const realContentScore = igProfile ? calcContentScore(igProfile, igMedia, igMonthlyGrowth) : 0;
+  const realFollowers = igProfile?.followers_count ?? 0;
+  const { pace: realPace, estDate: realEstDate } = calcPaceAndDate(realFollowers, igGoal, igMonthlyGrowth);
+  const realHandle = igProfile?.username ? "@" + igProfile.username : "@masonadari";
 
   const activeClient = CLIENTS.find(c => view === `client:${c.id}`);
 
@@ -852,8 +939,8 @@ export default function AdariCommandCenter() {
                 </div>
               </Tile>
               <Tile label="Prospects Found" value="4" sub="via burner account" color={P.butter} />
-              <Tile label="Mason Followers" value={igProfile ? igProfile.followers_count?.toLocaleString() ?? "—" : "370"} sub={igProfile ? "live · @" + igProfile.username : "loading..."} color={P.rose} />
-              {igProfile && <Tile label="Mason Following" value={igProfile.follows_count?.toLocaleString() ?? "—"} sub="live data ✓" color={P.lavender} />}
+              <Tile label="Mason Followers" value={igProfile ? realFollowers.toLocaleString() : "—"} sub={igProfile ? "live · " + realHandle : "loading..."} color={P.rose} />
+              <Tile label="Mason Engagement" value={igProfile ? realEngagement.toFixed(1) + "%" : "—"} sub={igProfile ? "live ✓" : "loading..."} color={P.lavender} />
             </div>
 
             <SH>This Week's Top Content</SH>
@@ -877,7 +964,7 @@ export default function AdariCommandCenter() {
           </div>
         )}
 
-        {activeClient && <ClientView client={activeClient} igProfile={activeClient.id === "mason" ? igProfile : null} igData={activeClient.id === "mason" ? igData : null} />}
+        {activeClient && <ClientView client={activeClient} igProfile={activeClient.id === "mason" ? igProfile : null} igData={activeClient.id === "mason" ? igData : null} realFollowers={realFollowers} realEngagement={realEngagement} realReach={realReach} realContentScore={realContentScore} realHandle={realHandle} realPace={realPace} realEstDate={realEstDate} igGoal={igGoal} setIgGoal={setIgGoal} />}
 
         {view === "globe" && <GlobeFeed />}
         {view === "live" && <LiveStudio />}
