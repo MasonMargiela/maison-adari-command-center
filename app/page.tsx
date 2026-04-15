@@ -848,15 +848,19 @@ export default function AdariCommandCenter() {
 
   const igProfile = igData?.profile;
   const igMedia: any[] = igData?.media ?? [];
-  const igMonthlyGrowth: number = igData?.analytics?.monthlyGrowthRate ?? 0;
+  const igMetrics = igData?.metrics;
 
-  // Real derived metrics
-  const realEngagement = igProfile ? calcEngagement(igProfile, igMedia) : 0;
-  const realReach = igProfile ? calcReach(igProfile, igMedia) : "—";
-  const realContentScore = igProfile ? calcContentScore(igProfile, igMedia, igMonthlyGrowth) : 0;
-  const realFollowers = igProfile?.followers_count ?? 0;
-  const { pace: realPace, estDate: realEstDate } = calcPaceAndDate(realFollowers, igGoal, igMonthlyGrowth);
-  const realHandle = igProfile?.username ? "@" + igProfile.username : "@masonadari";
+  // All metrics come directly from API — no calculations in UI
+  const realFollowers = igMetrics?.followers ?? igProfile?.followers_count ?? 0;
+  const realFollowing = igMetrics?.following ?? igProfile?.follows_count ?? 0;
+  const realEngagement = igMetrics?.engagementRate ?? 0;
+  const realReach = igMetrics?.reach ?? "—";
+  const realContentScore = igMetrics?.contentScore ?? 0;
+  const realHandle = igMetrics?.handle ?? (igProfile?.username ? "@" + igProfile.username : "—");
+  const realPace = igMetrics?.pace ?? "Estimating...";
+  const realEstDate = igMetrics?.monthlyGrowthRate > 0 && igGoal > realFollowers
+    ? new Date(Date.now() + Math.ceil((igGoal - realFollowers) / igMetrics.monthlyGrowthRate) * 30 * 24 * 60 * 60 * 1000).toLocaleDateString("en-US", { month: "short", year: "numeric" })
+    : "Need more history";
 
   const activeClient = CLIENTS.find(c => view === `client:${c.id}`);
 
