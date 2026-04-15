@@ -533,7 +533,7 @@ const CLIENTS = [
     accounts: [
       {
         platform: "Instagram", icon: "📸", handle: "@masonadari",
-        followers: 4820, followerDelta: "+34", reach: 12400, engagement: "3.2%",
+        followers: 4820, followerDelta: "+34", reach: 12400, engagement: "3.2%", liveData: true,
         color: P.rose, colorSoft: P.roseSoft, colorDeep: P.roseDeep,
         insight: "Your contrarian takes on restaurant marketing outperform lifestyle content by 3.8×. The audience you're building is agency-aware — they save, share, and DM. Priority: increase to 4×/week and test a 'day in the life of an agency owner' series. Your saves-to-follower ratio is top 12% of accounts your size.",
         posts: [
@@ -627,7 +627,7 @@ const PROSPECTS = [
 ];
 
 // ── CLIENT VIEW ───────────────────────────────────────────────────────────
-const ClientView = ({ client }) => {
+const ClientView = ({ client, igProfile }) => {
   const [openAcc, setOpenAcc] = useState(0);
   return (
     <div>
@@ -639,7 +639,7 @@ const ClientView = ({ client }) => {
           <div style={{ fontSize: 18, fontWeight: 700, fontFamily: "'Fraunces',serif", color: P.ink }}>{client.name}</div>
           <div style={{ fontSize: 11, color: P.inkSoft }}>{client.role}</div>
           <div style={{ display: "flex", gap: 6, marginTop: 6, flexWrap: "wrap" }}>
-            <Tag color={client.colorDeep} bg={client.colorSoft}>{client.totalFollowers.toLocaleString()} followers</Tag>
+            <Tag color={client.colorDeep} bg={client.colorSoft}>{igProfile ? `@${igProfile.username}` : client.totalFollowers.toLocaleString() + " followers"}</Tag>
             <Tag color={P.sageDeep} bg={P.sageSoft}>↑ {client.weeklyGrowth} this week</Tag>
           </div>
         </div>
@@ -672,8 +672,8 @@ const ClientView = ({ client }) => {
                 <div style={{ fontSize: 11, color: P.inkSoft }}>{acc.handle}</div>
               </div>
               <div style={{ textAlign: "right" }}>
-                <div style={{ fontSize: 15, fontWeight: 700, fontFamily: "'Fraunces',serif", color: P.ink }}>{acc.followers >= 1000 ? (acc.followers / 1000).toFixed(1) + "K" : acc.followers}</div>
-                <div style={{ fontSize: 10, color: P.sageDeep }}>{acc.followerDelta} this week</div>
+                <div style={{ fontSize: 15, fontWeight: 700, fontFamily: "'Fraunces',serif", color: P.ink }}>{igProfile && acc.platform === "Instagram" ? (igProfile.media_count + " posts") : acc.followers >= 1000 ? (acc.followers / 1000).toFixed(1) + "K" : acc.followers}</div>
+                <div style={{ fontSize: 10, color: P.sageDeep }}>{igProfile && acc.platform === "Instagram" ? "live data ✓" : acc.followerDelta + " this week"}</div>
               </div>
               <div style={{ color: P.inkFaint, fontSize: 11, marginLeft: 4 }}>{isOpen ? "▲" : "▼"}</div>
             </button>
@@ -683,7 +683,7 @@ const ClientView = ({ client }) => {
                 <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: 8, marginBottom: 4 }}>
                   <Tile label="Reach" value={acc.reach >= 1000 ? (acc.reach / 1000).toFixed(0) + "K" : String(acc.reach)} color={acc.color} />
                   <Tile label="Engagement" value={acc.engagement} color={acc.color} />
-                  <Tile label="Followers" value={acc.followers >= 1000 ? (acc.followers / 1000).toFixed(1) + "K" : String(acc.followers)} color={acc.color} />
+                  <Tile label={igProfile && acc.platform === "Instagram" ? "Posts (Live)" : "Followers"} value={igProfile && acc.platform === "Instagram" ? String(igProfile.media_count) : acc.followers >= 1000 ? (acc.followers / 1000).toFixed(1) + "K" : String(acc.followers)} sub={igProfile && acc.platform === "Instagram" ? `@${igProfile.username}` : undefined} color={acc.color} />
                 </div>
 
                 {acc.milestones && (
@@ -745,6 +745,11 @@ export default function AdariCommandCenter() {
 
   const igProfile = igData?.profile;
   const igMedia = igData?.media ?? [];
+
+  // Override Mason's live data from real API
+  const masonLiveFollowers = igProfile?.media_count !== undefined ? igProfile.media_count : null;
+  const masonLiveUsername = igProfile?.username ?? "masonadari";
+
   const activeClient = CLIENTS.find(c => view === `client:${c.id}`);
 
   const TABS: { id: string; label: string; color?: string; avatar?: string }[] = [
@@ -827,6 +832,7 @@ export default function AdariCommandCenter() {
               </Tile>
               <Tile label="Prospects Found" value="4" sub="via burner account" color={P.butter} />
               <Tile label="Mason Engagement" value="3.2%" sub="↑ from 2.8% last week" color={P.rose} />
+              {igProfile && <Tile label="Mason IG (Live)" value={igProfile.username} sub={`${igProfile.media_count} posts · live data`} color={P.lavender} />}
             </div>
 
             <SH>This Week's Top Content</SH>
@@ -850,7 +856,7 @@ export default function AdariCommandCenter() {
           </div>
         )}
 
-        {activeClient && <ClientView client={activeClient} />}
+        {activeClient && <ClientView client={activeClient} igProfile={activeClient.id === "mason" ? igProfile : null} />}
 
         {view === "globe" && <GlobeFeed />}
         {view === "live" && <LiveStudio />}
