@@ -834,7 +834,7 @@ const PersonCard = ({ name, avatar, color, colorSoft, colorDeep, accounts, conte
         </div>
         <div style={{ display: 'flex', justifyContent: 'space-between' }}>
           <div style={{ fontSize: 10, color: P.inkSoft, fontFamily: F.mono }}>
-            {goalPaceSource === 'historical_data' ? goalPace + ' ✓' : goalPaceSource === 'early_estimate' ? goalPace + ' (early)' : goalMonthly > 0 ? goalPace + ' (est.)' : 'Estimating...'}
+            {goalPaceSource === 'historical_data' ? goalPace + ' ✓' : goalPaceSource === 'early_estimate' ? goalPace + ' (early)' : goalMonthly > 0 ? goalPace + ' (est.)' : 'Syncing baseline'}
           </div>
           <div style={{ fontSize: 10, color: P.inkFaint, fontFamily: F.mono }}>
             Est. {calcEstDate(goalFollowers, activeGoal, goalMonthly > 0 ? goalMonthly : Math.max(1, Math.round(goalFollowers * 0.03)))}
@@ -979,9 +979,9 @@ const OverviewTab = ({ igMetrics, igLoading, igGoal, handleSetIgGoal, today }: a
       <div style={{ background: P.dark, borderRadius: 14, padding: '14px 16px', marginBottom: 12 }}>
         <div style={{ fontSize: 9, color: P.darkMuted, fontFamily: F.mono, letterSpacing: '0.14em', textTransform: 'uppercase', marginBottom: 10 }}>Connect More Accounts</div>
         {[
-          { label: "Matt's Instagram", handle: '@macroswitmat', icon: '📸', color: P.peach },
-          { label: "Matt's TikTok", handle: '@macroswitmat', icon: '🎵', color: P.sage },
-          { label: "Mason's TikTok", handle: '@masonadari', icon: '🎵', color: P.sky },
+          { label: "Matt's Instagram", handle: '@macroswitmatt', icon: '📸', color: P.peach },
+          { label: "Matt's TikTok", handle: '@macroswitmatt', icon: '🎵', color: P.sage },
+          { label: "Mason's TikTok", handle: '@masondoesnumbers', icon: '🎵', color: P.sky },
         ].map((acc, i) => (
           <div key={i} style={{ display: 'flex', alignItems: 'center', gap: 9, padding: '9px 0', borderBottom: i < 2 ? `1px solid ${P.darkBorder}` : 'none' }}>
             <span style={{ fontSize: 16 }}>{acc.icon}</span>
@@ -1201,9 +1201,9 @@ const IGAccountView = ({ acc, igData, igGoal, setIgGoal }: { acc: any; igData: a
         goal={igGoal}
         color={acc.color}
         colorSoft={acc.colorSoft}
-        pace={paceMonthly > 0 ? pace : 'Estimating...'}
+        pace={paceMonthly > 0 ? pace : 'Syncing baseline'}
         paceSource={paceSource}
-        estDate={paceMonthly > 0 ? estDate : 'Need more history'}
+        estDate={paceMonthly > 0 ? estDate : 'Building data'}
       />
 
       {/* Posts */}
@@ -1389,6 +1389,24 @@ const GenericAccountView = ({ acc, goal, setGoal }: { acc: any; goal: number; se
         </>
       )}
 
+      {/* Milestones */}
+      {acc.milestones && acc.milestones.length > 0 && (
+        <>
+          <SH>Viral Velocity Tracker</SH>
+          <div style={{ background: P.white, border: `1px solid ${P.border}`, borderRadius: 13, overflow: 'hidden', marginBottom: 8 }}>
+            {acc.milestones.map((m: any, i: number) => (
+              <div key={i} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '10px 14px', borderBottom: i < acc.milestones.length - 1 ? `1px solid ${P.borderLight}` : 'none' }}>
+                <div>
+                  <div style={{ fontSize: 12, color: P.inkMid }}>{m.label}</div>
+                  <div style={{ fontSize: 10, color: P.inkFaint, marginTop: 1 }}>{m.delta}</div>
+                </div>
+                <div style={{ fontSize: 13, fontWeight: 700, color: acc.colorDeep, fontFamily: F.display }}>{m.value}</div>
+              </div>
+            ))}
+          </div>
+        </>
+      )}
+
       {/* Posts */}
       {acc.posts?.length > 0 && (
         <>
@@ -1463,7 +1481,7 @@ const ClientView = ({ client, igData, igGoal, setIgGoal }: { client: any; igData
               <Tag color={P.skyDeep} bg={P.skySoft}>@masondoesnumbers TikTok</Tag>
             )}
             {!isMason && (
-              <><Tag color={P.sageDeep} bg={P.sageSoft}>@macroswitmatt TikTok</Tag><Tag color={P.peachDeep} bg={P.peachSoft}>@macroswitmatt IG</Tag></>
+              <><Tag color={P.sageDeep} bg={P.sageSoft}>@macroswitmatt TikTok</Tag><Tag color={P.peachDeep} bg={P.peachSoft}>@macroswithmatt IG</Tag></>
             )}
           </div>
         </div>
