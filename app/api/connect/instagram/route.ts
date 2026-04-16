@@ -8,7 +8,16 @@ export async function GET(request: NextRequest) {
     return NextResponse.json({ error: 'Missing Instagram credentials' }, { status: 500 });
   }
 
-  const url = `https://api.instagram.com/oauth/authorize?client_id=${clientId}&redirect_uri=${encodeURIComponent(redirectUri)}&scope=user_profile,user_media&response_type=code`;
+  // Use Facebook OAuth (Graph API) — Basic Display API deprecated Dec 2024
+  // This gets an Instagram-connected Facebook login token
+  const scopes = [
+    'instagram_basic',
+    'instagram_manage_insights',
+    'pages_show_list',
+    'pages_read_engagement',
+  ].join(',');
+
+  const url = `https://www.facebook.com/v19.0/dialog/oauth?client_id=${clientId}&redirect_uri=${encodeURIComponent(redirectUri)}&scope=${scopes}&response_type=code`;
 
   return NextResponse.redirect(url);
 }

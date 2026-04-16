@@ -3,43 +3,56 @@ import { NextRequest, NextResponse } from 'next/server';
 export async function GET(request: NextRequest) {
   const { searchParams } = new URL(request.url);
   const code = searchParams.get('code');
+  const error = searchParams.get('error');
+  const errorCode = searchParams.get('error_code');
+  const errorMessage = searchParams.get('error_message');
+
+  if (error || errorCode) {
+    const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || 'https://project-3tj6u.vercel.app';
+    return NextResponse.redirect(`${baseUrl}/connect?ig_error=${encodeURIComponent(errorMessage ?? error ?? 'unknown')}`);
+  }
 
   if (!code) {
     return NextResponse.json({ error: 'No code provided' }, { status: 400 });
   }
 
-  const params = new URLSearchParams();
-  params.append('client_id', process.env.INSTAGRAM_APP_ID!);
-  params.append('client_secret', process.env.INSTAGRAM_APP_SECRET!);
-  params.append('grant_type', 'authorization_code');
-  params.append('redirect_uri', process.env.INSTAGRAM_REDIRECT_URI!);
-  params.append('code', code);
+  const redirectUri = process.env.INSTAGRAM_REDIRECT_URI!;
+  const appId = process.env.INSTAGRAM_APP_ID!;
+  const appSecret = process.env.INSTAGRAM_APP_SECRET!;
 
-  const tokenRes = await fetch('https://api.instagram.com/oauth/access_token', {
-    method: 'POST',
-    body: params,
-  });
-
+  const tokenRes = await fetch(
+    `https://graph.facebook.com/v19.0/oauth/access_token?client_id=${appId}&redirect_uri=${encodeURIComponent(redirectUri)}&client_secret=${appSecret}&code=${code}`
+  );
   const tokenData = await tokenRes.json();
 
-  if (tokenData.error_type) {
-    return NextResponse.json({ error: tokenData.error_message, raw: tokenData }, { status: 400 });
+  if (tokenData.error) {
+    return NextResponse.json({ error: tokenData.error.message, raw: tokenData }, { status: 400 });
   }
 
-  const shortToken = tokenData.access_token;
-  const userId = tokenData.user_id;
+  const fbToken = tokenData.access_token;
 
-  const longTokenRes = await fetch(
-    `https://graph.instagram.com/access_token?grant_type=ig_exchange_token&client_secret=${process.env.INSTAGRAM_APP_SECRET}&access_token=${shortToken}`
-  );
-  const longTokenData = await longTokenRes.json();
-  const finalToken = longTokenData.access_token || shortToken;
+  const pagesRes = await fetch(`https://graph.facebook.com/v19.0/me/accounts?access_token=${fbToken}`);
+  const pagesData = await pagesRes.json();
+
+  let igAccountId = null;
+  let finalToken = fbToken;
+
+  if (pagesData.data && pagesData.data.length > 0) {
+    const pageToken = pagesData.data[0].access_token;
+    const pageId = pagesData.data[0].id;
+    const igRes = await fetch(`https://graph.facebook.com/v19.0/${pageId}?fields=instagram_business_account&access_token=${pageToken}`);
+    const igData = await igRes.json();
+    igAccountId = igData.instagram_business_account?.id;
+    finalToken = pageToken;
+  }
+
+  const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || 'https://project-3tj6u.vercel.app';
 
   return NextResponse.json({
     ok: true,
+    message: 'Instagram connected. Add these to Vercel env vars then redeploy.',
     access_token: finalToken,
-    user_id: userId,
-    expires_in: longTokenData.expires_in,
-    message: 'Copy this access_token and add it as INSTAGRAM_ACCESS_TOKEN in Vercel env vars',
+    ig_account_id: igAccountId,
+    pages: pagesData.data?.map((p: any) => ({ id: p.id, name: p.name })),
   });
 }
