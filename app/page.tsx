@@ -1004,6 +1004,10 @@ const OverviewTab = ({ igMetrics, igLoading, igGoal, handleSetIgGoal, today }: a
         ))}
       </div>
 
+      {/* Biggest Follower Deck */}
+      <SH children="Biggest Follower" sub="Top 4 followers ranked by their own audience size · tap a card" />
+      <BiggestFollowerDeck />
+
       {/* Top content — real sorted by performance */}
       <SH children="Top Content This Week" sub="Sorted by likes · best performing first" />
       {allContent.map((p, i) => (
@@ -1384,6 +1388,124 @@ const ClientView = ({ client, igData, igGoal, setIgGoal }: { client: any; igData
 
 
 // ── REACH DATA ─────────────────────────────────────────────────────────────
+// ── BIGGEST FOLLOWER DECK ──────────────────────────────────────────────────
+const BIGGEST_FOLLOWERS: Record<string, any[]> = {
+  day: [
+    { handle: '@foodgodnyc', platform: 'Instagram', followers: 4200000, badge: '#1 Today', since: 'followed 2hrs ago', avatar: 'FG', color: P.rose },
+    { handle: '@latimes', platform: 'Twitter', followers: 1800000, badge: '#2 Today', since: 'followed 5hrs ago', avatar: 'LT', color: P.sky },
+    { handle: '@thrillist', platform: 'Instagram', followers: 980000, badge: '#3 Today', since: 'followed 6hrs ago', avatar: 'TH', color: P.peach },
+    { handle: '@eatfamous', platform: 'TikTok', followers: 440000, badge: '#4 Today', since: 'followed 11hrs ago', avatar: 'EF', color: P.sage },
+  ],
+  week: [
+    { handle: '@gordonramsay', platform: 'Instagram', followers: 16500000, badge: '#1 This Week', since: 'followed Mon', avatar: 'GR', color: P.rose },
+    { handle: '@ladbible', platform: 'TikTok', followers: 7200000, badge: '#2 This Week', since: 'followed Tue', avatar: 'LB', color: P.sage },
+    { handle: '@foodgodnyc', platform: 'Instagram', followers: 4200000, badge: '#3 This Week', since: 'followed Wed', avatar: 'FG', color: P.peach },
+    { handle: '@eater', platform: 'Twitter', followers: 1100000, badge: '#4 This Week', since: 'followed Thu', avatar: 'EA', color: P.sky },
+  ],
+  month: [
+    { handle: '@gordonramsay', platform: 'Instagram', followers: 16500000, badge: '#1 This Month', since: 'followed Apr 2', avatar: 'GR', color: P.rose },
+    { handle: '@ladbible', platform: 'TikTok', followers: 7200000, badge: '#2 This Month', since: 'followed Apr 5', avatar: 'LB', color: P.sage },
+    { handle: '@tasty', platform: 'Instagram', followers: 5900000, badge: '#3 This Month', since: 'followed Apr 8', avatar: 'TA', color: P.peach },
+    { handle: '@foodgodnyc', platform: 'Instagram', followers: 4200000, badge: '#4 This Month', since: 'followed Apr 11', avatar: 'FG', color: P.lavender },
+  ],
+  year: [
+    { handle: '@gordonramsay', platform: 'Instagram', followers: 16500000, badge: '#1 This Year', since: 'followed Jan 14', avatar: 'GR', color: P.rose },
+    { handle: '@ladbible', platform: 'TikTok', followers: 7200000, badge: '#2 This Year', since: 'followed Feb 3', avatar: 'LB', color: P.sage },
+    { handle: '@tasty', platform: 'Instagram', followers: 5900000, badge: '#3 This Year', since: 'followed Mar 7', avatar: 'TA', color: P.peach },
+    { handle: '@buzzfeed', platform: 'Twitter', followers: 4800000, badge: '#4 This Year', since: 'followed Mar 22', avatar: 'BF', color: P.sky },
+  ],
+};
+
+const BiggestFollowerDeck = () => {
+  const [period, setPeriod] = useState('week');
+  const [selectedIdx, setSelectedIdx] = useState<number | null>(null);
+  const cards = BIGGEST_FOLLOWERS[period];
+  const rotations = [-9, -3, 3, 9];
+  const xOffsets = [0, 30, 60, 90];
+  const yOffsets = [18, 8, 8, 18];
+
+  const periodLabels: Record<string, string> = {
+    day: 'today', week: 'this week', month: 'this month', year: 'this year',
+  };
+
+  return (
+    <div style={{ marginBottom: 4 }}>
+      {/* Period switcher */}
+      <div style={{ display: 'flex', background: P.card, border: `1px solid ${P.border}`, borderRadius: 20, padding: 2, gap: 1, marginBottom: 14, width: 'fit-content' }}>
+        {['day', 'week', 'month', 'year'].map(p => (
+          <button key={p} onClick={() => { setPeriod(p); setSelectedIdx(null); }}
+            style={{ background: period === p ? P.ink : 'none', color: period === p ? P.white : P.inkSoft, border: 'none', borderRadius: 16, padding: '4px 12px', fontSize: 10, fontWeight: 600, cursor: 'pointer', fontFamily: F.mono, transition: 'all 0.15s' }}>
+            {p}
+          </button>
+        ))}
+      </div>
+      <div style={{ fontSize: 10, color: P.inkFaint, fontFamily: F.mono, marginBottom: 16 }}>
+        Biggest followers by their own follower count · {periodLabels[period]}
+      </div>
+
+      {/* Fanned card deck */}
+      <div style={{ position: 'relative', height: 268, marginBottom: selectedIdx !== null ? 14 : 0 }}>
+        {cards.map((card, i) => {
+          const isSelected = selectedIdx === i;
+          return (
+            <div key={i} onClick={() => setSelectedIdx(isSelected ? null : i)}
+              style={{
+                position: 'absolute',
+                left: xOffsets[i],
+                top: isSelected ? 0 : yOffsets[i],
+                width: 195,
+                height: 240,
+                borderRadius: 16,
+                background: P.white,
+                border: `1px solid ${isSelected ? card.color : P.border}`,
+                zIndex: isSelected ? 10 : (4 - i),
+                transform: `rotate(${isSelected ? 0 : rotations[i]}deg) ${isSelected ? 'translateY(-12px) scale(1.04)' : ''}`,
+                transition: 'all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1)',
+                cursor: 'pointer',
+                overflow: 'hidden',
+              }}>
+              {/* Color bar top */}
+              <div style={{ height: 5, background: card.color, opacity: 0.8 }} />
+              <div style={{ padding: '12px 13px 0' }}>
+                <div style={{ fontSize: 9, color: P.inkFaint, fontFamily: F.mono, marginBottom: 9 }}>{card.badge}</div>
+                <div style={{ width: 40, height: 40, borderRadius: '50%', background: `${card.color}25`, border: `1.5px solid ${card.color}60`, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 12, fontWeight: 700, color: card.color, fontFamily: F.display, marginBottom: 9 }}>{card.avatar}</div>
+                <div style={{ fontSize: 12, fontWeight: 600, color: P.ink, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{card.handle}</div>
+                <div style={{ fontSize: 10, color: P.inkSoft, marginTop: 2 }}>{card.platform}</div>
+              </div>
+              <div style={{ position: 'absolute', bottom: 13, left: 13, right: 13 }}>
+                <div style={{ fontSize: 20, fontWeight: 700, fontFamily: F.display, color: P.ink, letterSpacing: '-0.02em' }}>{fmtNum(card.followers)}</div>
+                <div style={{ fontSize: 10, color: P.inkSoft }}>their followers</div>
+                <div style={{ fontSize: 9, color: P.inkFaint, marginTop: 7, paddingTop: 7, borderTop: `1px solid ${P.borderLight}`, fontFamily: F.mono }}>{card.since}</div>
+              </div>
+            </div>
+          );
+        })}
+      </div>
+
+      {/* Selected card detail */}
+      {selectedIdx !== null && cards[selectedIdx] && (
+        <div style={{ background: P.card, border: `1px solid ${P.border}`, borderRadius: 13, padding: '13px 14px', marginTop: 6 }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 10 }}>
+            <div style={{ width: 36, height: 36, borderRadius: '50%', background: `${cards[selectedIdx].color}25`, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 12, fontWeight: 700, color: cards[selectedIdx].color, fontFamily: F.display }}>{cards[selectedIdx].avatar}</div>
+            <div style={{ flex: 1 }}>
+              <div style={{ fontSize: 13, fontWeight: 600, color: P.ink }}>{cards[selectedIdx].handle}</div>
+              <div style={{ fontSize: 10, color: P.inkSoft }}>{cards[selectedIdx].platform} · {cards[selectedIdx].since}</div>
+            </div>
+            <div style={{ textAlign: 'right' }}>
+              <div style={{ fontSize: 18, fontWeight: 700, fontFamily: F.display, color: P.ink }}>{fmtNum(cards[selectedIdx].followers)}</div>
+              <div style={{ fontSize: 9, color: P.inkSoft }}>their followers</div>
+            </div>
+          </div>
+          <div style={{ fontSize: 11, color: P.inkMid, lineHeight: 1.7, background: P.white, borderRadius: 9, padding: '9px 11px' }}>
+            An account with {fmtNum(cards[selectedIdx].followers)} followers followed you {periodLabels[period]}. That's your highest-value organic signal for this period. A story mention or collab could reach their entire audience directly.
+          </div>
+        </div>
+      )}
+    </div>
+  );
+};
+
+
 const REACH_DATA = [12, 18, 14, 22, 19, 28, 31, 26, 38, 42, 35, 51, 48, 63, 71, 58, 82, 94, 87, 110, 103, 128, 141, 163];
 
 // ── MAIN COMPONENT ─────────────────────────────────────────────────────────
