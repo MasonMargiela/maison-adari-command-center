@@ -859,8 +859,8 @@ const OverviewTab = ({ igMetrics, igLoading, igGoal, handleSetIgGoal, today }: a
   };
 
   const masonAccounts = [
-    { platform: 'Instagram', followers: igMetrics?.followers ?? 370, followerDelta: '+0', reach: igMetrics?.reach ?? '56' },
     { platform: 'TikTok', followers: 0, followerDelta: '+0', reach: '0' },
+    { platform: 'Instagram', followers: igMetrics?.followers ?? 370, followerDelta: '+0', reach: igMetrics?.reach ?? '56' },
   ];
 
   const mattAccounts = [
@@ -872,7 +872,10 @@ const OverviewTab = ({ igMetrics, igLoading, igGoal, handleSetIgGoal, today }: a
   const masonTotal = igMetrics?.followers ?? 370;
   const mattTotal = 48200 + 5300;
   const combinedTotal = masonTotal + mattTotal;
-  const combinedWeeklyDelta = (igMetrics ? 0 : 0) + 194 + 44;
+  // Weekly deltas — Mason IG real if available
+  const masonWeeklyDelta = igMetrics?.weeklyGrowthRate ?? 0;
+  const mattWeeklyDelta = 194 + 44; // mock until Matt connects
+  const combinedWeeklyDelta = masonWeeklyDelta + mattWeeklyDelta;
 
   // Top content — sorted by likes, best first
   const allContent = [
@@ -895,24 +898,31 @@ const OverviewTab = ({ igMetrics, igLoading, igGoal, handleSetIgGoal, today }: a
         </div>
       </div>
 
-      {/* Combined totals banner */}
-      <div style={{ background: P.dark, borderRadius: 14, padding: '14px 16px', marginBottom: 12, display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: 10 }}>
-        <div>
-          <div style={{ fontSize: 9, color: P.darkMuted, fontFamily: F.mono, textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: 4 }}>Combined Followers</div>
-          <div style={{ fontSize: 20, fontWeight: 700, fontFamily: F.display, color: P.darkText }}>{fmtNum(combinedTotal)}</div>
-          <div style={{ fontSize: 10, color: P.sageDeep, marginTop: 2 }}>↑ +{fmtNum(combinedWeeklyDelta)} this wk</div>
-        </div>
-        <div>
-          <div style={{ fontSize: 9, color: P.darkMuted, fontFamily: F.mono, textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: 4 }}>Combined Reach</div>
-          <div style={{ fontSize: 20, fontWeight: 700, fontFamily: F.display, color: P.darkText }}>163K</div>
-          <div style={{ fontSize: 10, color: P.inkFaint, marginTop: 2 }}>est. cross-platform</div>
-        </div>
-        <div>
-          <div style={{ fontSize: 9, color: P.darkMuted, fontFamily: F.mono, textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: 4 }}>Platforms</div>
-          <div style={{ fontSize: 20, fontWeight: 700, fontFamily: F.display, color: P.darkText }}>3</div>
-          <div style={{ fontSize: 10, color: P.inkFaint, marginTop: 2 }}>IG · TikTok × 2</div>
-        </div>
-      </div>
+      {/* Combined totals banner — updates with time period */}
+      {(() => {
+        const { value: combinedDelta, label: combinedLabel } = applyTimePeriod(combinedWeeklyDelta, timePeriod);
+        const { value: masonDelta } = applyTimePeriod(masonWeeklyDelta, timePeriod);
+        const { value: mattDelta } = applyTimePeriod(mattWeeklyDelta, timePeriod);
+        return (
+          <div style={{ background: P.dark, borderRadius: 14, padding: '14px 16px', marginBottom: 12, display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: 10 }}>
+            <div>
+              <div style={{ fontSize: 9, color: P.darkMuted, fontFamily: F.mono, textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: 4 }}>Combined Followers</div>
+              <div style={{ fontSize: 20, fontWeight: 700, fontFamily: F.display, color: P.darkText }}>{fmtNum(combinedTotal)}</div>
+              <div style={{ fontSize: 10, color: P.sageDeep, marginTop: 2 }}>↑ +{fmtNum(combinedDelta)} {combinedLabel}</div>
+            </div>
+            <div>
+              <div style={{ fontSize: 9, color: P.darkMuted, fontFamily: F.mono, textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: 4 }}>Combined Reach</div>
+              <div style={{ fontSize: 20, fontWeight: 700, fontFamily: F.display, color: P.darkText }}>{igMetrics ? igMetrics.reach : '—'}</div>
+              <div style={{ fontSize: 10, color: igMetrics ? P.sageDeep : P.inkFaint, marginTop: 2 }}>{igMetrics ? 'derived live' : 'loading...'}</div>
+            </div>
+            <div>
+              <div style={{ fontSize: 9, color: P.darkMuted, fontFamily: F.mono, textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: 4 }}>Platforms</div>
+              <div style={{ fontSize: 20, fontWeight: 700, fontFamily: F.display, color: P.darkText }}>3</div>
+              <div style={{ fontSize: 10, color: P.inkFaint, marginTop: 2 }}>IG · TikTok × 2</div>
+            </div>
+          </div>
+        );
+      })()}
 
       {/* Time period switcher */}
       <div style={{ display: 'flex', alignItems: 'center', gap: 7, marginBottom: 12 }}>
@@ -1016,81 +1026,78 @@ const OverviewTab = ({ igMetrics, igLoading, igGoal, handleSetIgGoal, today }: a
 };
 
 // ── INSTAGRAM ACCOUNT VIEW ─────────────────────────────────────────────────
-const IGAccountView = ({ acc, igData, igGoal, setIgGoal }: { acc: any; igData: any; igGoal: number; setIgGoal: (v: number) => void }) => {
+const UnifiedAccountView = ({ acc, igData, goal, setGoal }: { acc: any; igData: any; goal: number; setGoal: (v: number) => void }) => {
   const [timePeriod, setTimePeriod] = useState('week');
-  const [goalPlatform, setGoalPlatform] = useState('instagram');
+  const [goalPlatform, setGoalPlatform] = useState(acc.platform.toLowerCase());
 
   const metrics = igData?.metrics;
   const media = igData?.media ?? [];
   const analytics = igData?.analytics;
-  const isLive = !!metrics;
+  const isLive = !!metrics && acc.platform === 'Instagram';
 
+  // Core metrics — use live if available, else use mock
   const followers = isLive ? metrics.followers : acc.followers;
   const following = isLive ? metrics.following : null;
-  const reach = isLive ? metrics.reach : (acc.reach >= 1000 ? fmtNum(acc.reach) : String(acc.reach));
-  const engagement = isLive ? metrics.engagementRate.toFixed(1) + '%' : acc.engagement;
+  const reachDisplay = isLive ? metrics.reach : (acc.reach >= 1000 ? fmtNum(acc.reach) : String(acc.reach));
+  const engagementDisplay = isLive ? metrics.engagementRate.toFixed(1) + '%' : acc.engagement;
   const handle = isLive ? metrics.handle : acc.handle;
-  const paceMonthly = metrics?.monthlyGrowthRate ?? 0;
-  const paceYearly = metrics?.yearlyGrowthRate ?? paceMonthly * 12;
-  const paceSource = metrics?.paceSource ?? 'insufficient_history';
-  const pace = metrics?.pace ?? 'Syncing baseline...';
-  const contentScore = metrics?.contentScore ?? 0;
-  const posts = isLive && media.length > 0 ? media : acc.posts;
-  const working = analytics?.working ?? acc.working;
-  const flopping = analytics?.flopping ?? acc.flopping;
+  const mediaCount = isLive ? metrics.mediaCount : (acc.posts?.length ?? 0);
+  const contentScore = isLive ? metrics.contentScore : 0;
 
-  // Weekly delta — for Mason use 0 since we don't have historical yet
-  const weeklyDelta = paceMonthly > 0 ? Math.round(paceMonthly / 4.33) : 0;
-  const { value: deltaVal, label: deltaLabel } = applyTimePeriod(weeklyDelta, timePeriod);
+  // Pace
+  const weeklyDelta = isLive
+    ? (metrics.weeklyGrowthRate ?? Math.round(metrics.monthlyGrowthRate / 4.33))
+    : (parseInt((acc.followerDelta ?? '+0').replace('+', '')) || 0);
+  const paceMonthly = isLive ? (metrics.monthlyGrowthRate ?? 0) : Math.round(weeklyDelta * 4.33);
+  const paceYearly = isLive ? (metrics.yearlyGrowthRate ?? paceMonthly * 12) : paceMonthly * 12;
+  const paceSource = isLive ? (metrics.paceSource ?? 'estimated_baseline') : 'estimated_baseline';
+  const rawPace = isLive ? (metrics.pace ?? 'Syncing baseline') : (paceMonthly > 0 ? '+' + paceMonthly + '/mo' : 'Syncing baseline');
 
-  // Pace by selected period
-  const paceByPeriod = {
+  const paceByPeriod: Record<string, string> = {
     day: paceMonthly > 0 ? (paceMonthly / 30).toFixed(1) : '—',
-    week: paceMonthly > 0 ? (paceMonthly / 4.33).toFixed(0) : '—',
+    week: weeklyDelta > 0 ? String(weeklyDelta) : '—',
     month: paceMonthly > 0 ? String(paceMonthly) : '—',
     year: paceYearly > 0 ? String(paceYearly) : '—',
-  } as Record<string, string>;
-
+  };
   const paceLabels: Record<string, string> = {
     day: 'per day', week: 'per week', month: 'per month', year: 'per year',
   };
 
-  // ETA based on selected period rate
-  const currentPeriodRate = parseFloat(paceByPeriod[timePeriod] ?? '0');
-  const monthlyFromPeriod = timePeriod === 'sec' ? currentPeriodRate * 30 * 24 * 3600
-    : timePeriod === 'min' ? currentPeriodRate * 30 * 24 * 60
-    : timePeriod === 'day' ? currentPeriodRate * 30
-    : timePeriod === 'week' ? currentPeriodRate * 4.33
-    : timePeriod === 'month' ? currentPeriodRate
-    : currentPeriodRate / 12;
-  const estDate = calcEstDate(followers, igGoal, Math.round(monthlyFromPeriod));
+  const { value: deltaVal, label: deltaLabel } = applyTimePeriod(weeklyDelta, timePeriod);
+
+  // ETA
+  const goalFollowers = followers;
+  const goalMonthly = paceMonthly > 0 ? paceMonthly : Math.max(1, Math.round(followers * 0.03));
+  const estDate = calcEstDate(goalFollowers, goal, goalMonthly);
 
   // Pie chart slices
-  const pieSlices = [
-    { value: followers, color: acc.colorDeep, label: 'Instagram' },
-    { value: 0, color: P.skyDeep, label: 'TikTok' },
-  ];
+  const pieSlices = [{ value: followers, color: acc.colorDeep, label: acc.platform }];
 
-  // Mock sparkline data for engagement (will be real once historical data builds)
-  const engagementHistory = [0, 0, 0, 0, 0, 0, isLive ? metrics.engagementRate : 0];
-  const reachHistory = [0, 0, 0, 0, 0, 0, isLive ? parseFloat(metrics.reach ?? '0') : 0];
+  // Posts/media
+  const posts = isLive && media.length > 0 ? media : (acc.posts ?? []);
+  const working = analytics?.working ?? acc.working;
+  const flopping = analytics?.flopping ?? acc.flopping;
+
+  // Sparkline data
+  const engHistory = [0, 0, 0, 0, 0, 0, isLive ? metrics.engagementRate : parseFloat(acc.engagement ?? '0')];
+  const reachHistory = [0, 0, 0, 0, 0, 0, isLive ? parseFloat(String(metrics.reach).replace('K', '')) || 1 : acc.reach / 1000 || 1];
 
   return (
     <div>
-      {/* Account header with handle and content score */}
-      <div style={{ background: P.white, border: `1px solid ${P.border}`, borderRadius: 14, padding: '14px 16px', marginBottom: 12, display: 'flex', alignItems: 'center', gap: 10 }}>
-        <div style={{ width: 36, height: 36, borderRadius: 9, background: acc.colorSoft, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 16, flexShrink: 0 }}>{acc.icon}</div>
+      {/* Account sub-header with score ring */}
+      <div style={{ background: P.white, border: `1px solid ${P.border}`, borderRadius: 14, padding: '13px 15px', marginBottom: 10, display: 'flex', alignItems: 'center', gap: 10 }}>
+        <div style={{ width: 32, height: 32, borderRadius: 8, background: acc.colorSoft, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 14, flexShrink: 0 }}>{acc.icon}</div>
         <div style={{ flex: 1 }}>
-          <div style={{ fontSize: 13, fontWeight: 600, color: P.ink }}>{acc.platform}</div>
-          <div style={{ fontSize: 11, color: P.inkSoft, display: 'flex', alignItems: 'center', gap: 5 }}>
+          <div style={{ fontSize: 12, fontWeight: 600, color: P.ink }}>{acc.platform}</div>
+          <div style={{ fontSize: 10, color: P.inkSoft, display: 'flex', alignItems: 'center', gap: 4 }}>
             {handle}
-            {isLive && <><LiveDot color={P.sageDeep} /><span style={{ fontSize: 9, color: P.sageDeep, fontFamily: F.mono }}>live</span></>}
+            {isLive && <><LiveDot color={P.sageDeep} /><span style={{ fontSize: 9, color: P.sageDeep, fontFamily: F.mono }}>synced</span></>}
           </div>
         </div>
-        <Ring val={contentScore} color={acc.colorDeep} size={46} />
+        <Ring val={contentScore} color={acc.colorDeep} size={44} />
       </div>
 
-      {/* Followers with pie chart */}
+      {/* Followers card with pie chart and time switcher */}
       <div style={{ background: P.white, border: `1px solid ${P.border}`, borderRadius: 14, padding: '14px 15px', marginBottom: 8, borderTop: `2.5px solid ${acc.color}` }}>
         <div style={{ display: 'flex', alignItems: 'flex-start', gap: 12 }}>
           <div style={{ flex: 1 }}>
@@ -1099,14 +1106,16 @@ const IGAccountView = ({ acc, igData, igGoal, setIgGoal }: { acc: any; igData: a
             </div>
             <div style={{ fontSize: 22, fontWeight: 700, fontFamily: F.display, color: P.ink, letterSpacing: '-0.02em' }}>{fmtNum(followers)}</div>
             <div style={{ display: 'flex', alignItems: 'center', gap: 5, marginTop: 4 }}>
-              <span style={{ fontSize: 12, color: deltaVal >= 0 ? P.sageDeep : P.roseDeep, fontWeight: 600 }}>{deltaVal >= 0 ? '↑' : '↓'} {deltaVal >= 0 ? '+' : ''}{fmtNum(Math.abs(deltaVal))}</span>
+              <span style={{ fontSize: 12, color: deltaVal >= 0 ? P.sageDeep : P.roseDeep, fontWeight: 600 }}>
+                {deltaVal >= 0 ? '↑' : '↓'} {deltaVal >= 0 ? '+' : ''}{fmtNum(Math.abs(deltaVal))}
+              </span>
               <span style={{ fontSize: 10, color: P.inkFaint }}>{deltaLabel}</span>
             </div>
             {/* Time period switcher */}
             <div style={{ display: 'flex', background: P.card, border: `1px solid ${P.border}`, borderRadius: 20, padding: 2, gap: 1, marginTop: 8, width: 'fit-content' }}>
-              {TIME_PERIODS.map(tp => (
+              {TIME_PERIODS.map((tp: any) => (
                 <button key={tp.id} onClick={() => setTimePeriod(tp.id)}
-                  style={{ background: timePeriod === tp.id ? P.ink : 'none', color: timePeriod === tp.id ? P.white : P.inkSoft, border: 'none', borderRadius: 16, padding: '3px 7px', fontSize: 9, fontWeight: 600, cursor: 'pointer', fontFamily: F.mono, transition: 'all 0.15s' }}>
+                  style={{ background: timePeriod === tp.id ? P.ink : 'none', color: timePeriod === tp.id ? P.white : P.inkSoft, border: 'none', borderRadius: 16, padding: '3px 9px', fontSize: 10, fontWeight: 600, cursor: 'pointer', fontFamily: F.mono, transition: 'all 0.15s' }}>
                   {tp.label}
                 </button>
               ))}
@@ -1120,276 +1129,84 @@ const IGAccountView = ({ acc, igData, igGoal, setIgGoal }: { acc: any; igData: a
         </div>
       </div>
 
-      {/* Engagement + Reach with mini sparklines */}
+      {/* Engagement + Reach with sparklines */}
       <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 8, marginBottom: 8 }}>
         <div style={{ background: P.white, border: `1px solid ${P.border}`, borderRadius: 14, padding: '12px 13px', borderTop: `2.5px solid ${acc.color}` }}>
           <div style={{ fontSize: 9, color: P.inkFaint, textTransform: 'uppercase', letterSpacing: '0.12em', fontFamily: F.mono, marginBottom: 4 }}>Engagement</div>
-          <div style={{ fontSize: 18, fontWeight: 700, fontFamily: F.display, color: P.ink }}>{engagement}</div>
-          {isLive && <div style={{ fontSize: 9, color: P.sageDeep, fontFamily: F.mono, marginBottom: 6 }}>live ✓</div>}
-          <Spark data={engagementHistory.length > 1 ? engagementHistory : [0, 0, 0, 0, 0, 0, 0]} color={acc.color} h={28} />
+          <div style={{ fontSize: 18, fontWeight: 700, fontFamily: F.display, color: P.ink }}>{engagementDisplay}</div>
+          <div style={{ fontSize: 9, color: isLive ? P.sageDeep : P.inkFaint, fontFamily: F.mono, marginBottom: 6 }}>{isLive ? 'live ✓' : 'mock'}</div>
+          <Spark data={engHistory} color={acc.color} h={28} />
         </div>
         <div style={{ background: P.white, border: `1px solid ${P.border}`, borderRadius: 14, padding: '12px 13px', borderTop: `2.5px solid ${acc.color}` }}>
-          <div style={{ fontSize: 9, color: P.inkFaint, textTransform: 'uppercase', letterSpacing: '0.12em', fontFamily: F.mono, marginBottom: 4 }}>Reach (est.)</div>
-          <div style={{ fontSize: 18, fontWeight: 700, fontFamily: F.display, color: P.ink }}>{reach}</div>
-          {isLive && <div style={{ fontSize: 9, color: P.sageDeep, fontFamily: F.mono, marginBottom: 6 }}>derived ✓</div>}
-          <Spark data={[0, 0, 0, 0, 0, 0, isLive ? parseFloat(String(metrics.reach).replace('K','')) || 1 : 1]} color={acc.color} h={28} />
+          <div style={{ fontSize: 9, color: P.inkFaint, textTransform: 'uppercase', letterSpacing: '0.12em', fontFamily: F.mono, marginBottom: 4 }}>Reach</div>
+          <div style={{ fontSize: 18, fontWeight: 700, fontFamily: F.display, color: P.ink }}>{reachDisplay}</div>
+          <div style={{ fontSize: 9, color: isLive ? P.sageDeep : P.inkFaint, fontFamily: F.mono, marginBottom: 6 }}>{isLive ? 'derived ✓' : 'mock'}</div>
+          <Spark data={reachHistory} color={acc.color} h={28} />
         </div>
         {following != null && (
           <div style={{ background: P.white, border: `1px solid ${P.border}`, borderRadius: 14, padding: '12px 13px', borderTop: `2.5px solid ${acc.color}` }}>
             <div style={{ fontSize: 9, color: P.inkFaint, textTransform: 'uppercase', letterSpacing: '0.12em', fontFamily: F.mono, marginBottom: 4 }}>Following</div>
             <div style={{ fontSize: 18, fontWeight: 700, fontFamily: F.display, color: P.ink }}>{fmtNum(following)}</div>
-            {isLive && <div style={{ fontSize: 9, color: P.sageDeep, fontFamily: F.mono }}>live ✓</div>}
+            <div style={{ fontSize: 9, color: P.sageDeep, fontFamily: F.mono }}>live ✓</div>
           </div>
         )}
         <div style={{ background: P.white, border: `1px solid ${P.border}`, borderRadius: 14, padding: '12px 13px', borderTop: `2.5px solid ${acc.color}` }}>
           <div style={{ fontSize: 9, color: P.inkFaint, textTransform: 'uppercase', letterSpacing: '0.12em', fontFamily: F.mono, marginBottom: 4 }}>Posts</div>
-          <div style={{ fontSize: 18, fontWeight: 700, fontFamily: F.display, color: P.ink }}>{isLive ? metrics.mediaCount : acc.posts?.length ?? 0}</div>
-          {isLive && <div style={{ fontSize: 9, color: P.sageDeep, fontFamily: F.mono }}>live ✓</div>}
+          <div style={{ fontSize: 18, fontWeight: 700, fontFamily: F.display, color: P.ink }}>{mediaCount}</div>
+          <div style={{ fontSize: 9, color: isLive ? P.sageDeep : P.inkFaint, fontFamily: F.mono }}>{isLive ? 'live ✓' : 'mock'}</div>
         </div>
       </div>
 
-      {/* Pace cards — update with time period */}
+      {/* Growth Pace */}
       <div style={{ background: P.card, border: `1px solid ${P.border}`, borderRadius: 13, padding: '12px 14px', marginBottom: 8 }}>
         <div style={{ fontSize: 9, color: P.inkFaint, fontFamily: F.mono, marginBottom: 10, textTransform: 'uppercase', letterSpacing: '0.1em' }}>Growth Pace</div>
         <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 8, marginBottom: 10 }}>
           <div>
-            <div style={{ fontSize: 9, color: P.inkFaint, fontFamily: F.mono, marginBottom: 3 }}>{paceLabels[timePeriod]?.toUpperCase()}</div>
+            <div style={{ fontSize: 9, color: P.inkFaint, fontFamily: F.mono, marginBottom: 3, textTransform: 'uppercase' }}>{paceLabels[timePeriod]}</div>
             <div style={{ fontSize: 20, fontWeight: 700, fontFamily: F.display, color: P.ink }}>
-              {paceMonthly > 0 ? (parseFloat(paceByPeriod[timePeriod] ?? '0') >= 0 ? '+' : '') + paceByPeriod[timePeriod] : '—'}
+              {paceByPeriod[timePeriod] !== '—' ? '+' + paceByPeriod[timePeriod] : '—'}
             </div>
-            <div style={{ fontSize: 9, color: paceSource === 'historical_data' ? P.sageDeep : P.inkFaint, fontFamily: F.mono, marginTop: 2 }}>
-              {paceSource === 'historical_data' ? 'tracked ✓' : paceSource === 'early_estimate' ? 'early data' : 'est. baseline'}
-            </div>
-          </div>
-          <div>
-            <div style={{ fontSize: 9, color: P.inkFaint, fontFamily: F.mono, marginBottom: 3 }}>EST. GOAL DATE</div>
-            <div style={{ fontSize: 14, fontWeight: 700, fontFamily: F.display, color: P.ink }}>{paceMonthly > 0 ? estDate : '—'}</div>
-            <div style={{ fontSize: 9, color: P.inkFaint, fontFamily: F.mono, marginTop: 2 }}>at this {timePeriod} rate</div>
-          </div>
-        </div>
-        {/* Time period switcher for pace */}
-        <div style={{ display: 'flex', background: P.white, border: `1px solid ${P.border}`, borderRadius: 20, padding: 2, gap: 1 }}>
-          {TIME_PERIODS.map(tp => (
-            <button key={tp.id} onClick={() => setTimePeriod(tp.id)}
-              style={{ background: timePeriod === tp.id ? acc.colorDeep : 'none', color: timePeriod === tp.id ? P.white : P.inkSoft, border: 'none', borderRadius: 16, padding: '4px 0', fontSize: 9, fontWeight: 600, cursor: 'pointer', fontFamily: F.mono, flex: 1, transition: 'all 0.15s' }}>
-              {tp.label}
-            </button>
-          ))}
-        </div>
-      </div>
-
-      {/* Follower goal with platform toggle */}
-      <SH>Follower Goal</SH>
-      <div style={{ display: 'flex', alignItems: 'center', gap: 7, marginBottom: 8 }}>
-        <div style={{ display: 'flex', background: P.card, border: `1px solid ${P.border}`, borderRadius: 14, padding: 2, gap: 1 }}>
-          {['instagram', 'tiktok'].map(pl => (
-            <button key={pl} onClick={() => setGoalPlatform(pl)}
-              style={{ background: goalPlatform === pl ? acc.colorDeep : 'none', color: goalPlatform === pl ? P.white : P.inkSoft, border: 'none', borderRadius: 11, padding: '3px 10px', fontSize: 9, fontWeight: 600, cursor: 'pointer', fontFamily: F.mono, textTransform: 'uppercase' }}>
-              {pl === 'instagram' ? 'IG' : 'TikTok'}
-            </button>
-          ))}
-        </div>
-        <div style={{ fontSize: 10, color: P.inkSoft }}>goal target:</div>
-        <input type="number" value={igGoal}
-          onChange={e => { const v = parseInt(e.target.value); if (v > 0) setIgGoal(v); }}
-          style={{ width: 80, border: `1px solid ${P.border}`, borderRadius: 7, padding: '4px 8px', fontSize: 12, fontFamily: F.mono, background: P.white, color: P.ink, textAlign: 'right' }}
-        />
-      </div>
-      <GoalBar
-        label={goalPlatform === 'instagram' ? 'Instagram Followers' : 'TikTok Followers'}
-        current={followers}
-        goal={igGoal}
-        color={acc.color}
-        colorSoft={acc.colorSoft}
-        pace={paceMonthly > 0 ? pace : 'Syncing baseline'}
-        paceSource={paceSource}
-        estDate={paceMonthly > 0 ? estDate : 'Building data'}
-      />
-
-      {/* Posts */}
-      {posts.length > 0 && (
-        <>
-          <SH>Recent Posts</SH>
-          {posts.slice(0, 5).map((p: any, i: number) => (
-            <PostCard key={p.id ?? i} post={p} accent={acc.color} accentSoft={acc.colorSoft} accentDeep={acc.colorDeep} />
-          ))}
-        </>
-      )}
-      {posts.length === 0 && (
-        <div style={{ background: acc.colorSoft, border: `1px solid ${acc.color}30`, borderRadius: 12, padding: '18px', textAlign: 'center', margin: '12px 0' }}>
-          <div style={{ fontSize: 20, marginBottom: 7 }}>📭</div>
-          <div style={{ fontSize: 13, fontWeight: 600, color: P.ink, marginBottom: 4 }}>No posts yet</div>
-          <div style={{ fontSize: 11, color: P.inkSoft, lineHeight: 1.6 }}>Post your first video to start tracking engagement, top comments, and content performance.</div>
-        </div>
-      )}
-
-      <SH>{"What's Working · What's Flopping"}</SH>
-      <WW working={working} flopping={flopping} />
-
-      {acc.topComments?.length > 0 && (
-        <>
-          <SH>Top Comments</SH>
-          {acc.topComments.map((c: any, i: number) => <CmtCard key={i} c={c} accent={acc.colorDeep} accentSoft={acc.colorSoft} />)}
-        </>
-      )}
-
-      <SH>AI Strategic Insight</SH>
-      <AIInsight text={acc.insight} platform={acc.platform} />
-    </div>
-  );
-};
-
-// ── GENERIC ACCOUNT VIEW (Matt and non-live accounts) ──────────────────────
-const GenericAccountView = ({ acc, goal, setGoal }: { acc: any; goal: number; setGoal: (v: number) => void }) => {
-  const [timePeriod, setTimePeriod] = useState('week');
-  const [goalPlatform, setGoalPlatform] = useState(acc.platform.toLowerCase());
-
-  const weeklyDelta = parseInt((acc.followerDelta ?? '+0').replace('+', '').replace(',', '')) || 0;
-  const { value: deltaVal, label: deltaLabel } = applyTimePeriod(weeklyDelta, timePeriod);
-
-  const paceMonthly = Math.round(weeklyDelta * 4.33);
-  const paceYearly = paceMonthly * 12;
-
-  const paceByPeriod = {
-    day: paceMonthly > 0 ? (paceMonthly / 30).toFixed(1) : '—',
-    week: weeklyDelta > 0 ? String(weeklyDelta) : '—',
-    month: paceMonthly > 0 ? String(paceMonthly) : '—',
-    year: paceYearly > 0 ? String(paceYearly) : '—',
-  } as Record<string, string>;
-
-  const paceLabels: Record<string, string> = {
-    day: 'per day', week: 'per week', month: 'per month', year: 'per year',
-  };
-
-  const estDate = calcEstDate(acc.followers, goal, paceMonthly);
-
-  const pieSlices = [
-    { value: acc.followers, color: acc.colorDeep, label: acc.platform },
-  ];
-
-  // Mock sparklines using weekly delta extrapolated
-  const mockHistory = Array.from({ length: 7 }, (_, i) => Math.max(0, acc.followers - weeklyDelta * (6 - i)));
-
-  return (
-    <div>
-      {/* Account header */}
-      <div style={{ background: P.white, border: `1px solid ${P.border}`, borderRadius: 14, padding: '14px 16px', marginBottom: 12, display: 'flex', alignItems: 'center', gap: 10 }}>
-        <div style={{ width: 36, height: 36, borderRadius: 9, background: acc.colorSoft, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 16, flexShrink: 0 }}>{acc.icon}</div>
-        <div style={{ flex: 1 }}>
-          <div style={{ fontSize: 13, fontWeight: 600, color: P.ink }}>{acc.platform}</div>
-          <div style={{ fontSize: 11, color: P.inkSoft }}>{acc.handle}</div>
-        </div>
-        <Ring val={0} color={acc.colorDeep} size={46} />
-      </div>
-
-      {/* Followers with pie chart */}
-      <div style={{ background: P.white, border: `1px solid ${P.border}`, borderRadius: 14, padding: '14px 15px', marginBottom: 8, borderTop: `2.5px solid ${acc.color}` }}>
-        <div style={{ display: 'flex', alignItems: 'flex-start', gap: 12 }}>
-          <div style={{ flex: 1 }}>
-            <div style={{ fontSize: 9, color: P.inkFaint, textTransform: 'uppercase', letterSpacing: '0.12em', fontFamily: F.mono, marginBottom: 4 }}>Followers</div>
-            <div style={{ fontSize: 22, fontWeight: 700, fontFamily: F.display, color: P.ink, letterSpacing: '-0.02em' }}>{fmtNum(acc.followers)}</div>
-            <div style={{ display: 'flex', alignItems: 'center', gap: 5, marginTop: 4 }}>
-              <span style={{ fontSize: 12, color: deltaVal >= 0 ? P.sageDeep : P.roseDeep, fontWeight: 600 }}>{deltaVal >= 0 ? '↑' : '↓'} {deltaVal >= 0 ? '+' : ''}{fmtNum(Math.abs(deltaVal))}</span>
-              <span style={{ fontSize: 10, color: P.inkFaint }}>{deltaLabel}</span>
-            </div>
-            <div style={{ display: 'flex', background: P.card, border: `1px solid ${P.border}`, borderRadius: 20, padding: 2, gap: 1, marginTop: 8, width: 'fit-content' }}>
-              {TIME_PERIODS.map(tp => (
-                <button key={tp.id} onClick={() => setTimePeriod(tp.id)}
-                  style={{ background: timePeriod === tp.id ? P.ink : 'none', color: timePeriod === tp.id ? P.white : P.inkSoft, border: 'none', borderRadius: 16, padding: '3px 7px', fontSize: 9, fontWeight: 600, cursor: 'pointer', fontFamily: F.mono, transition: 'all 0.15s' }}>
-                  {tp.label}
-                </button>
-              ))}
+            <div style={{ fontSize: 9, color: isLive && paceSource === 'historical_data' ? P.sageDeep : P.inkFaint, fontFamily: F.mono, marginTop: 2 }}>
+              {isLive ? (paceSource === 'historical_data' ? 'tracked ✓' : paceSource === 'early_estimate' ? 'early data' : 'est. baseline') : 'mock data'}
             </div>
           </div>
           <div>
-            <div style={{ fontSize: 9, color: P.inkFaint, fontFamily: F.mono, marginBottom: 6, textTransform: 'uppercase', letterSpacing: '0.1em' }}>By Platform</div>
-            <PieChart slices={pieSlices} size={72} />
-          </div>
-        </div>
-      </div>
-
-      {/* Engagement + Reach with sparklines */}
-      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 8, marginBottom: 8 }}>
-        <div style={{ background: P.white, border: `1px solid ${P.border}`, borderRadius: 14, padding: '12px 13px', borderTop: `2.5px solid ${acc.color}` }}>
-          <div style={{ fontSize: 9, color: P.inkFaint, textTransform: 'uppercase', letterSpacing: '0.12em', fontFamily: F.mono, marginBottom: 4 }}>Engagement</div>
-          <div style={{ fontSize: 18, fontWeight: 700, fontFamily: F.display, color: P.ink }}>{acc.engagement}</div>
-          <div style={{ fontSize: 9, color: P.inkFaint, fontFamily: F.mono, marginBottom: 6 }}>mock</div>
-          <Spark data={mockHistory.map(() => parseFloat(acc.engagement ?? '0'))} color={acc.color} h={28} />
-        </div>
-        <div style={{ background: P.white, border: `1px solid ${P.border}`, borderRadius: 14, padding: '12px 13px', borderTop: `2.5px solid ${acc.color}` }}>
-          <div style={{ fontSize: 9, color: P.inkFaint, textTransform: 'uppercase', letterSpacing: '0.12em', fontFamily: F.mono, marginBottom: 4 }}>Reach</div>
-          <div style={{ fontSize: 18, fontWeight: 700, fontFamily: F.display, color: P.ink }}>{acc.reach >= 1000 ? fmtNum(acc.reach) : String(acc.reach)}</div>
-          <div style={{ fontSize: 9, color: P.inkFaint, fontFamily: F.mono, marginBottom: 6 }}>mock</div>
-          <Spark data={mockHistory.map(() => acc.reach / 1000)} color={acc.color} h={28} />
-        </div>
-      </div>
-
-      {/* Pace cards */}
-      <div style={{ background: P.card, border: `1px solid ${P.border}`, borderRadius: 13, padding: '12px 14px', marginBottom: 8 }}>
-        <div style={{ fontSize: 9, color: P.inkFaint, fontFamily: F.mono, marginBottom: 10, textTransform: 'uppercase', letterSpacing: '0.1em' }}>Growth Pace</div>
-        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 8, marginBottom: 10 }}>
-          <div>
-            <div style={{ fontSize: 9, color: P.inkFaint, fontFamily: F.mono, marginBottom: 3 }}>{paceLabels[timePeriod]?.toUpperCase()}</div>
-            <div style={{ fontSize: 20, fontWeight: 700, fontFamily: F.display, color: P.ink }}>
-              +{paceByPeriod[timePeriod] ?? '0'}
-            </div>
-            <div style={{ fontSize: 9, color: P.inkFaint, fontFamily: F.mono, marginTop: 2 }}>mock data</div>
-          </div>
-          <div>
-            <div style={{ fontSize: 9, color: P.inkFaint, fontFamily: F.mono, marginBottom: 3 }}>EST. GOAL DATE</div>
+            <div style={{ fontSize: 9, color: P.inkFaint, fontFamily: F.mono, marginBottom: 3, textTransform: 'uppercase' }}>Est. Goal Date</div>
             <div style={{ fontSize: 14, fontWeight: 700, fontFamily: F.display, color: P.ink }}>{estDate}</div>
-            <div style={{ fontSize: 9, color: P.inkFaint, fontFamily: F.mono, marginTop: 2 }}>at this {timePeriod} rate</div>
+            <div style={{ fontSize: 9, color: P.inkFaint, fontFamily: F.mono, marginTop: 2 }}>at {timePeriod} rate</div>
           </div>
         </div>
         <div style={{ display: 'flex', background: P.white, border: `1px solid ${P.border}`, borderRadius: 20, padding: 2, gap: 1 }}>
-          {TIME_PERIODS.map(tp => (
+          {TIME_PERIODS.map((tp: any) => (
             <button key={tp.id} onClick={() => setTimePeriod(tp.id)}
-              style={{ background: timePeriod === tp.id ? acc.colorDeep : 'none', color: timePeriod === tp.id ? P.white : P.inkSoft, border: 'none', borderRadius: 16, padding: '4px 0', fontSize: 9, fontWeight: 600, cursor: 'pointer', fontFamily: F.mono, flex: 1, transition: 'all 0.15s' }}>
+              style={{ background: timePeriod === tp.id ? acc.colorDeep : 'none', color: timePeriod === tp.id ? P.white : P.inkSoft, border: 'none', borderRadius: 16, padding: '4px 0', fontSize: 10, fontWeight: 600, cursor: 'pointer', fontFamily: F.mono, flex: 1, transition: 'all 0.15s' }}>
               {tp.label}
             </button>
           ))}
         </div>
       </div>
 
-      {/* Goal */}
+      {/* Follower Goal */}
       <SH>Follower Goal</SH>
-      <div style={{ display: 'flex', alignItems: 'center', gap: 7, marginBottom: 8 }}>
-        <div style={{ fontSize: 10, color: P.inkSoft }}>goal target:</div>
+      <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 8 }}>
+        <div style={{ fontSize: 10, color: P.inkSoft }}>Target:</div>
         <input type="number" value={goal}
-          onChange={e => { const v = parseInt(e.target.value); if (v > 0) setGoal(v); }}
-          style={{ width: 80, border: `1px solid ${P.border}`, borderRadius: 7, padding: '4px 8px', fontSize: 12, fontFamily: F.mono, background: P.white, color: P.ink, textAlign: 'right' }}
+          onChange={(e: any) => { const v = parseInt(e.target.value); if (v > 0) setGoal(v); }}
+          style={{ width: 90, border: `1px solid ${P.border}`, borderRadius: 7, padding: '4px 8px', fontSize: 12, fontFamily: F.mono, background: P.white, color: P.ink, textAlign: 'right' }}
         />
       </div>
       <GoalBar
         label={acc.platform + ' Followers'}
-        current={acc.followers}
+        current={followers}
         goal={goal}
         color={acc.color}
         colorSoft={acc.colorSoft}
-        pace={'+' + paceMonthly + '/mo'}
-        paceSource="estimated_baseline"
+        pace={paceMonthly > 0 ? '+' + paceMonthly + '/mo' : 'Syncing baseline'}
+        paceSource={paceSource}
         estDate={estDate}
       />
 
-      {/* Milestones */}
-      {acc.milestones && acc.milestones.length > 0 && (
-        <>
-          <SH>Viral Velocity Tracker</SH>
-          <div style={{ background: P.white, border: `1px solid ${P.border}`, borderRadius: 13, overflow: 'hidden', marginBottom: 4 }}>
-            {acc.milestones.map((m: any, i: number) => (
-              <div key={i} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '10px 14px', borderBottom: i < acc.milestones.length - 1 ? `1px solid ${P.borderLight}` : 'none' }}>
-                <div>
-                  <div style={{ fontSize: 12, color: P.inkMid }}>{m.label}</div>
-                  <div style={{ fontSize: 10, color: P.inkFaint, marginTop: 1 }}>{m.delta}</div>
-                </div>
-                <div style={{ fontSize: 13, fontWeight: 700, color: acc.colorDeep, fontFamily: F.display }}>{m.value}</div>
-              </div>
-            ))}
-          </div>
-        </>
-      )}
-
-      {/* Milestones */}
+      {/* Viral velocity milestones */}
       {acc.milestones && acc.milestones.length > 0 && (
         <>
           <SH>Viral Velocity Tracker</SH>
@@ -1408,17 +1225,24 @@ const GenericAccountView = ({ acc, goal, setGoal }: { acc: any; goal: number; se
       )}
 
       {/* Posts */}
-      {acc.posts?.length > 0 && (
+      {posts.length > 0 && (
         <>
           <SH>Recent Posts</SH>
-          {acc.posts.map((p: any, i: number) => (
-            <PostCard key={i} post={p} accent={acc.color} accentSoft={acc.colorSoft} accentDeep={acc.colorDeep} />
+          {posts.slice(0, 5).map((p: any, i: number) => (
+            <PostCard key={p.id ?? i} post={p} accent={acc.color} accentSoft={acc.colorSoft} accentDeep={acc.colorDeep} />
           ))}
         </>
       )}
+      {posts.length === 0 && (
+        <div style={{ background: acc.colorSoft, border: `1px solid ${acc.color}30`, borderRadius: 12, padding: '18px', textAlign: 'center', margin: '12px 0' }}>
+          <div style={{ fontSize: 20, marginBottom: 7 }}>📭</div>
+          <div style={{ fontSize: 13, fontWeight: 600, color: P.ink, marginBottom: 4 }}>No posts yet</div>
+          <div style={{ fontSize: 11, color: P.inkSoft, lineHeight: 1.6 }}>Post content to start tracking performance.</div>
+        </div>
+      )}
 
       <SH>{"What's Working · What's Flopping"}</SH>
-      <WW working={acc.working} flopping={acc.flopping} />
+      <WW working={working ?? 'Post content to see what works.'} flopping={flopping ?? 'Post content to identify patterns.'} />
 
       {acc.topComments?.length > 0 && (
         <>
@@ -1428,23 +1252,20 @@ const GenericAccountView = ({ acc, goal, setGoal }: { acc: any; goal: number; se
       )}
 
       <SH>AI Strategic Insight</SH>
-      <AIInsight text={acc.insight} platform={acc.platform} />
+      <AIInsight text={acc.insight ?? 'Connect this account to generate AI insights based on your real content performance.'} platform={acc.platform} />
     </div>
   );
 };
 
-
-// ── CLIENT VIEW ────────────────────────────────────────────────────────────
 const ClientView = ({ client, igData, igGoal, setIgGoal }: { client: any; igData: any; igGoal: number; setIgGoal: (v: number) => void }) => {
-  const [openAccs, setOpenAccs] = useState<Set<number>>(new Set([0]));
-  const toggleAcc = (idx: number) => {
-    setOpenAccs(prev => {
-      const next = new Set(prev);
-      if (next.has(idx)) next.delete(idx);
-      else next.add(idx);
-      return next;
-    });
-  };
+  // Both panels open by default
+  const [openAccs, setOpenAccs] = useState<Set<number>>(() => new Set(client.accounts.map((_: any, i: number) => i)));
+  const toggleAcc = (idx: number) => setOpenAccs(prev => {
+    const s = new Set(prev);
+    s.has(idx) ? s.delete(idx) : s.add(idx);
+    return new Set(s);
+  });
+
   const [mattGoals, setMattGoals] = useState<Record<string, number>>(() => {
     if (typeof window !== 'undefined') {
       try { return JSON.parse(localStorage.getItem('matt_goals') ?? '{}'); } catch { return {}; }
@@ -1455,7 +1276,6 @@ const ClientView = ({ client, igData, igGoal, setIgGoal }: { client: any; igData
   const metrics = igData?.metrics;
   const isMason = client.id === 'mason';
   const displayFollowers = isMason && metrics ? metrics.followers : client.totalFollowers;
-  const displayHandle = isMason && metrics ? metrics.handle : null;
   const contentScore = isMason && metrics ? metrics.contentScore : client.contentScore;
 
   const setMattGoal = (platform: string, v: number) => {
@@ -1464,24 +1284,35 @@ const ClientView = ({ client, igData, igGoal, setIgGoal }: { client: any; igData
     if (typeof window !== 'undefined') localStorage.setItem('matt_goals', JSON.stringify(updated));
   };
 
+  // Reorder accounts: TikTok always first
+  const sortedAccounts = [...client.accounts].sort((a: any, b: any) => {
+    if (a.platform === 'TikTok') return -1;
+    if (b.platform === 'TikTok') return 1;
+    return 0;
+  });
+
   return (
     <div>
-      {/* Client header */}
+      {/* Creator header */}
       <div style={{ background: P.white, border: `1px solid ${P.border}`, borderRadius: 16, padding: '16px 18px', marginBottom: 14, display: 'flex', gap: 13, alignItems: 'center' }}>
         <div style={{ width: 50, height: 50, borderRadius: 13, background: client.colorSoft, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 20, fontWeight: 700, color: client.colorDeep, fontFamily: F.display, flexShrink: 0 }}>
           {client.avatar}
         </div>
         <div style={{ flex: 1 }}>
           <div style={{ fontSize: 17, fontWeight: 700, fontFamily: F.display, color: P.ink }}>{client.name}</div>
-          <div style={{ fontSize: 11, color: P.inkSoft }}>{client.role}</div>
-          <div style={{ display: 'flex', gap: 5, marginTop: 6, flexWrap: 'wrap' }}>
+          <div style={{ fontSize: 11, color: P.inkSoft, marginBottom: 6 }}>{client.role}</div>
+          <div style={{ display: 'flex', gap: 5, flexWrap: 'wrap' }}>
             <Tag color={client.colorDeep} bg={client.colorSoft}>{fmtNum(displayFollowers)} followers</Tag>
-            {displayHandle && <Tag color={P.sageDeep} bg={P.sageSoft}>{displayHandle}</Tag>}
-            {isMason && (
-              <Tag color={P.skyDeep} bg={P.skySoft}>@masondoesnumbers TikTok</Tag>
-            )}
-            {!isMason && (
-              <><Tag color={P.sageDeep} bg={P.sageSoft}>@macroswitmatt TikTok</Tag><Tag color={P.peachDeep} bg={P.peachSoft}>@macroswithmatt IG</Tag></>
+            {isMason ? (
+              <>
+                <Tag color={P.roseDeep} bg={P.roseSoft}>📸 @masondoesnumbers</Tag>
+                <Tag color={P.skyDeep} bg={P.skySoft}>🎵 @masondoesnumbers</Tag>
+              </>
+            ) : (
+              <>
+                <Tag color={P.sageDeep} bg={P.sageSoft}>🎵 @macroswitmatt</Tag>
+                <Tag color={P.peachDeep} bg={P.peachSoft}>📸 @macroswithmatt</Tag>
+              </>
             )}
           </div>
         </div>
@@ -1490,18 +1321,27 @@ const ClientView = ({ client, igData, igGoal, setIgGoal }: { client: any; igData
 
       {/* Best times */}
       <SH>Best Times to Post</SH>
-      <div style={{ background: P.white, border: `1px solid ${P.border}`, borderRadius: 13, padding: '12px 14px', display: 'flex', gap: 7, flexWrap: 'wrap' }}>
+      <div style={{ background: P.white, border: `1px solid ${P.border}`, borderRadius: 13, padding: '12px 14px', display: 'flex', gap: 7, flexWrap: 'wrap', marginBottom: 4 }}>
         {client.bestTimes.map((t: string, i: number) => <Tag key={i} color={client.colorDeep} bg={client.colorSoft}>⏰ {t}</Tag>)}
       </div>
 
-      {/* Accounts */}
-      <SH children={`${client.accounts.length} Connected Account${client.accounts.length > 1 ? 's' : ''}`} />
-      {client.accounts.map((acc: any, idx: number) => {
-        const isOpen = openAccs.has(idx);
+      {/* Connected accounts — TikTok first, both open by default */}
+      <SH children={`${sortedAccounts.length} Connected Accounts`} sub="Tap header to collapse · both open by default" />
+      {sortedAccounts.map((acc: any, idx: number) => {
+        const originalIdx = client.accounts.indexOf(acc);
+        const isOpen = openAccs.has(originalIdx);
         const isIGLive = isMason && acc.platform === 'Instagram' && !!metrics;
+        const accGoal = isMason
+          ? igGoal
+          : (mattGoals[acc.platform] ?? (acc.platform === 'TikTok' ? 100000 : 10000));
+        const setAccGoal = isMason
+          ? setIgGoal
+          : (v: number) => setMattGoal(acc.platform, v);
+
         return (
-          <div key={idx} style={{ background: P.card, border: `1px solid ${P.border}`, borderRadius: 15, marginBottom: 12, overflow: 'hidden' }}>
-            <button onClick={() => toggleAcc(idx)}
+          <div key={originalIdx} style={{ background: P.card, border: `1px solid ${P.border}`, borderRadius: 15, marginBottom: 12, overflow: 'hidden' }}>
+            {/* Account header button */}
+            <button onClick={() => toggleAcc(originalIdx)}
               style={{ width: '100%', background: 'none', border: 'none', cursor: 'pointer', padding: '13px 15px', display: 'flex', alignItems: 'center', gap: 9, borderBottom: isOpen ? `1px solid ${P.border}` : 'none' }}>
               <div style={{ width: 32, height: 32, borderRadius: 8, background: acc.colorSoft, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 14, flexShrink: 0 }}>{acc.icon}</div>
               <div style={{ textAlign: 'left', flex: 1 }}>
@@ -1509,27 +1349,30 @@ const ClientView = ({ client, igData, igGoal, setIgGoal }: { client: any; igData
                   {acc.platform}
                   {isIGLive && <LiveDot color={P.sageDeep} />}
                 </div>
-                <div style={{ fontSize: 10, color: P.inkSoft }}>{isIGLive ? metrics.handle : acc.handle}</div>
+                <div style={{ fontSize: 10, color: P.inkSoft }}>
+                  {isIGLive ? metrics.handle : acc.handle}
+                </div>
               </div>
               <div style={{ textAlign: 'right' }}>
                 <div style={{ fontSize: 14, fontWeight: 700, fontFamily: F.display, color: P.ink }}>
                   {isIGLive ? fmtNum(metrics.followers) : fmtNum(acc.followers)}
                 </div>
-                <div style={{ fontSize: 9, color: P.sageDeep, fontFamily: F.mono }}>{isIGLive ? 'live ✓' : acc.followerDelta}</div>
+                <div style={{ fontSize: 9, color: P.sageDeep, fontFamily: F.mono }}>
+                  {isIGLive ? 'synced ✓' : acc.followerDelta + ' this wk'}
+                </div>
               </div>
               <div style={{ color: P.inkFaint, fontSize: 10, marginLeft: 3 }}>{isOpen ? '▲' : '▼'}</div>
             </button>
 
+            {/* Account content — same component for all */}
             {isOpen && (
               <div style={{ padding: '14px 15px' }}>
-                {isMason && acc.platform === 'Instagram'
-                  ? <IGAccountView acc={acc} igData={igData} igGoal={igGoal} setIgGoal={setIgGoal} />
-                  : <GenericAccountView
-                      acc={acc}
-                      goal={mattGoals[acc.platform] ?? (acc.platform === 'TikTok' ? 100000 : 10000)}
-                      setGoal={(v: number) => setMattGoal(acc.platform, v)}
-                    />
-                }
+                <UnifiedAccountView
+                  acc={acc}
+                  igData={isIGLive ? igData : null}
+                  goal={accGoal}
+                  setGoal={setAccGoal}
+                />
               </div>
             )}
           </div>
