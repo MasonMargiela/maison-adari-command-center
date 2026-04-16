@@ -85,10 +85,22 @@ export async function GET() {
           savedToSupabase = true;
           const accountId = accountData.id;
 
-          await supabase.from('metric_snapshots').insert([
-            { connected_account_id: accountId, platform: 'instagram', metric_type: 'followers_count', metric_value: followers },
-            { connected_account_id: accountId, platform: 'instagram', metric_type: 'engagement_rate', metric_value: engagementRate },
-          ]);
+          // Only insert once per hour to avoid duplicate snapshots
+          const oneHourAgo = new Date(Date.now() - 60 * 60 * 1000).toISOString();
+          const { data: recentSnap } = await supabase
+            .from('metric_snapshots')
+            .select('id')
+            .eq('connected_account_id', accountId)
+            .eq('metric_type', 'followers_count')
+            .gte('recorded_at', oneHourAgo)
+            .limit(1);
+
+          if (!recentSnap || recentSnap.length === 0) {
+            await supabase.from('metric_snapshots').insert([
+              { connected_account_id: accountId, platform: 'instagram', metric_type: 'followers_count', metric_value: followers },
+              { connected_account_id: accountId, platform: 'instagram', metric_type: 'engagement_rate', metric_value: engagementRate },
+            ]);
+          }
 
           // Pull full history for pace calculation
           const { data: snapshots } = await supabase
