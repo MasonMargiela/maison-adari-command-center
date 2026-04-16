@@ -1391,28 +1391,28 @@ const ClientView = ({ client, igData, igGoal, setIgGoal }: { client: any; igData
 // ── BIGGEST FOLLOWER DECK ──────────────────────────────────────────────────
 const BIGGEST_FOLLOWERS: Record<string, any[]> = {
   day: [
-    { handle: '@foodgodnyc', platform: 'Instagram', followers: 4200000, badge: '#1 Today', since: 'followed 2hrs ago', avatar: 'FG', color: P.rose },
-    { handle: '@latimes', platform: 'Twitter', followers: 1800000, badge: '#2 Today', since: 'followed 5hrs ago', avatar: 'LT', color: P.sky },
-    { handle: '@thrillist', platform: 'Instagram', followers: 980000, badge: '#3 Today', since: 'followed 6hrs ago', avatar: 'TH', color: P.peach },
-    { handle: '@eatfamous', platform: 'TikTok', followers: 440000, badge: '#4 Today', since: 'followed 11hrs ago', avatar: 'EF', color: P.sage },
+    { handle: '@foodgodnyc', platform: 'Instagram', followers: 4200000, badge: '#1 Today', since: 'followed 2hrs ago', avatar: 'FG', color: P.rose, followedAccount: '@macroswitmatt', followedPlatform: 'TikTok' },
+    { handle: '@latimes', platform: 'Twitter', followers: 1800000, badge: '#2 Today', since: 'followed 5hrs ago', avatar: 'LT', color: P.sky, followedAccount: '@macroswitmatt', followedPlatform: 'TikTok' },
+    { handle: '@thrillist', platform: 'Instagram', followers: 980000, badge: '#3 Today', since: 'followed 6hrs ago', avatar: 'TH', color: P.peach, followedAccount: '@masondoesnumbers', followedPlatform: 'Instagram' },
+    { handle: '@eatfamous', platform: 'TikTok', followers: 440000, badge: '#4 Today', since: 'followed 11hrs ago', avatar: 'EF', color: P.sage, followedAccount: '@macroswitmatt', followedPlatform: 'TikTok' },
   ],
   week: [
-    { handle: '@gordonramsay', platform: 'Instagram', followers: 16500000, badge: '#1 This Week', since: 'followed Mon', avatar: 'GR', color: P.rose },
-    { handle: '@ladbible', platform: 'TikTok', followers: 7200000, badge: '#2 This Week', since: 'followed Tue', avatar: 'LB', color: P.sage },
-    { handle: '@foodgodnyc', platform: 'Instagram', followers: 4200000, badge: '#3 This Week', since: 'followed Wed', avatar: 'FG', color: P.peach },
-    { handle: '@eater', platform: 'Twitter', followers: 1100000, badge: '#4 This Week', since: 'followed Thu', avatar: 'EA', color: P.sky },
+    { handle: '@gordonramsay', platform: 'Instagram', followers: 16500000, badge: '#1 This Week', since: 'followed Mon', avatar: 'GR', color: P.rose, followedAccount: '@macroswitmatt', followedPlatform: 'TikTok' },
+    { handle: '@ladbible', platform: 'TikTok', followers: 7200000, badge: '#2 This Week', since: 'followed Tue', avatar: 'LB', color: P.sage, followedAccount: '@macroswitmatt', followedPlatform: 'TikTok' },
+    { handle: '@foodgodnyc', platform: 'Instagram', followers: 4200000, badge: '#3 This Week', since: 'followed Wed', avatar: 'FG', color: P.peach, followedAccount: '@masondoesnumbers', followedPlatform: 'Instagram' },
+    { handle: '@eater', platform: 'Twitter', followers: 1100000, badge: '#4 This Week', since: 'followed Thu', avatar: 'EA', color: P.sky, followedAccount: '@macroswitmatt', followedPlatform: 'TikTok' },
   ],
   month: [
-    { handle: '@gordonramsay', platform: 'Instagram', followers: 16500000, badge: '#1 This Month', since: 'followed Apr 2', avatar: 'GR', color: P.rose },
-    { handle: '@ladbible', platform: 'TikTok', followers: 7200000, badge: '#2 This Month', since: 'followed Apr 5', avatar: 'LB', color: P.sage },
-    { handle: '@tasty', platform: 'Instagram', followers: 5900000, badge: '#3 This Month', since: 'followed Apr 8', avatar: 'TA', color: P.peach },
-    { handle: '@foodgodnyc', platform: 'Instagram', followers: 4200000, badge: '#4 This Month', since: 'followed Apr 11', avatar: 'FG', color: P.lavender },
+    { handle: '@gordonramsay', platform: 'Instagram', followers: 16500000, badge: '#1 This Month', since: 'followed Apr 2', avatar: 'GR', color: P.rose, followedAccount: '@macroswitmatt', followedPlatform: 'TikTok' },
+    { handle: '@ladbible', platform: 'TikTok', followers: 7200000, badge: '#2 This Month', since: 'followed Apr 5', avatar: 'LB', color: P.sage, followedAccount: '@macroswitmatt', followedPlatform: 'TikTok' },
+    { handle: '@tasty', platform: 'Instagram', followers: 5900000, badge: '#3 This Month', since: 'followed Apr 8', avatar: 'TA', color: P.peach, followedAccount: '@macroswitmatt', followedPlatform: 'TikTok' },
+    { handle: '@foodgodnyc', platform: 'Instagram', followers: 4200000, badge: '#4 This Month', since: 'followed Apr 11', avatar: 'FG', color: P.lavender, followedAccount: '@masondoesnumbers', followedPlatform: 'Instagram' },
   ],
   year: [
-    { handle: '@gordonramsay', platform: 'Instagram', followers: 16500000, badge: '#1 This Year', since: 'followed Jan 14', avatar: 'GR', color: P.rose },
-    { handle: '@ladbible', platform: 'TikTok', followers: 7200000, badge: '#2 This Year', since: 'followed Feb 3', avatar: 'LB', color: P.sage },
-    { handle: '@tasty', platform: 'Instagram', followers: 5900000, badge: '#3 This Year', since: 'followed Mar 7', avatar: 'TA', color: P.peach },
-    { handle: '@buzzfeed', platform: 'Twitter', followers: 4800000, badge: '#4 This Year', since: 'followed Mar 22', avatar: 'BF', color: P.sky },
+    { handle: '@gordonramsay', platform: 'Instagram', followers: 16500000, badge: '#1 This Year', since: 'followed Jan 14', avatar: 'GR', color: P.rose, followedAccount: '@macroswitmatt', followedPlatform: 'TikTok' },
+    { handle: '@ladbible', platform: 'TikTok', followers: 7200000, badge: '#2 This Year', since: 'followed Feb 3', avatar: 'LB', color: P.sage, followedAccount: '@macroswitmatt', followedPlatform: 'TikTok' },
+    { handle: '@tasty', platform: 'Instagram', followers: 5900000, badge: '#3 This Year', since: 'followed Mar 7', avatar: 'TA', color: P.peach, followedAccount: '@macroswitmatt', followedPlatform: 'TikTok' },
+    { handle: '@buzzfeed', platform: 'Twitter', followers: 4800000, badge: '#4 This Year', since: 'followed Mar 22', avatar: 'BF', color: P.sky, followedAccount: '@masondoesnumbers', followedPlatform: 'Instagram' },
   ],
 };
 
@@ -1497,7 +1497,7 @@ const BiggestFollowerDeck = () => {
             </div>
           </div>
           <div style={{ fontSize: 11, color: P.inkMid, lineHeight: 1.7, background: P.white, borderRadius: 9, padding: '9px 11px' }}>
-            An account with {fmtNum(cards[selectedIdx].followers)} followers followed you {periodLabels[period]}. That's your highest-value organic signal for this period. A story mention or collab could reach their entire audience directly.
+            <span style={{ fontWeight: 600, color: P.ink }}>{cards[selectedIdx].handle}</span> ({fmtNum(cards[selectedIdx].followers)} followers on {cards[selectedIdx].platform}) followed <span style={{ fontWeight: 600, color: P.ink }}>{cards[selectedIdx].followedAccount ?? '@macroswitmatt'}</span> on <span style={{ fontWeight: 600, color: P.ink }}>{cards[selectedIdx].followedPlatform ?? 'TikTok'}</span> {periodLabels[period]}. Highest-value organic signal for this period — a mention or collab reaches their full audience.
           </div>
         </div>
       )}
