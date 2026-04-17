@@ -49,7 +49,18 @@ export default function ConnectPage() {
       hoverClass: 'connect-btn-snap',
       requiresSetup: true,
       setupNote: 'Snapchat Business API requires approval. Contact Mason to enable.',
-      logo: `<svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" style="width:22px;height:22px;flex-shrink:0"><rect width="24" height="24" rx="6" fill="#FFFC00"/><path d="M12 4c-2.2 0-4 1.8-4 4v.5c-.3.1-.7.2-1 .4-.2.1-.3.3-.2.5.1.3.4.4.7.4.1 0 .3 0 .4-.1-.1.5-.3.9-.6 1.3-.4.5-.9.8-1.4.9-.2 0-.3.2-.3.4 0 .4.8.7 1.8.8.1.3.2.6.5.8-.4.1-.8.3-1.2.5-.2.1-.3.3-.2.5.1.2.3.3.5.3h.2c.8-.3 1.6-.4 2.3-.1.5.2 1 .5 1.5.5s1-.3 1.5-.5c.7-.3 1.5-.2 2.3.1h.2c.2 0 .4-.1.5-.3.1-.2 0-.4-.2-.5-.4-.2-.8-.4-1.2-.5.3-.2.4-.5.5-.8 1-.1 1.8-.4 1.8-.8 0-.2-.1-.4-.3-.4-.5-.1-1-.4-1.4-.9-.3-.4-.5-.8-.6-1.3.1.1.3.1.4.1.3 0 .6-.1.7-.4.1-.2 0-.4-.2-.5-.3-.2-.7-.3-1-.4V8c0-2.2-1.8-4-4-4z" fill="#000000"/></svg>`,
+                  logo: `<svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" style="width:22px;height:22px;flex-shrink:0;filter:drop-shadow(0 1px 4px rgba(255,252,0,0.35))">
+        <defs>
+          <linearGradient id="snap_shine" x1="0%" y1="0%" x2="60%" y2="100%">
+            <stop offset="0%" stop-color="rgba(255,255,255,0.55)"/>
+            <stop offset="100%" stop-color="rgba(255,255,255,0)"/>
+          </linearGradient>
+        </defs>
+        <rect width="24" height="24" rx="6" fill="#FFFC00"/>
+        <rect width="24" height="12" rx="6" fill="url(#snap_shine)"/>
+        <path d="M12 4.8c-1.8 0-3.3 1.5-3.3 3.3v.3l-.1.1c-.2.1-.5.2-.7.3-.1.1-.2.2-.1.4.1.2.3.3.5.3h.2c0 .3-.2.6-.4.9-.3.4-.7.6-1.1.7-.1 0-.2.1-.2.3 0 .3.6.5 1.4.6.1.2.1.4.3.6-.3.1-.6.2-.9.4-.1.1-.2.2-.1.4.1.1.2.2.4.2h.1c.6-.2 1.2-.3 1.7-.1.4.1.8.4 1.2.4s.8-.3 1.2-.4c.5-.2 1.1-.1 1.7.1h.1c.2 0 .3-.1.4-.2.1-.2 0-.3-.1-.4-.3-.2-.6-.3-.9-.4.1-.2.2-.4.3-.6.8-.1 1.4-.3 1.4-.6 0-.2-.1-.3-.2-.3-.4-.1-.8-.3-1.1-.7-.2-.3-.4-.6-.4-.9h.2c.2 0 .4-.1.5-.3.1-.2 0-.3-.1-.4-.2-.1-.5-.2-.7-.3l-.1-.1v-.3c0-1.8-1.5-3.3-3.3-3.3z" fill="#000000"/>
+        <rect width="24" height="24" rx="6" fill="none" stroke="rgba(255,255,255,0.25)" stroke-width="0.5"/>
+      </svg>`,
     },
     {
       id: 'kick',
@@ -63,7 +74,18 @@ export default function ConnectPage() {
       hoverClass: 'connect-btn-kick',
       requiresSetup: true,
       setupNote: 'Kick API is in early access. Limited metrics available. Contact Mason to enable.',
-      logo: `<svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" style="width:22px;height:22px;flex-shrink:0"><rect width="24" height="24" rx="6" fill="#53fc18"/><path d="M6 5h3v5.5l4-5.5h3.5l-4.5 6 4.5 8H13l-3-5.5-1 1.3V19H6V5z" fill="#000000"/></svg>`,
+                  logo: `<svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" style="width:22px;height:22px;flex-shrink:0;filter:drop-shadow(0 1px 4px rgba(83,252,24,0.2))">
+        <defs>
+          <linearGradient id="kick_shine" x1="0%" y1="0%" x2="60%" y2="100%">
+            <stop offset="0%" stop-color="rgba(255,255,255,0.12)"/>
+            <stop offset="100%" stop-color="rgba(255,255,255,0)"/>
+          </linearGradient>
+        </defs>
+        <rect width="24" height="24" rx="6" fill="#000000"/>
+        <rect width="24" height="12" rx="6" fill="url(#kick_shine)"/>
+        <path d="M6.5 5h2.8v5l3.6-5h3.3l-4 5.5 4.3 8.5h-3.2l-2.8-5.6L9.3 15v4H6.5V5z" fill="#53fc18"/>
+        <rect width="24" height="24" rx="6" fill="none" stroke="rgba(83,252,24,0.12)" stroke-width="0.5"/>
+      </svg>`,
     },
     {
       id: 'twitch',
@@ -119,7 +141,19 @@ export default function ConnectPage() {
       hoverClass: 'connect-btn-threads',
       requiresSetup: true,
       setupNote: 'Threads API requires separate Meta app approval from Instagram. Contact Mason.',
-      logo: `<svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" style="width:22px;height:22px;flex-shrink:0"><rect width="24" height="24" rx="6" fill="#101010"/><path d="M16.2 11.2c-.1-.1-.3-.1-.4-.2-.1-1.5-1-2.4-2.5-2.4h-.1c-.9 0-1.6.4-2.1 1l.8.8c.3-.4.8-.6 1.3-.6.9 0 1.5.5 1.6 1.4-.5-.1-1-.1-1.6-.1-1.6 0-2.6.7-2.6 2 0 1.2 1 2 2.4 2 .8 0 1.5-.3 2-.9v.7h1.1v-2.6c.1-.4 0-.8-.1-1.1h.2zm-1.2 2.1c0 .9-.8 1.5-1.9 1.5-.7 0-1.2-.3-1.2-.9 0-.7.6-1 1.6-1 .5 0 1 .1 1.5.1v.3z" fill="white"/></svg>`,
+                  logo: `<svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" style="width:22px;height:22px;flex-shrink:0;filter:drop-shadow(0 1px 3px rgba(0,0,0,0.5))">
+        <defs>
+          <linearGradient id="threads_shine" x1="0%" y1="0%" x2="60%" y2="100%">
+            <stop offset="0%" stop-color="rgba(255,255,255,0.1)"/>
+            <stop offset="100%" stop-color="rgba(255,255,255,0)"/>
+          </linearGradient>
+        </defs>
+        <rect width="24" height="24" rx="6" fill="#101010"/>
+        <rect width="24" height="12" rx="6" fill="url(#threads_shine)"/>
+        <path d="M15.5 11.1c-.1-.8-.5-1.4-1.1-1.8-.6-.4-1.4-.5-2.1-.3-.5.1-.9.4-1.2.8l.6.6c.2-.3.5-.5.9-.6.5-.1 1 0 1.4.3.4.3.6.7.7 1.2-.4-.1-.8-.1-1.2-.1-1.4 0-2.3.6-2.3 1.8 0 .5.2.9.6 1.2.4.3.9.4 1.4.4.7 0 1.3-.3 1.7-.8.1.3.2.5.2.8h.9c0-.5-.1-1-.3-1.4.1-.4.1-.8-.2-1.1zm-1 1.9c-.1.6-.7 1-1.4 1-.3 0-.6-.1-.8-.2-.2-.2-.3-.4-.3-.6 0-.6.5-.9 1.4-.9.4 0 .7 0 1.1.1v.6z" fill="white"/>
+        <path d="M12.5 6.5c-1.2 0-2.3.4-3.1 1.2-.8.8-1.2 1.9-1.2 3.1 0 .4 0 .7.1 1.1-.2.3-.4.7-.4 1.1 0 1 .8 1.8 1.8 1.8.3 0 .6-.1.9-.2.6.3 1.2.5 1.9.5 2.5 0 4.5-2 4.5-4.5s-2-5.1-4.5-5.1zm0 8.2c-.4 0-.8-.1-1.2-.2-.2.1-.4.2-.6.2-.5 0-.9-.4-.9-.9 0-.2.1-.4.2-.6-.1-.3-.1-.6-.1-.9 0-1 .4-1.9 1-2.5.7-.7 1.6-1 2.6-1 1.9 0 3.5 1.6 3.5 3.5s-2 4.4-4.5 4.4z" fill="white" opacity="0.4"/>
+        <rect width="24" height="24" rx="6" fill="none" stroke="rgba(255,255,255,0.06)" stroke-width="0.5"/>
+      </svg>`,
     },
   ];
 
