@@ -18,95 +18,112 @@ export default function ConnectPage() {
       name: 'Instagram',
       available: true,
       connectPath: '/api/connect/instagram',
-      desc: 'Followers · Reach · Engagement · Posts · Stories',
-      metrics: ['Followers', 'Following', 'Posts', 'Reach', 'Engagement Rate', 'Profile Views', 'Story Views'],
+      desc: 'Reels · Posts · Stories · Reach · Engagement',
+      metrics: ['Followers', 'Following', 'Reels Views', 'Static Post Reach', 'Story Views', 'Engagement Rate', 'Profile Views', 'Saves', 'Shares'],
       gradient: 'linear-gradient(115deg, #feda77 0%, #f5a623 12%, #f56040 25%, #e1306c 45%, #c13584 62%, #833ab4 78%, #405de6 100%)',
-      logo: (
-        `<svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" style="width:28px;height:28px;">
-          <defs><linearGradient id="ig" x1="0%" y1="100%" x2="100%" y2="0%">
-            <stop offset="0%" stop-color="#f09433"/>
-            <stop offset="25%" stop-color="#e6683c"/>
-            <stop offset="50%" stop-color="#dc2743"/>
-            <stop offset="75%" stop-color="#cc2366"/>
-            <stop offset="100%" stop-color="#bc1888"/>
-          </linearGradient></defs>
-          <rect x="2" y="2" width="20" height="20" rx="6" fill="url(#ig)"/>
-          <circle cx="12" cy="12" r="4.5" stroke="white" stroke-width="1.8" fill="none"/>
-          <circle cx="17" cy="7" r="1.2" fill="white"/>
-        </svg>`
-      ),
+      hoverGradient: 'linear-gradient(115deg, #405de6 0%, #833ab4 22%, #c13584 45%, #e1306c 62%, #f56040 78%, #feda77 100%)',
+      hoverClass: 'connect-btn-ig',
+      logo: `<svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" style="width:22px;height:22px;flex-shrink:0"><defs><linearGradient id="ig" x1="0%" y1="100%" x2="100%" y2="0%"><stop offset="0%" stop-color="#f09433"/><stop offset="25%" stop-color="#e6683c"/><stop offset="50%" stop-color="#dc2743"/><stop offset="75%" stop-color="#cc2366"/><stop offset="100%" stop-color="#bc1888"/></linearGradient></defs><rect x="2" y="2" width="20" height="20" rx="6" fill="url(#ig)"/><circle cx="12" cy="12" r="4.5" stroke="white" stroke-width="1.8" fill="none"/><circle cx="17" cy="7" r="1.2" fill="white"/></svg>`,
     },
     {
       id: 'tiktok',
       name: 'TikTok',
       available: true,
       connectPath: '/api/connect/tiktok',
-      desc: 'Followers · Video Views · Likes · Comments · FYP Reach',
-      metrics: ['Followers', 'Following', 'Video Views', 'Likes', 'Comments', 'Shares', 'Profile Views'],
-      gradient: '#0d0d14',
-      logo: (
-        `<svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" style="width:28px;height:28px;">
-          <rect width="24" height="24" rx="6" fill="#010101"/>
-          <path d="M17 6.5c-.8-.5-1.4-1.3-1.6-2.2h-2.2v9.3c0 1.1-.9 2-2 2s-2-.9-2-2 .9-2 2-2c.2 0 .4 0 .6.1V9.4c-.2 0-.4-.1-.6-.1-2.3 0-4.2 1.9-4.2 4.2s1.9 4.2 4.2 4.2 4.2-1.9 4.2-4.2V9.8c.8.5 1.7.8 2.7.8V8.4c-.5 0-1-.1-1.1-.2l.1-1.7z" fill="white"/>
-          <path d="M15.9 8.4V6.7c1 .5 2 .8 3 .8V9.8c-.3 0-.6-.1-.9-.2-.8-.3-1.5-.7-2.1-1.2z" fill="#69C9D0"/>
-          <path d="M15.9 6.7c.2.9.8 1.7 1.6 2.2.6.4 1.3.8 2.1 1v-2.2c-1-.2-2-.6-3.7-1z" fill="#EE1D52"/>
-        </svg>`
-      ),
+      desc: 'Videos · Lives · Stories · FYP Reach · Gifts',
+      metrics: ['Followers', 'Following', 'Video Views', 'Live Viewers', 'Story Views', 'Likes', 'Comments', 'Shares', 'Profile Views', 'TikTok Gifts'],
+      gradient: 'linear-gradient(135deg, #010101 0%, #1a1a1a 40%, #010101 100%)',
+      hoverGradient: 'linear-gradient(115deg, #ffffff 0%, #f5f5f5 50%, #efefef 100%)',
+      hoverClass: 'connect-btn-tt',
+      logo: `<svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" style="width:22px;height:22px;flex-shrink:0"><rect width="24" height="24" rx="6" fill="#010101"/><path d="M17 6.5c-.8-.5-1.4-1.3-1.6-2.2h-2.2v9.3c0 1.1-.9 2-2 2s-2-.9-2-2 .9-2 2-2c.2 0 .4 0 .6.1V9.4c-.2 0-.4-.1-.6-.1-2.3 0-4.2 1.9-4.2 4.2s1.9 4.2 4.2 4.2 4.2-1.9 4.2-4.2V9.8c.8.5 1.7.8 2.7.8V8.4c-.5 0-1-.1-1.1-.2l.1-1.7z" fill="white"/><path d="M15.9 8.4V6.7c1 .5 2 .8 3 .8V9.8c-.3 0-.6-.1-.9-.2-.8-.3-1.5-.7-2.1-1.2z" fill="#69C9D0"/><path d="M15.9 6.7c.2.9.8 1.7 1.6 2.2.6.4 1.3.8 2.1 1v-2.2c-1-.2-2-.6-3.7-1z" fill="#EE1D52"/></svg>`,
+    },
+    {
+      id: 'snapchat',
+      name: 'Snapchat',
+      available: true,
+      connectPath: '/api/connect/snapchat',
+      desc: 'Snaps · Stories · Spotlight · Views · Subscribers',
+      metrics: ['Subscribers', 'Story Views', 'Snap Views', 'Spotlight Views', 'Story Reach', 'Engagement Rate', 'Profile Views'],
+      gradient: 'linear-gradient(135deg, #FFFC00 0%, #FFE000 100%)',
+      hoverGradient: 'linear-gradient(135deg, #1a1a00 0%, #2a2a00 100%)',
+      hoverClass: 'connect-btn-snap',
+      requiresSetup: true,
+      setupNote: 'Snapchat Business API requires approval. Contact Mason to enable.',
+      logo: `<svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" style="width:22px;height:22px;flex-shrink:0"><rect width="24" height="24" rx="6" fill="#FFFC00"/><path d="M12 4c-2.2 0-4 1.8-4 4v.5c-.3.1-.7.2-1 .4-.2.1-.3.3-.2.5.1.3.4.4.7.4.1 0 .3 0 .4-.1-.1.5-.3.9-.6 1.3-.4.5-.9.8-1.4.9-.2 0-.3.2-.3.4 0 .4.8.7 1.8.8.1.3.2.6.5.8-.4.1-.8.3-1.2.5-.2.1-.3.3-.2.5.1.2.3.3.5.3h.2c.8-.3 1.6-.4 2.3-.1.5.2 1 .5 1.5.5s1-.3 1.5-.5c.7-.3 1.5-.2 2.3.1h.2c.2 0 .4-.1.5-.3.1-.2 0-.4-.2-.5-.4-.2-.8-.4-1.2-.5.3-.2.4-.5.5-.8 1-.1 1.8-.4 1.8-.8 0-.2-.1-.4-.3-.4-.5-.1-1-.4-1.4-.9-.3-.4-.5-.8-.6-1.3.1.1.3.1.4.1.3 0 .6-.1.7-.4.1-.2 0-.4-.2-.5-.3-.2-.7-.3-1-.4V8c0-2.2-1.8-4-4-4z" fill="#000000"/></svg>`,
+    },
+    {
+      id: 'kick',
+      name: 'Kick',
+      available: true,
+      connectPath: '/api/connect/kick',
+      desc: 'Live Viewers · Subscribers · Clips · Chat · Revenue',
+      metrics: ['Subscribers', 'Live Viewers', 'Peak Viewers', 'Clip Views', 'Chat Messages', 'Follows Gained', 'Hours Streamed'],
+      gradient: 'linear-gradient(135deg, #53fc18 0%, #3dd10f 50%, #2aaa08 100%)',
+      hoverGradient: 'linear-gradient(135deg, #0a1a04 0%, #0d2206 100%)',
+      hoverClass: 'connect-btn-kick',
+      requiresSetup: true,
+      setupNote: 'Kick API is in early access. Limited metrics available. Contact Mason to enable.',
+      logo: `<svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" style="width:22px;height:22px;flex-shrink:0"><rect width="24" height="24" rx="6" fill="#53fc18"/><path d="M6 5h3v5.5l4-5.5h3.5l-4.5 6 4.5 8H13l-3-5.5-1 1.3V19H6V5z" fill="#000000"/></svg>`,
+    },
+    {
+      id: 'twitch',
+      name: 'Twitch',
+      available: true,
+      connectPath: '/api/connect/twitch',
+      desc: 'Live Viewers · Subscribers · Bits · Clips · Revenue',
+      metrics: ['Followers', 'Subscribers', 'Live Viewers', 'Peak Viewers', 'Bits Received', 'Clip Views', 'Hours Streamed', 'Sub Revenue'],
+      gradient: 'linear-gradient(135deg, #9146ff 0%, #6441a5 100%)',
+      hoverGradient: 'linear-gradient(135deg, #bf94ff 0%, #9146ff 100%)',
+      hoverClass: 'connect-btn-twitch',
+      requiresSetup: true,
+      setupNote: 'Twitch API requires developer app registration. Contact Mason to enable.',
+      logo: `<svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" style="width:22px;height:22px;flex-shrink:0"><rect width="24" height="24" rx="6" fill="#9146FF"/><path d="M6 4l-1.5 3.5V18h4v2h2.5l2-2h3l4-4V4H6zm11.5 9.5l-2 2H12l-2 2v-2H7V6h10.5v7.5z" fill="white"/><rect x="13" y="8" width="1.5" height="4" fill="white"/><rect x="10" y="8" width="1.5" height="4" fill="white"/></svg>`,
     },
     {
       id: 'youtube',
       name: 'YouTube',
       available: true,
       connectPath: '/api/connect/youtube',
-      desc: 'Subscribers · Views · Watch Time · Impressions · CTR',
-      metrics: ['Subscribers', 'Total Views', 'Watch Time', 'Impressions', 'CTR', 'Avg View Duration', 'Revenue'],
-      gradient: 'linear-gradient(135deg, #FF0000, #cc0000)',
+      desc: 'Subscribers · Videos · Shorts · Live · Revenue',
+      metrics: ['Subscribers', 'Total Views', 'Watch Time', 'Shorts Views', 'Live Viewers', 'Impressions', 'CTR', 'Avg View Duration', 'Revenue'],
+      gradient: 'linear-gradient(135deg, #FF0000 0%, #cc0000 100%)',
+      hoverGradient: 'linear-gradient(135deg, #ff4444 0%, #FF0000 100%)',
+      hoverClass: 'connect-btn-yt',
       requiresSetup: true,
       setupNote: 'Requires Google Cloud project with YouTube Data API v3 enabled. Contact Mason to set up.',
-      logo: (
-        `<svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" style="width:28px;height:28px;">
-          <rect width="24" height="24" rx="6" fill="#FF0000"/>
-          <path d="M20.5 8s-.2-1.4-.8-2c-.8-.8-1.6-.8-2-.9C15.5 5 12 5 12 5s-3.5 0-5.7.1c-.4.1-1.2.1-2 .9-.6.6-.8 2-.8 2S3.2 9.6 3.2 11.2v1.5c0 1.5.2 3.2.2 3.2s.2 1.4.8 2c.8.8 1.8.8 2.3.8C7.8 18.9 12 19 12 19s3.5 0 5.7-.2c.4-.1 1.2-.1 2-.9.6-.6.8-2 .8-2s.3-1.6.3-3.2v-1.5C20.8 9.6 20.5 8 20.5 8z" fill="white"/>
-          <polygon points="10,8.5 10,15.5 16,12" fill="#FF0000"/>
-        </svg>`
-      ),
+      logo: `<svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" style="width:22px;height:22px;flex-shrink:0"><rect width="24" height="24" rx="6" fill="#FF0000"/><path d="M20.5 8s-.2-1.4-.8-2c-.8-.8-1.6-.8-2-.9C15.5 5 12 5 12 5s-3.5 0-5.7.1c-.4.1-1.2.1-2 .9-.6.6-.8 2-.8 2S3.2 9.6 3.2 11.2v1.5c0 1.5.2 3.2.2 3.2s.2 1.4.8 2c.8.8 1.8.8 2.3.8C7.8 18.9 12 19 12 19s3.5 0 5.7-.2c.4-.1 1.2-.1 2-.9.6-.6.8-2 .8-2s.3-1.6.3-3.2v-1.5C20.8 9.6 20.5 8 20.5 8z" fill="white"/><polygon points="10,8.5 10,15.5 16,12" fill="#FF0000"/></svg>`,
     },
     {
       id: 'twitter',
       name: 'X / Twitter',
       available: true,
       connectPath: '/api/connect/twitter',
-      desc: 'Followers · Impressions · Engagements · Profile Visits · Mentions',
+      desc: 'Followers · Impressions · Engagements · Mentions',
       metrics: ['Followers', 'Following', 'Impressions', 'Engagements', 'Profile Visits', 'Mentions', 'Link Clicks'],
-      gradient: 'linear-gradient(135deg, #000000, #333333)',
+      gradient: 'linear-gradient(135deg, #000000 0%, #1a1a1a 100%)',
+      hoverGradient: 'linear-gradient(135deg, #333333 0%, #111111 100%)',
+      hoverClass: 'connect-btn-x',
       requiresSetup: true,
-      setupNote: 'Twitter API v2 requires a developer account and Basic tier ($100/mo). Contact Mason to enable.',
-      logo: (
-        `<svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" style="width:28px;height:28px;">
-          <rect width="24" height="24" rx="6" fill="#000000"/>
-          <path d="M17.75 4h-2.5l-3.25 4.5L8.75 4H4l5.5 7.5L4 20h2.5l3.5-4.75L13.5 20H18l-5.75-7.75L17.75 4z" fill="white"/>
-        </svg>`
-      ),
+      setupNote: 'Twitter API v2 requires Basic tier ($100/mo developer account). Contact Mason to enable.',
+      logo: `<svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" style="width:22px;height:22px;flex-shrink:0"><rect width="24" height="24" rx="6" fill="#000000"/><path d="M17.75 4h-2.5l-3.25 4.5L8.75 4H4l5.5 7.5L4 20h2.5l3.5-4.75L13.5 20H18l-5.75-7.75L17.75 4z" fill="white"/></svg>`,
     },
     {
       id: 'threads',
       name: 'Threads',
       available: true,
       connectPath: '/api/connect/threads',
-      desc: 'Followers · Views · Likes · Replies · Reposts · Reach',
-      metrics: ['Followers', 'Following', 'Views', 'Likes', 'Replies', 'Reposts', 'Reach'],
-      gradient: 'linear-gradient(135deg, #000000, #444444)',
+      desc: 'Followers · Views · Likes · Replies · Reposts',
+      metrics: ['Followers', 'Following', 'Views', 'Likes', 'Replies', 'Reposts', 'Reach', 'Engagement Rate'],
+      gradient: 'linear-gradient(135deg, #101010 0%, #1c1c1c 100%)',
+      hoverGradient: 'linear-gradient(135deg, #2a2a2a 0%, #111111 100%)',
+      hoverClass: 'connect-btn-threads',
       requiresSetup: true,
-      setupNote: 'Threads API is in limited beta. Requires Meta developer app approval separate from Instagram. Contact Mason.',
-      logo: (
-        `<svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" style="width:28px;height:28px;">
-          <rect width="24" height="24" rx="6" fill="#000000"/>
-          <path d="M16.2 11.2c-.1-.1-.3-.1-.4-.2-.1-1.5-1-2.4-2.5-2.4h-.1c-.9 0-1.6.4-2.1 1l.8.8c.3-.4.8-.6 1.3-.6.9 0 1.5.5 1.6 1.4-.5-.1-1-.1-1.6-.1-1.6 0-2.6.7-2.6 2 0 1.2 1 2 2.4 2 .8 0 1.5-.3 2-.9v.7h1.1v-2.6c.1-.4 0-.8-.1-1.1h.2zm-1.2 2.1c0 .9-.8 1.5-1.9 1.5-.7 0-1.2-.3-1.2-.9 0-.7.6-1 1.6-1 .5 0 1 .1 1.5.1v.3z" fill="white"/>
-          <path d="M12 5.5C8.4 5.5 5.5 8.4 5.5 12S8.4 18.5 12 18.5 18.5 15.6 18.5 12 15.6 5.5 12 5.5zm3.1 9.9c-.6.7-1.5 1.1-2.5 1.1-2 0-3.4-1.2-3.4-2.9 0-1.1.6-2 1.6-2.5-.2-.4-.3-.8-.3-1.2 0-1.4.9-2.3 2.2-2.3.8 0 1.5.3 2 .8l-.7.7c-.3-.3-.8-.5-1.3-.5-.7 0-1.1.4-1.1 1.1 0 .3.1.7.3 1l.1.1c.4-.1.8-.1 1.2-.1 1.7 0 2.8.8 2.8 2.2v.1c.2.2.2.5.2.8 0 .6-.3 1.1-.8 1.6h-.3z" fill="white" opacity="0.4"/>
-        </svg>`
-      ),
+      setupNote: 'Threads API requires separate Meta app approval from Instagram. Contact Mason.',
+      logo: `<svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" style="width:22px;height:22px;flex-shrink:0"><rect width="24" height="24" rx="6" fill="#101010"/><path d="M16.2 11.2c-.1-.1-.3-.1-.4-.2-.1-1.5-1-2.4-2.5-2.4h-.1c-.9 0-1.6.4-2.1 1l.8.8c.3-.4.8-.6 1.3-.6.9 0 1.5.5 1.6 1.4-.5-.1-1-.1-1.6-.1-1.6 0-2.6.7-2.6 2 0 1.2 1 2 2.4 2 .8 0 1.5-.3 2-.9v.7h1.1v-2.6c.1-.4 0-.8-.1-1.1h.2zm-1.2 2.1c0 .9-.8 1.5-1.9 1.5-.7 0-1.2-.3-1.2-.9 0-.7.6-1 1.6-1 .5 0 1 .1 1.5.1v.3z" fill="white"/></svg>`,
     },
   ];
+
+  const allPlatformIcons = platforms.map(p => p.logo);
 
   return (
     <>
@@ -114,195 +131,213 @@ export default function ConnectPage() {
       <style>{`
         * { box-sizing: border-box; margin: 0; padding: 0; }
         body { background: #1a1612; }
-        .connect-btn { transition: all 0.22s cubic-bezier(0.34, 1.56, 0.64, 1); position: relative; overflow: hidden; }
-        .connect-btn::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 1px; background: linear-gradient(90deg, transparent, rgba(255,255,255,0.25), transparent); }
+
+        .connect-btn {
+          transition: all 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);
+          position: relative; overflow: hidden;
+        }
+        .connect-btn::before {
+          content: '';
+          position: absolute; top: 0; left: 0; right: 0; height: 1px;
+          background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+        }
         .connect-btn:not(:disabled):hover { transform: translateY(-1px) scale(1.005); }
         .connect-btn:not(:disabled):active { transform: scale(0.97); transition-duration: 0.08s; }
+
         .connect-btn-ig:hover {
-          background: linear-gradient(115deg, #f5c400 0%, #f55f00 20%, #e8264e 45%, #b02f7a 70%, #6f32a0 100%) !important;
-          border-color: rgba(255,255,255,0.04) !important;
-          box-shadow: 0 8px 36px rgba(200,40,90,0.5) !important;
-          text-shadow: 0 1px 3px rgba(0,0,0,0.2) !important;
-          color: rgba(255,255,255,0.95) !important;
+          background: linear-gradient(115deg, #405de6 0%, #833ab4 22%, #c13584 45%, #e1306c 62%, #f56040 78%, #feda77 100%) !important;
+          border-color: rgba(255,255,255,0.06) !important;
+          box-shadow: 0 8px 40px rgba(200,50,100,0.55), inset 0 1px 0 rgba(255,255,255,0.2) !important;
+          color: #fff !important;
         }
         .connect-btn-tt:hover {
-          background: linear-gradient(115deg, #ffffff 0%, #f9f9f9 30%, #f3f3f3 60%, #fafafa 100%) !important;
-          border-color: rgba(255,255,255,0.03) !important;
-          box-shadow: 0 8px 38px rgba(255,255,255,0.32) !important;
+          background: linear-gradient(115deg, #ffffff 0%, #f5f5f5 50%, #efefef 100%) !important;
+          border-color: rgba(200,200,200,0.3) !important;
+          box-shadow: 0 8px 40px rgba(255,255,255,0.25), inset 0 1px 0 rgba(255,255,255,1) !important;
           color: #0a0a0a !important;
           text-shadow: none !important;
         }
+        .connect-btn-snap:hover {
+          background: linear-gradient(135deg, #FFFC00 0%, #FFE000 100%) !important;
+          border-color: rgba(255,252,0,0.3) !important;
+          box-shadow: 0 8px 40px rgba(255,252,0,0.3) !important;
+          color: #000 !important;
+          text-shadow: none !important;
+        }
+        .connect-btn-kick:hover {
+          background: linear-gradient(135deg, #53fc18 0%, #3dd10f 100%) !important;
+          border-color: rgba(83,252,24,0.3) !important;
+          box-shadow: 0 8px 40px rgba(83,252,24,0.3) !important;
+          color: #000 !important;
+          text-shadow: none !important;
+        }
+        .connect-btn-twitch:hover {
+          background: linear-gradient(135deg, #bf94ff 0%, #9146ff 100%) !important;
+          border-color: rgba(145,70,255,0.3) !important;
+          box-shadow: 0 8px 40px rgba(145,70,255,0.4) !important;
+          color: #fff !important;
+        }
+        .connect-btn-yt:hover {
+          background: linear-gradient(135deg, #ff4444 0%, #FF0000 100%) !important;
+          border-color: rgba(255,0,0,0.3) !important;
+          box-shadow: 0 8px 40px rgba(255,0,0,0.4) !important;
+          color: #fff !important;
+        }
+        .connect-btn-x:hover {
+          background: linear-gradient(135deg, #333 0%, #111 100%) !important;
+          border-color: rgba(255,255,255,0.15) !important;
+          color: #fff !important;
+        }
+        .connect-btn-threads:hover {
+          background: linear-gradient(135deg, #2a2a2a 0%, #111 100%) !important;
+          border-color: rgba(255,255,255,0.1) !important;
+          color: #fff !important;
+        }
         .platform-card { transition: border-color 0.25s ease; }
+
+        @keyframes fadeUp {
+          from { opacity: 0; transform: translateY(8px); }
+          to { opacity: 1; transform: translateY(0); }
+        }
+        .fade-up { animation: fadeUp 0.35s ease forwards; }
       `}</style>
 
-      <div style={{
-        minHeight: '100vh',
-        background: '#1a1612',
-        color: '#f0e8dc',
-        fontFamily: "'DM Sans', sans-serif",
-        paddingBottom: 80,
-      }}>
+      <div style={{ minHeight: '100vh', background: '#1a1612', color: '#f0e8dc', fontFamily: "'DM Sans', sans-serif", paddingBottom: 80 }}>
+
         {/* Header */}
-        <div style={{
-          padding: '40px 20px 28px',
-          borderBottom: '1px solid #3a342c',
-        }}>
-          <div style={{ fontSize: 10, letterSpacing: '0.2em', textTransform: 'uppercase', color: '#7a7268', fontFamily: "'DM Mono', monospace", marginBottom: 8 }}>
+        <div style={{ padding: '36px 20px 24px', borderBottom: '1px solid rgba(255,255,255,0.06)' }}>
+          <div style={{ fontSize: 9, letterSpacing: '0.22em', textTransform: 'uppercase', color: 'rgba(255,255,255,0.25)', fontFamily: "'DM Mono', monospace", marginBottom: 14 }}>
             Maison Adari · Command Center
           </div>
-          <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', gap: 16 }}>
+          <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', gap: 12 }}>
             <div style={{ flex: 1 }}>
-              <div style={{ fontSize: 28, fontWeight: 800, fontFamily: "'Fraunces', serif", letterSpacing: '-0.02em', lineHeight: 1.1, marginBottom: 10 }}>
+              <div style={{ fontSize: 26, fontWeight: 800, fontFamily: "'Fraunces', serif", letterSpacing: '-0.02em', lineHeight: 1.1, marginBottom: 8 }}>
                 Connect Your Accounts
               </div>
-              <div style={{ fontSize: 13, color: '#7a7268', lineHeight: 1.7, maxWidth: 320 }}>
-                Link your social profiles so your analytics sync automatically. Read-only access — we never post on your behalf.
+              <div style={{ fontSize: 12, color: 'rgba(255,255,255,0.3)', lineHeight: 1.7, maxWidth: 300, fontWeight: 300 }}>
+                Link your profiles. Analytics sync every 5 minutes. Read-only — we never post.
               </div>
             </div>
-            <div style={{ flexShrink: 0, display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: 6, paddingTop: 4 }}>
-              <div style={{ fontSize: 9, color: 'rgba(255,255,255,0.2)', fontFamily: "'DM Mono', monospace", letterSpacing: '0.1em', textTransform: 'uppercase' }}>The AFE</div>
-              <div style={{ display: 'flex', gap: 5 }}>
-                {['📸','🎵','▶️','𝕏','🧵'].map((icon, i) => (
-                  <div key={i} style={{ width: 28, height: 28, borderRadius: 8, background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.06)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 13 }}>{icon}</div>
+            <div style={{ flexShrink: 0, display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: 8, paddingTop: 2 }}>
+              <div style={{ fontSize: 8, color: 'rgba(255,255,255,0.18)', fontFamily: "'DM Mono', monospace", letterSpacing: '0.12em', textTransform: 'uppercase' }}>
+                {platforms.length} platforms
+              </div>
+              <div style={{ display: 'flex', flexWrap: 'wrap', gap: 4, justifyContent: 'flex-end', maxWidth: 120 }}>
+                {platforms.map((p, i) => (
+                  <div key={i} style={{ width: 26, height: 26, borderRadius: 7, background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.06)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
+                    dangerouslySetInnerHTML={{ __html: p.logo.replace('width:22px;height:22px', 'width:14px;height:14px') }} />
                 ))}
               </div>
-              <div style={{ fontSize: 9, color: 'rgba(255,255,255,0.15)', fontFamily: "'DM Mono', monospace" }}>5 platforms · read-only</div>
+              <div style={{ fontSize: 8, color: 'rgba(255,255,255,0.12)', fontFamily: "'DM Mono', monospace" }}>read-only · revoke anytime</div>
             </div>
           </div>
         </div>
 
-        <div style={{ padding: '24px 20px 0' }}>
-          {/* What gets tracked */}
-          <div style={{ background: '#242018', border: '1px solid #3a342c', borderRadius: 16, padding: '16px 18px', marginBottom: 24 }}>
-            <div style={{ fontSize: 9, color: 'rgba(255,255,255,0.5)', fontFamily: "'DM Mono', monospace", letterSpacing: '0.15em', textTransform: 'uppercase', marginBottom: 14 }}>What gets tracked after connecting</div>
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10 }}>
-              {[
-                ['Followers & Following', 'Updated every 5 min'],
-                ['Reach & Impressions', 'Per post + profile'],
-                ['Engagement Rate', 'Likes, comments, saves'],
-                ['Post Performance', 'All content types'],
-                ['Trending Detection', '100K/day, 1M/month'],
-                ['Biggest Followers', 'Ranked by their size'],
-              ].map(([label, sub], i) => (
-                <div key={i}>
-                  <div style={{ fontSize: 12, color: '#d4ccc4', fontWeight: 500 }}>{label}</div>
-                  <div style={{ fontSize: 10, color: '#7a7268', marginTop: 2 }}>{sub}</div>
-                </div>
-              ))}
-            </div>
+        {/* What gets tracked */}
+        <div style={{ margin: '20px 20px 0', background: 'rgba(255,255,255,0.02)', border: '1px solid rgba(255,255,255,0.05)', borderRadius: 16, padding: '16px 18px' }}>
+          <div style={{ fontSize: 9, color: 'rgba(255,255,255,0.5)', fontFamily: "'DM Mono', monospace", letterSpacing: '0.15em', textTransform: 'uppercase', marginBottom: 12 }}>
+            What gets tracked after connecting
           </div>
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px 16px' }}>
+            {[
+              ['Followers & Following', 'Every 5 minutes'],
+              ['Reach & Impressions', 'Per post + profile'],
+              ['Reels vs Static Posts', 'Differentiated'],
+              ['Video Length Buckets', '30s / 60s / 3min+'],
+              ['Story Views', 'All platforms'],
+              ['Live Stream Metrics', 'Viewers, gifts, subs'],
+              ['Trending Detection', '100K/day threshold'],
+              ['Revenue Streams', 'Gifts, subs, AdSense'],
+            ].map(([label, sub], i) => (
+              <div key={i}>
+                <div style={{ fontSize: 12, color: 'rgba(255,255,255,0.7)', fontWeight: 500 }}>{label}</div>
+                <div style={{ fontSize: 10, color: 'rgba(255,255,255,0.28)', marginTop: 2, fontFamily: "'DM Mono', monospace" }}>{sub}</div>
+              </div>
+            ))}
+          </div>
+        </div>
 
-          {/* Platform cards */}
-          {platforms.map(platform => {
+        {/* Platform list */}
+        <div style={{ padding: '20px 20px 0' }}>
+          {platforms.map((platform, idx) => {
             const isConnected = connected.includes(platform.id);
             const isExpanded = expanded === platform.id;
 
             return (
-              <div key={platform.id} className="platform-card" style={{
-                background: '#242018',
-                border: `1px solid ${isConnected ? '#5a9e66' : '#3a342c'}`,
+              <div key={platform.id} className="platform-card fade-up" style={{
+                background: 'rgba(255,255,255,0.02)',
+                border: `1px solid ${isConnected ? 'rgba(90,158,102,0.4)' : 'rgba(255,255,255,0.06)'}`,
                 borderRadius: 16,
-                marginBottom: 10,
+                marginBottom: 8,
                 overflow: 'hidden',
+                animationDelay: `${idx * 0.04}s`,
+                opacity: 0,
               }}>
                 {/* Header row */}
-                <div
-                  onClick={() => setExpanded(isExpanded ? null : platform.id)}
-                  style={{ padding: '16px 18px', display: 'flex', alignItems: 'center', gap: 14, cursor: 'pointer' }}
-                >
-                  <div dangerouslySetInnerHTML={{ __html: platform.logo }} style={{ flexShrink: 0, display: 'flex', alignItems: 'center' }} />
-                  <div style={{ flex: 1 }}>
+                <button onClick={() => setExpanded(isExpanded ? null : platform.id)}
+                  style={{ width: '100%', background: 'none', border: 'none', cursor: 'pointer', padding: '14px 16px', display: 'flex', alignItems: 'center', gap: 12, borderBottom: isExpanded ? '1px solid rgba(255,255,255,0.05)' : 'none' }}>
+                  <div dangerouslySetInnerHTML={{ __html: platform.logo }} style={{ flexShrink: 0 }} />
+                  <div style={{ flex: 1, textAlign: 'left' }}>
                     <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-                      <span style={{ fontSize: 15, fontWeight: 600, color: '#f0e8dc', fontFamily: "'Fraunces', serif" }}>{platform.name}</span>
-                      {isConnected && (
-                        <span style={{ background: '#5a9e6620', border: '1px solid #5a9e66', borderRadius: 20, padding: '2px 8px', fontSize: 9, color: '#5a9e66', fontFamily: "'DM Mono', monospace" }}>CONNECTED</span>
-                      )}
-                      {platform.requiresSetup && !isConnected && (
-                        <span style={{ background: '#3a342c', borderRadius: 20, padding: '2px 8px', fontSize: 9, color: '#7a7268', fontFamily: "'DM Mono', monospace" }}>SETUP REQUIRED</span>
-                      )}
+                      <span style={{ fontSize: 14, fontWeight: 600, color: '#f0e8dc', fontFamily: "'Fraunces', serif" }}>{platform.name}</span>
+                      {isConnected && <span style={{ fontSize: 8, color: '#5a9e66', background: 'rgba(90,158,102,0.15)', border: '1px solid rgba(90,158,102,0.3)', borderRadius: 20, padding: '2px 7px', fontFamily: "'DM Mono', monospace", letterSpacing: '0.08em' }}>LIVE</span>}
+                      {(platform as any).requiresSetup && !isConnected && <span style={{ fontSize: 8, color: 'rgba(255,255,255,0.2)', background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.06)', borderRadius: 20, padding: '2px 7px', fontFamily: "'DM Mono', monospace" }}>SETUP REQ.</span>}
                     </div>
-                    <div style={{ fontSize: 11, color: '#7a7268', marginTop: 3 }}>{platform.desc}</div>
+                    <div style={{ fontSize: 10, color: 'rgba(255,255,255,0.22)', marginTop: 2, fontFamily: "'DM Mono', monospace" }}>{platform.desc}</div>
                   </div>
-                  <div style={{ color: '#7a7268', fontSize: 10 }}>{isExpanded ? '▲' : '▼'}</div>
-                </div>
+                  <div style={{ color: 'rgba(255,255,255,0.18)', fontSize: 9, fontFamily: "'DM Mono', monospace", transition: 'transform 0.2s', transform: isExpanded ? 'rotate(180deg)' : 'rotate(0deg)' }}>▼</div>
+                </button>
 
-                {/* Expanded */}
+                {/* Expanded content */}
                 {isExpanded && (
-                  <div style={{ borderTop: '1px solid #3a342c', padding: '16px 18px' }}>
+                  <div style={{ padding: '16px' }}>
                     {/* Metrics */}
-                    <div style={{ fontSize: 9, color: '#7a7268', fontFamily: "'DM Mono', monospace", letterSpacing: '0.12em', textTransform: 'uppercase', marginBottom: 10 }}>Metrics tracked</div>
-                    <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6, marginBottom: 18 }}>
+                    <div style={{ display: 'flex', flexWrap: 'wrap', gap: 5, marginBottom: 16 }}>
                       {platform.metrics.map((m, i) => (
-                        <span key={i} style={{ background: '#1a1612', border: '1px solid #3a342c', borderRadius: 20, padding: '4px 10px', fontSize: 11, color: '#a09080', fontFamily: "'DM Mono', monospace" }}>{m}</span>
+                        <span key={i} style={{ background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.07)', borderRadius: 20, padding: '3px 10px', fontSize: 10, color: 'rgba(255,255,255,0.4)', fontFamily: "'DM Mono', monospace" }}>{m}</span>
                       ))}
                     </div>
 
-                    {/* Setup note if required */}
-                    {platform.requiresSetup && (
-                      <div style={{ background: '#1a1612', border: '1px solid #b8940a40', borderRadius: 12, padding: '12px 14px', marginBottom: 14 }}>
-                        <div style={{ fontSize: 9, color: '#b8940a', fontFamily: "'DM Mono', monospace", marginBottom: 6, textTransform: 'uppercase', letterSpacing: '0.1em' }}>Setup required</div>
-                        <div style={{ fontSize: 12, color: '#7a7268', lineHeight: 1.6 }}>{platform.setupNote}</div>
+                    {/* Setup note */}
+                    {(platform as any).requiresSetup && (
+                      <div style={{ background: 'rgba(184,148,10,0.07)', border: '1px solid rgba(184,148,10,0.18)', borderRadius: 12, padding: '10px 13px', marginBottom: 14 }}>
+                        <div style={{ fontSize: 8, color: 'rgba(184,148,10,0.7)', fontFamily: "'DM Mono', monospace", marginBottom: 4, textTransform: 'uppercase', letterSpacing: '0.1em' }}>Setup required</div>
+                        <div style={{ fontSize: 11, color: 'rgba(255,255,255,0.3)', lineHeight: 1.6, fontWeight: 300 }}>{(platform as any).setupNote}</div>
                       </div>
                     )}
 
                     {/* Connect button */}
-                    {!platform.requiresSetup ? (
-                      <button
-                        className={`connect-btn${platform.id === 'instagram' ? ' connect-btn-ig' : platform.id === 'tiktok' ? ' connect-btn-tt' : ''}`}
-                        onClick={() => { window.location.href = platform.connectPath; }}
-                        disabled={isConnected}
-                        style={{
-                          width: '100%',
-                          background: isConnected ? '#5a9e6620' : platform.gradient,
-                          border: isConnected ? '1px solid #5a9e66'
-                          : platform.id === 'instagram' ? '1px solid rgba(220,140,180,0.3)'
-                          : platform.id === 'tiktok' ? '1px solid rgba(105,201,208,0.2)'
-                          : '1px solid rgba(255,255,255,0.06)',
-                          borderRadius: 14,
-                          padding: '15px',
-                          color: isConnected ? '#5a9e66' : 'rgba(255,255,255,0.92)',
-                          fontSize: 14,
-                          fontWeight: 600,
-                          cursor: isConnected ? 'default' : 'pointer',
-                          fontFamily: "'DM Sans', sans-serif",
-                          display: 'flex',
-                          alignItems: 'center',
-                          justifyContent: 'center',
-                          gap: 10,
-                          letterSpacing: '0.02em',
-                          textShadow: isConnected ? 'none' : '0 1px 2px rgba(0,0,0,0.3)',
-                          boxShadow: isConnected ? 'none' : platform.id === 'instagram'
-                            ? 'inset 0 1px 0 rgba(255,255,255,0.18), inset 0 -1px 0 rgba(0,0,0,0.2), 0 8px 32px rgba(180,100,160,0.35), 0 2px 8px rgba(0,0,0,0.4)'
-                            : platform.id === 'tiktok'
-                            ? 'inset 0 1px 0 rgba(255,255,255,0.1), inset 0 -1px 0 rgba(0,0,0,0.3), 0 8px 32px rgba(105,201,208,0.2), 0 2px 8px rgba(0,0,0,0.5)'
-                            : 'inset 0 1px 0 rgba(255,255,255,0.08), 0 4px 16px rgba(0,0,0,0.3)',
-                          transition: 'all 0.18s cubic-bezier(0.34, 1.56, 0.64, 1)',
-                        }}
-                      >
-                        <span dangerouslySetInnerHTML={{ __html: isConnected ? '' : platform.logo }} />
-                        {isConnected ? '✓ Connected' : `Sign in with ${platform.name}`}
-                      </button>
-                    ) : (
-                      <div style={{
+                    <button
+                      className={`connect-btn ${(platform as any).hoverClass || ''}`}
+                      onClick={() => !isConnected && (window.location.href = platform.connectPath)}
+                      disabled={isConnected}
+                      style={{
                         width: '100%',
-                        background: '#1a1612',
-                        border: '1px solid #3a342c',
-                        borderRadius: 14,
-                        padding: '15px',
-                        color: '#7a7268',
+                        background: isConnected ? 'rgba(90,158,102,0.1)' : platform.gradient,
+                        border: `1px solid ${isConnected ? 'rgba(90,158,102,0.3)' : 'rgba(255,255,255,0.12)'}`,
+                        borderRadius: 13,
+                        padding: '13px 16px',
+                        color: isConnected ? '#5a9e66' : 'rgba(255,255,255,0.95)',
                         fontSize: 13,
-                        textAlign: 'center',
+                        fontWeight: 600,
+                        cursor: isConnected ? 'default' : 'pointer',
                         fontFamily: "'DM Sans', sans-serif",
-                        lineHeight: 1.5,
-                      }}>
-                        API credentials required · Contact Mason to enable
-                      </div>
-                    )}
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        gap: 9,
+                        letterSpacing: '0.02em',
+                        textShadow: isConnected ? 'none' : '0 1px 3px rgba(0,0,0,0.35)',
+                        boxShadow: isConnected ? 'none' : 'inset 0 1px 0 rgba(255,255,255,0.1), 0 2px 12px rgba(0,0,0,0.3)',
+                      }}
+                    >
+                      {!isConnected && <span dangerouslySetInnerHTML={{ __html: platform.logo }} />}
+                      {isConnected ? '✓ Connected' : `Sign in with ${platform.name}`}
+                    </button>
 
-                    {/* Privacy note */}
-                    {!platform.requiresSetup && (
-                      <div style={{ fontSize: 10, color: '#5a5248', marginTop: 12, textAlign: 'center', lineHeight: 1.6 }}>
-                        Read-only access · No posting or DM permissions · Syncs every 5 min · Revoke anytime from {platform.name} settings
+                    {!isConnected && (
+                      <div style={{ fontSize: 9, color: 'rgba(255,255,255,0.15)', marginTop: 10, textAlign: 'center', fontFamily: "'DM Mono', monospace", lineHeight: 1.6 }}>
+                        read-only · no posting · syncs every 5 min · revoke anytime
                       </div>
                     )}
                   </div>
@@ -310,13 +345,12 @@ export default function ConnectPage() {
               </div>
             );
           })}
+        </div>
 
-          {/* Footer */}
-          <div style={{ marginTop: 16, textAlign: 'center' }}>
-            <a href="/" style={{ color: '#5a5248', fontSize: 11, fontFamily: "'DM Mono', monospace", textDecoration: 'none', borderBottom: '1px solid #3a342c', paddingBottom: 1 }}>
-              ← Back to Command Center
-            </a>
-          </div>
+        <div style={{ marginTop: 24, textAlign: 'center', padding: '0 20px' }}>
+          <a href="/" style={{ color: 'rgba(255,255,255,0.15)', fontSize: 10, fontFamily: "'DM Mono', monospace", textDecoration: 'none', letterSpacing: '0.05em' }}>
+            ← command center
+          </a>
         </div>
       </div>
     </>
