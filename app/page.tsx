@@ -241,7 +241,7 @@ const AIInsight = ({ text, platform }: { text: string; platform: string }) => (
 
 // ── WHAT'S WORKING ─────────────────────────────────────────────────────────
 const WW = ({ working, flopping }: { working: string; flopping: string }) => (
-  <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 8 }}>
+  <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, minmax(0, 1fr))', gap: 8 }}>
     <div style={{ background: P.sageSoft, border: `1px solid ${P.sage}`, borderRadius: 11, padding: '12px' }}>
       <div style={{ fontSize: 9, color: P.sageDeep, letterSpacing: '0.12em', textTransform: 'uppercase', fontFamily: F.mono, marginBottom: 6 }}>✓ Working</div>
       <div style={{ fontSize: 11, color: P.inkMid, lineHeight: 1.7 }}>{working}</div>
@@ -794,7 +794,7 @@ const PersonCard = ({ name, avatar, color, colorSoft, colorDeep, accounts, conte
       </div>
 
       {/* Stats row */}
-      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 7, marginBottom: 12 }}>
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, minmax(0, 1fr))', gap: 7, marginBottom: 12 }}>
         <div style={{ background: colorSoft, borderRadius: 9, padding: '9px 11px' }}>
           <div style={{ fontSize: 9, color: P.inkFaint, fontFamily: F.mono, marginBottom: 3, textTransform: 'uppercase', letterSpacing: '0.1em' }}>Engagement</div>
           <div style={{ fontSize: 16, fontWeight: 700, fontFamily: F.display, color: P.ink }}>{displayEngagement}</div>
@@ -904,7 +904,7 @@ const OverviewTab = ({ igMetrics, igLoading, igGoal, handleSetIgGoal, today }: a
         const { value: masonDelta } = applyTimePeriod(masonWeeklyDelta, timePeriod);
         const { value: mattDelta } = applyTimePeriod(mattWeeklyDelta, timePeriod);
         return (
-          <div style={{ background: P.dark, borderRadius: 14, padding: '14px 16px', marginBottom: 12, display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: 10 }}>
+          <div style={{ background: P.dark, borderRadius: 14, padding: '14px 16px', marginBottom: 12, display: 'grid', gridTemplateColumns: 'repeat(3, minmax(0, 1fr))', gap: 10 }}>
             <div>
               <div style={{ fontSize: 9, color: P.darkMuted, fontFamily: F.mono, textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: 4 }}>Combined Followers</div>
               <div style={{ fontSize: 20, fontWeight: 700, fontFamily: F.display, color: P.darkText }}>{fmtNum(combinedTotal)}</div>
@@ -1103,8 +1103,8 @@ const UnifiedAccountView = ({ acc, igData, goal, setGoal }: { acc: any; igData: 
 
       {/* Followers card with pie chart and time switcher */}
       <div style={{ background: P.white, border: `1px solid ${P.border}`, borderRadius: 14, padding: '14px 15px', marginBottom: 8, borderTop: `2.5px solid ${acc.color}` }}>
-        <div style={{ display: 'flex', alignItems: 'flex-start', gap: 12 }}>
-          <div style={{ flex: 1 }}>
+        <div style={{ display: 'flex', alignItems: 'flex-start', gap: 10, flexWrap: 'wrap' }}>
+          <div style={{ flex: 1, minWidth: 0 }}>
             <div style={{ fontSize: 9, color: P.inkFaint, textTransform: 'uppercase', letterSpacing: '0.12em', fontFamily: F.mono, marginBottom: 4, display: 'flex', alignItems: 'center', gap: 5 }}>
               Followers {isLive && <LiveDot color={P.sageDeep} />}
             </div>
@@ -1134,7 +1134,7 @@ const UnifiedAccountView = ({ acc, igData, goal, setGoal }: { acc: any; igData: 
       </div>
 
       {/* Engagement + Reach with sparklines */}
-      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 8, marginBottom: 8 }}>
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, minmax(0, 1fr))', gap: 8, marginBottom: 8 }}>
         <div style={{ background: P.white, border: `1px solid ${P.border}`, borderRadius: 14, padding: '12px 13px', borderTop: `2.5px solid ${acc.color}` }}>
           <div style={{ fontSize: 9, color: P.inkFaint, textTransform: 'uppercase', letterSpacing: '0.12em', fontFamily: F.mono, marginBottom: 4 }}>Engagement</div>
           <div style={{ fontSize: 18, fontWeight: 700, fontFamily: F.display, color: P.ink }}>{engagementDisplay}</div>
@@ -1164,7 +1164,7 @@ const UnifiedAccountView = ({ acc, igData, goal, setGoal }: { acc: any; igData: 
       {/* Growth Pace */}
       <div style={{ background: P.card, border: `1px solid ${P.border}`, borderRadius: 13, padding: '12px 14px', marginBottom: 8 }}>
         <div style={{ fontSize: 9, color: P.inkFaint, fontFamily: F.mono, marginBottom: 10, textTransform: 'uppercase', letterSpacing: '0.1em' }}>Growth Pace</div>
-        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 8, marginBottom: 10 }}>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, minmax(0, 1fr))', gap: 8, marginBottom: 10 }}>
           <div>
             <div style={{ fontSize: 9, color: P.inkFaint, fontFamily: F.mono, marginBottom: 3, textTransform: 'uppercase' }}>{paceLabels[timePeriod]}</div>
             <div style={{ fontSize: 20, fontWeight: 700, fontFamily: F.display, color: P.ink }}>
@@ -1580,7 +1580,7 @@ export default function AdariCommandCenter() {
             </div>
           </div>
         </div>
-        <div style={{ display: 'flex', gap: 0, overflowX: 'auto', scrollbarWidth: 'none' }}>
+        <div style={{ display: 'flex', gap: 0, overflowX: 'auto', scrollbarWidth: 'none', WebkitOverflowScrolling: 'touch', msOverflowStyle: 'none' }}>
           {TABS.map(tab => {
             const active = view === tab.id;
             return (
@@ -1761,7 +1761,7 @@ export default function AdariCommandCenter() {
                     <div style={{ fontSize: 24, fontWeight: 800, fontFamily: F.display, color: p.color }}>{p.heat}</div>
                   </div>
                 </div>
-                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 8, marginBottom: 10 }}>
+                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, minmax(0, 1fr))', gap: 8, marginBottom: 10 }}>
                   <div>
                     <div style={{ fontSize: 9, color: P.inkFaint, fontFamily: F.mono, marginBottom: 4 }}>Food Quality</div>
                     <div style={{ display: 'flex', gap: 6, alignItems: 'center' }}>
@@ -1789,7 +1789,7 @@ export default function AdariCommandCenter() {
           <div>
             <div style={{ background: P.dark, borderRadius: 18, padding: '20px', marginBottom: 18 }}>
               <div style={{ fontSize: 9, letterSpacing: '0.15em', textTransform: 'uppercase', color: P.darkMuted, fontFamily: F.mono, marginBottom: 12 }}>✦ Agency Revenue · Maison Adari</div>
-              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10 }}>
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, minmax(0, 1fr))', gap: 10 }}>
                 {[
                   { label: 'Billed This Month', value: '$0', sub: '0 active clients', color: P.sage },
                   { label: 'Pipeline Value', value: '$2,400', sub: '4 prospects identified', color: P.lavender },
