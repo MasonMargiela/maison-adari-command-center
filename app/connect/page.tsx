@@ -195,7 +195,7 @@ export default function ConnectPage() {
           background: linear-gradient(135deg, #FFFC00 0%, #FFE000 100%) !important;
           border-color: rgba(255,255,255,0.55) !important;
           box-shadow: 0 8px 36px rgba(255,220,0,0.35), 0 0 0 1px rgba(255,255,255,0.25), inset 0 1px 0 rgba(255,255,255,0.6) !important;
-          color: #1a1400 !important; text-shadow: none !important;
+          color: #ffffff !important; text-shadow: 0 1px 3px rgba(0,0,0,0.3) !important;
           backdrop-filter: blur(2px) !important;
         }
         .connect-btn-kick:hover {
@@ -212,8 +212,8 @@ export default function ConnectPage() {
         }
         .connect-btn-yt:hover {
           background: linear-gradient(115deg, #ffffff 0%, #f5f5f5 50%, #efefef 100%) !important;
-          border-color: rgba(200,200,200,0.25) !important;
-          box-shadow: 0 8px 40px rgba(255,255,255,0.22), inset 0 1px 0 rgba(255,255,255,1) !important;
+          border: 1px solid rgba(180,0,0,0.4) !important;
+          box-shadow: 0 8px 40px rgba(255,255,255,0.22), 0 0 0 1px rgba(150,0,0,0.1), inset 0 1px 0 rgba(255,150,150,0.3), inset 0 -1px 0 rgba(180,0,0,0.15) !important;
           color: #FF0000 !important; text-shadow: none !important;
         }
         .connect-btn-x:hover {
@@ -231,8 +231,8 @@ export default function ConnectPage() {
           box-shadow: 0 0 0 1px rgba(145,70,255,0.15), inset 0 1px 0 rgba(255,255,255,0.08) !important;
         }
         .connect-btn-yt-rest {
-          border-color: rgba(255,60,60,0.35) !important;
-          box-shadow: 0 0 0 1px rgba(255,60,60,0.15), inset 0 1px 0 rgba(255,255,255,0.08) !important;
+          border: 1px solid rgba(180,0,0,0.45) !important;
+          box-shadow: 0 0 0 1px rgba(150,0,0,0.12), inset 0 1px 0 rgba(255,100,100,0.15), inset 0 -1px 0 rgba(120,0,0,0.2) !important;
         }
         .platform-card { transition: border-color 0.25s ease; }
 
