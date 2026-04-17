@@ -1584,6 +1584,9 @@ const ClientView = ({ client, igData, igGoal, setIgGoal }: { client: any; igData
                 </div>
               </div>
               <div style={{ color: P.inkFaint, fontSize: 10, marginLeft: 3 }}>{isOpen ? '▲' : '▼'}</div>
+              <button onClick={(e) => { e.stopPropagation(); if (confirm('Remove ' + acc.platform + ' (' + acc.handle + ') from dashboard?')) { fetch('/api/connect/instagram/save', { method: 'DELETE', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ platform: acc.platform.toLowerCase(), handle: acc.handle }) }).then(() => window.location.reload()); } }}
+                style={{ background: 'none', border: 'none', cursor: 'pointer', padding: '4px 6px', color: P.inkFaint, fontSize: 11, marginLeft: 4, borderRadius: 6 }}
+                title="Remove account">✕</button>
             </button>
 
             {/* Account content — same component for all */}
