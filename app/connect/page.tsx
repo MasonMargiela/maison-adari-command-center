@@ -192,18 +192,16 @@ export default function ConnectPage() {
           text-shadow: none !important;
         }
         .connect-btn-snap:hover {
-          background: linear-gradient(135deg, #FFFC00 0%, #FFE000 100%) !important;
-          border-color: rgba(255,252,0,0.3) !important;
-          box-shadow: 0 8px 40px rgba(255,252,0,0.3) !important;
-          color: #000 !important;
-          text-shadow: none !important;
+          background: linear-gradient(135deg, #1a1a00 0%, #111100 100%) !important;
+          border-color: rgba(255,252,0,0.15) !important;
+          box-shadow: 0 8px 32px rgba(0,0,0,0.5) !important;
+          color: #FFFC00 !important; text-shadow: none !important;
         }
         .connect-btn-kick:hover {
-          background: linear-gradient(135deg, #53fc18 0%, #3dd10f 100%) !important;
-          border-color: rgba(83,252,24,0.3) !important;
-          box-shadow: 0 8px 40px rgba(83,252,24,0.3) !important;
-          color: #000 !important;
-          text-shadow: none !important;
+          background: linear-gradient(135deg, #0a1a04 0%, #061004 100%) !important;
+          border-color: rgba(83,252,24,0.15) !important;
+          box-shadow: 0 8px 32px rgba(0,0,0,0.5) !important;
+          color: #53fc18 !important; text-shadow: none !important;
         }
         .connect-btn-twitch:hover {
           background: linear-gradient(135deg, #bf94ff 0%, #9146ff 100%) !important;
