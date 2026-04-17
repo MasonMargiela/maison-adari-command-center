@@ -20,7 +20,7 @@ export default function ConnectPage() {
       connectPath: '/api/connect/instagram',
       desc: 'Followers · Reach · Engagement · Posts · Stories',
       metrics: ['Followers', 'Following', 'Posts', 'Reach', 'Engagement Rate', 'Profile Views', 'Story Views'],
-      gradient: 'linear-gradient(135deg, #f09433, #e6683c, #dc2743, #cc2366, #bc1888)',
+      gradient: 'linear-gradient(135deg, #c4849a 0%, #9870b8 60%, #7856a0 100%)',
       logo: (
         `<svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" style="width:28px;height:28px;">
           <defs><linearGradient id="ig" x1="0%" y1="100%" x2="100%" y2="0%">
@@ -43,7 +43,7 @@ export default function ConnectPage() {
       connectPath: '/api/connect/tiktok',
       desc: 'Followers · Video Views · Likes · Comments · FYP Reach',
       metrics: ['Followers', 'Following', 'Video Views', 'Likes', 'Comments', 'Shares', 'Profile Views'],
-      gradient: 'linear-gradient(135deg, #010101, #69C9D0)',
+      gradient: 'linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #1a1a2e 100%)',
       logo: (
         `<svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" style="width:28px;height:28px;">
           <rect width="24" height="24" rx="6" fill="#010101"/>
@@ -225,18 +225,21 @@ export default function ConnectPage() {
                         style={{
                           width: '100%',
                           background: isConnected ? '#5a9e6620' : platform.gradient,
-                          border: isConnected ? '1px solid #5a9e66' : 'none',
+                          border: isConnected ? '1px solid #5a9e66' : '1px solid rgba(255,255,255,0.08)',
                           borderRadius: 14,
                           padding: '15px',
-                          color: isConnected ? '#5a9e66' : '#ffffff',
+                          color: isConnected ? '#5a9e66' : 'rgba(255,255,255,0.92)',
                           fontSize: 14,
-                          fontWeight: 600,
+                          fontWeight: 500,
                           cursor: isConnected ? 'default' : 'pointer',
                           fontFamily: "'DM Sans', sans-serif",
                           display: 'flex',
                           alignItems: 'center',
                           justifyContent: 'center',
                           gap: 10,
+                          letterSpacing: '0.01em',
+                          boxShadow: isConnected ? 'none' : 'inset 0 1px 0 rgba(255,255,255,0.12), 0 4px 20px rgba(0,0,0,0.3)',
+                          transition: 'all 0.18s cubic-bezier(0.34, 1.56, 0.64, 1)',
                         }}
                       >
                         <span dangerouslySetInnerHTML={{ __html: isConnected ? '' : platform.logo }} />
