@@ -201,7 +201,7 @@ export default function ConnectPage() {
           background: linear-gradient(135deg, #53fc18 0%, #3dd10f 50%, #2aaa08 100%) !important;
           border-color: rgba(83,252,24,0.4) !important;
           box-shadow: 0 8px 36px rgba(83,252,24,0.35) !important;
-          color: #000 !important; text-shadow: none !important;
+          color: #fff !important; text-shadow: none !important;
         }
         .connect-btn-twitch:hover {
           background: linear-gradient(135deg, #bf94ff 0%, #9146ff 100%) !important;
@@ -210,10 +210,10 @@ export default function ConnectPage() {
           color: #fff !important;
         }
         .connect-btn-yt:hover {
-          background: linear-gradient(135deg, #cc0000 0%, #FF0000 50%, #cc0000 100%) !important;
-          border-color: rgba(150,0,0,0.2) !important;
-          box-shadow: 0 8px 28px rgba(150,0,0,0.4) !important;
-          color: #fff !important;
+          background: linear-gradient(115deg, #ffffff 0%, #f5f5f5 50%, #efefef 100%) !important;
+          border-color: rgba(200,200,200,0.25) !important;
+          box-shadow: 0 8px 40px rgba(255,255,255,0.22), inset 0 1px 0 rgba(255,255,255,1) !important;
+          color: #FF0000 !important; text-shadow: none !important;
         }
         .connect-btn-x:hover {
           background: linear-gradient(135deg, #333 0%, #111 100%) !important;
