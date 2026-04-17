@@ -1173,7 +1173,7 @@ const FollowerGraph = ({ accountId, color, colorSoft }: { accountId?: string; co
 
       {/* SVG graph */}
       <div ref={containerRef} style={{ width: '100%' }}>
-      <svg ref={svgRef} width={w} height={h}
+      <svg ref={svgRef} viewBox={`0 0 ${w} ${h}`} height={h}
         style={{ display: 'block', width: '100%', overflow: 'visible', cursor: 'crosshair' }}
         onMouseMove={handleMouseMove}
         onMouseLeave={handleMouseLeave}
