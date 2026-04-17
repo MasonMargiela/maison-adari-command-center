@@ -623,7 +623,7 @@ const CLIENTS = [
   {
     id: 'matt', name: 'Macros Wit Matt', role: 'Creator · Food Content', avatar: 'B',
     color: P.sage, colorSoft: P.sageSoft, colorDeep: P.sageDeep,
-    contentScore: 94, totalFollowers: 53500, totalReach: '184K', engagement: '6.1%', weeklyGrowth: '+238',
+    contentScore: 0, totalFollowers: 0, totalReach: '—', engagement: '—', weeklyGrowth: '+0',
     bestTimes: ['Mon 12–2pm', 'Thurs 7–9pm', 'Sat 10am–12pm'],
     primaryPlatform: 'tiktok',
     igGoalDefault: 100000,
@@ -680,6 +680,27 @@ const PieChart = ({ slices, size = 80 }: { slices: { value: number; color: strin
       <span style={{ lineHeight: 1.3 }}>No<br/>data</span>
     </div>
   );
+  // Single slice — render as full colored donut ring
+  if (slices.filter(s => s.value > 0).length === 1) {
+    const s = slices.find(sl => sl.value > 0)!;
+    const cx = size / 2, cy = size / 2, r = size / 2 - 4;
+    const innerR = r * 0.45;
+    return (
+      <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+        <svg width={size} height={size} style={{ flexShrink: 0 }}>
+          <circle cx={cx} cy={cy} r={r} fill={s.color} opacity={0.85} />
+          <circle cx={cx} cy={cy} r={innerR} fill={P.white} />
+        </svg>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 5 }}>
+            <div style={{ width: 7, height: 7, borderRadius: '50%', background: s.color, flexShrink: 0 }} />
+            <div style={{ fontSize: 10, color: P.inkMid }}>{s.label}</div>
+            <div style={{ fontSize: 10, color: P.inkFaint, fontFamily: F.mono }}>100%</div>
+          </div>
+        </div>
+      </div>
+    );
+  }
   let cumAngle = -90;
   const cx = size / 2, cy = size / 2, r = size / 2 - 4;
   const paths = slices.map(sl => {
@@ -864,8 +885,8 @@ const OverviewTab = ({ igMetrics, igLoading, igGoal, handleSetIgGoal, today }: a
   ];
 
   const mattAccounts = [
-    { platform: 'TikTok', followers: 48200, followerDelta: '+194', reach: '163K' },
-    { platform: 'Instagram', followers: 5300, followerDelta: '+44', reach: '21K' },
+    { platform: 'TikTok', followers: 0, followerDelta: '+0', reach: '—' },
+    { platform: 'Instagram', followers: 0, followerDelta: '+0', reach: '—' },
   ];
 
   // Combined totals
@@ -874,16 +895,12 @@ const OverviewTab = ({ igMetrics, igLoading, igGoal, handleSetIgGoal, today }: a
   const combinedTotal = masonTotal + mattTotal;
   // Weekly deltas — Mason IG real if available
   const masonWeeklyDelta = igMetrics?.weeklyGrowthRate ?? 0;
-  const mattWeeklyDelta = 194 + 44; // mock until Matt connects
+  const mattWeeklyDelta = 0; // real data once Matt connects
   const combinedWeeklyDelta = masonWeeklyDelta + mattWeeklyDelta;
 
   // Top content — sorted by likes, best first
-  const allContent = [
-    { creator: 'Macros Wit Matt', platform: 'TikTok', caption: 'BEST Ramen in LA (not Daikokuya)', likes: 41200, color: P.sage },
-    { creator: 'Macros Wit Matt', platform: 'TikTok', caption: 'This birria spot literally changed my life fr', likes: 28400, color: P.sage },
-    { creator: 'Macros Wit Matt', platform: 'Instagram', caption: 'BEST Ramen in LA 🍜 (full video on TikTok)', likes: 3800, color: P.peach },
-    { creator: 'Macros Wit Matt', platform: 'TikTok', caption: 'Underrated sushi in Torrance nobody talks about', likes: 9800, color: P.sage },
-  ].sort((a, b) => b.likes - a.likes);
+  // Top content pulls from connected accounts only — no mock data
+  const allContent: any[] = [];
 
   return (
     <div>
@@ -962,9 +979,9 @@ const OverviewTab = ({ igMetrics, igLoading, igGoal, handleSetIgGoal, today }: a
         colorSoft={P.sageSoft}
         colorDeep={P.sageDeep}
         accounts={mattAccounts}
-        contentScore={94}
-        engagement="6.1%"
-        reach="184K"
+        contentScore={0}
+        engagement="—"
+        reach="—"
         liveMetrics={null}
         timePeriod={timePeriod}
         igGoal={mattGoal}
@@ -973,16 +990,25 @@ const OverviewTab = ({ igMetrics, igLoading, igGoal, handleSetIgGoal, today }: a
         setMattGoal={handleSetMattGoal}
       />
 
-      {/* Combined reach sparkline */}
+      {/* Combined reach — real data only */}
       <div style={{ background: P.white, border: `1px solid ${P.border}`, borderRadius: 14, padding: '14px 16px', marginBottom: 10 }}>
         <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 8 }}>
           <div>
-            <div style={{ fontSize: 9, color: P.inkFaint, textTransform: 'uppercase', letterSpacing: '0.12em', fontFamily: F.mono }}>Combined Reach · Mason + Matt</div>
-            <div style={{ fontSize: 20, fontWeight: 700, fontFamily: F.display, color: P.ink, marginTop: 2 }}>163K <span style={{ fontSize: 11, color: P.sageDeep, fontWeight: 400 }}>↑ 22% this week</span></div>
+            <div style={{ fontSize: 9, color: P.inkFaint, textTransform: 'uppercase', letterSpacing: '0.12em', fontFamily: F.mono }}>Combined Reach · All Connected Accounts</div>
+            <div style={{ fontSize: 20, fontWeight: 700, fontFamily: F.display, color: P.ink, marginTop: 2 }}>
+              {igMetrics ? igMetrics.reach : '—'}
+              {igMetrics && <span style={{ fontSize: 11, color: P.sageDeep, fontWeight: 400, marginLeft: 8 }}>Instagram live ✓</span>}
+              {!igMetrics && <span style={{ fontSize: 11, color: P.inkFaint, fontWeight: 400, marginLeft: 8 }}>connect accounts to populate</span>}
+            </div>
           </div>
-          <Tag color={igMetrics ? P.sageDeep : P.inkFaint} bg={igMetrics ? P.sageSoft : P.card}>{igMetrics ? '🟢 IG Live' : 'partial data'}</Tag>
+          <Tag color={igMetrics ? P.sageDeep : P.inkFaint} bg={igMetrics ? P.sageSoft : P.card}>{igMetrics ? '🟢 Live' : 'no data'}</Tag>
         </div>
-        <Spark data={REACH_DATA} color={P.lavDeep} h={44} />
+        {igMetrics && <Spark data={REACH_DATA} color={P.lavDeep} h={44} />}
+        {!igMetrics && (
+          <div style={{ height: 44, background: P.borderLight, borderRadius: 8, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+            <span style={{ fontSize: 10, color: P.inkFaint, fontFamily: F.mono }}>graph populates as data accumulates</span>
+          </div>
+        )}
       </div>
 
       {/* Connect accounts */}
@@ -1005,12 +1031,21 @@ const OverviewTab = ({ igMetrics, igLoading, igGoal, handleSetIgGoal, today }: a
       </div>
 
       {/* Biggest Follower Deck */}
-      <SH children="Biggest Follower" sub="Top 4 followers ranked by their own audience size · tap a card" />
-      <BiggestFollowerDeck />
+      <SH children="Biggest Follower" sub="Top 4 followers ranked by their own audience size" />
+      <div style={{ background: P.card, border: `1px solid ${P.border}`, borderRadius: 13, padding: '18px', textAlign: 'center', marginBottom: 8 }}>
+        <div style={{ fontSize: 20, marginBottom: 8 }}>🃏</div>
+        <div style={{ fontSize: 13, fontWeight: 600, color: P.ink, marginBottom: 4 }}>Biggest Follower tracking coming soon</div>
+        <div style={{ fontSize: 11, color: P.inkSoft, lineHeight: 1.6 }}>Once TikTok and Instagram are connected, this will show your top 4 highest-value followers ranked by their own audience size — updated daily.</div>
+      </div>
 
       {/* Top content — real sorted by performance */}
       <SH children="Top Content This Week" sub="Sorted by likes · best performing first" />
-      {allContent.map((p, i) => (
+      {allContent.length === 0 ? (
+        <div style={{ background: P.card, border: `1px solid ${P.border}`, borderRadius: 11, padding: '18px', textAlign: 'center' }}>
+          <div style={{ fontSize: 13, color: P.inkSoft }}>Connect accounts to see top content</div>
+          <div style={{ fontSize: 11, color: P.inkFaint, marginTop: 4 }}>Posts will appear here ranked by performance once accounts are linked</div>
+        </div>
+      ) : allContent.map((p, i) => (
         <div key={i} style={{ background: P.white, border: `1px solid ${P.border}`, borderRadius: 11, padding: '11px 13px', marginBottom: 7, display: 'flex', gap: 9, alignItems: 'center' }}>
           <div style={{ width: 22, height: 22, borderRadius: '50%', background: p.color, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 9, fontWeight: 700, color: P.white, fontFamily: F.mono, flexShrink: 0 }}>{i + 1}</div>
           <div style={{ flex: 1, minWidth: 0 }}>
@@ -1021,10 +1056,11 @@ const OverviewTab = ({ igMetrics, igLoading, igGoal, handleSetIgGoal, today }: a
         </div>
       ))}
 
-      <SH children="Why We Do This" sub="Real comments. Real people." />
-      {CLIENTS.find((c: any) => c.id === 'matt')!.accounts[0].topComments.map((c: any, i: number) => (
-        <CmtCard key={i} c={c} accent={P.sageDeep} accentSoft={P.sageSoft} />
-      ))}
+      <SH children="Why We Do This" sub="Real comments from real people — connect accounts to populate." />
+      <div style={{ background: P.card, border: `1px solid ${P.border}`, borderRadius: 11, padding: '16px', textAlign: 'center' }}>
+        <div style={{ fontSize: 13, color: P.inkSoft }}>Connect TikTok or Instagram to see real top comments here</div>
+        <div style={{ fontSize: 11, color: P.inkFaint, marginTop: 4 }}>This section pulls the highest-liked comments from your best performing posts</div>
+      </div>
     </div>
   );
 };
@@ -1038,6 +1074,24 @@ const UnifiedAccountView = ({ acc, igData, goal, setGoal }: { acc: any; igData: 
   const media = igData?.media ?? [];
   const analytics = igData?.analytics;
   const isLive = !!metrics && acc.platform === 'Instagram';
+
+  // If account not connected, show clean placeholder
+  if (acc.notConnected) {
+    return (
+      <div style={{ textAlign: 'center', padding: '32px 20px' }}>
+        <div style={{ fontSize: 32, marginBottom: 12 }}>{acc.platform === 'TikTok' ? '🎵' : '📸'}</div>
+        <div style={{ fontSize: 15, fontWeight: 700, fontFamily: F.display, color: P.ink, marginBottom: 8 }}>
+          {acc.platform} Not Connected
+        </div>
+        <div style={{ fontSize: 12, color: P.inkSoft, lineHeight: 1.7, marginBottom: 20, maxWidth: 280, margin: '0 auto 20px' }}>
+          Connect {acc.handle} to start tracking followers, reach, engagement, posts, and more — updated every 5 minutes.
+        </div>
+        <a href="/connect" style={{ background: acc.platform === 'TikTok' ? P.sage : P.rose, border: 'none', borderRadius: 12, padding: '12px 24px', color: P.white, fontSize: 13, fontWeight: 600, cursor: 'pointer', textDecoration: 'none', display: 'inline-block', fontFamily: F.body }}>
+          Connect {acc.platform} →
+        </a>
+      </div>
+    );
+  }
 
   // Core metrics — use live if available, else use mock
   const followers = isLive ? metrics.followers : acc.followers;
@@ -1512,7 +1566,11 @@ const REACH_DATA = [12, 18, 14, 22, 19, 28, 31, 26, 38, 42, 35, 51, 48, 63, 71, 
 export default function AdariCommandCenter() {
   const [view, setView] = useState('overview');
   const [time, setTime] = useState(new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }));
-  const today = new Date().toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric', year: 'numeric' });
+  const [today, setToday] = useState(new Date().toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric', year: 'numeric' }));
+  useEffect(() => {
+    const d = setInterval(() => setToday(new Date().toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric', year: 'numeric' })), 60000);
+    return () => clearInterval(d);
+  }, []);
   const [igData, setIgData] = useState<any>(null);
   const [igLoading, setIgLoading] = useState(true);
   const [igGoal, setIgGoal] = useState<number>(() => {
@@ -1521,7 +1579,7 @@ export default function AdariCommandCenter() {
   });
 
   useEffect(() => {
-    const t = setInterval(() => setTime(new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })), 30000);
+    const t = setInterval(() => setTime(new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })), 1000);
     return () => clearInterval(t);
   }, []);
 
