@@ -1,4 +1,12 @@
-'use client';
+#!/usr/bin/env python3
+"""
+1. Updates invite page with auto color assignment from palette
+2. Adds dynamic client support — any invite code gets a color auto-assigned
+Run: python3 fix_invite_colors.py
+"""
+
+# New invite page with auto color + dynamic client support
+NEW_INVITE_PAGE = """'use client';
 
 import { useState, useEffect, Suspense } from 'react';
 import { useSearchParams } from 'next/navigation';
@@ -222,3 +230,36 @@ export default function ConnectInvitePage() {
     </Suspense>
   );
 }
+"""
+
+with open('app/connect/invite/page.tsx', 'w') as f:
+    f.write(NEW_INVITE_PAGE)
+print("✓ Updated invite page with auto color assignment")
+
+# Also update vercel.json to add weekly cron for token refresh
+import json, os
+
+vercel_path = 'vercel.json'
+if os.path.exists(vercel_path):
+    with open(vercel_path, 'r') as f:
+        vercel = json.load(f)
+else:
+    vercel = {}
+
+# Add cron job - runs every Sunday at 3am UTC
+vercel['crons'] = [
+    {
+        "path": "/api/cron/refresh-token",
+        "schedule": "0 3 * * 0"
+    },
+    {
+        "path": "/api/cron/sync", 
+        "schedule": "*/5 * * * *"
+    }
+]
+
+with open(vercel_path, 'w') as f:
+    json.dump(vercel, f, indent=2)
+
+print("✓ Added weekly token refresh cron to vercel.json")
+print("\nDone — run: npm run build && npx vercel --prod")
