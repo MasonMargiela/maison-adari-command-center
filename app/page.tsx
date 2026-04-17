@@ -1069,27 +1069,47 @@ const FollowerGraph = ({ accountId, color, colorSoft }: { accountId?: string; co
   const [data, setData] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [range, setRange] = useState('30');
-  const [selected, setSelected] = useState<any>(null);
+  const [hovered, setHovered] = useState<any>(null);
+  const [hoverX, setHoverX] = useState<number | null>(null);
   const svgRef = useRef<SVGSVGElement>(null);
+  const containerRef = useRef<HTMLDivElement>(null);
   const [w, setW] = useState(300);
 
   useEffect(() => {
-    if (typeof window !== 'undefined') {
-      setW(Math.min(window.innerWidth - 60, 600));
-    }
+    const update = () => {
+      if (containerRef.current) {
+        setW(containerRef.current.offsetWidth);
+      }
+    };
+    update();
+    window.addEventListener('resize', update);
+    return () => window.removeEventListener('resize', update);
   }, []);
 
   useEffect(() => {
-    if (!accountId) {
-      // Use Mason's known account ID from Supabase
-      fetch('/api/sync/instagram/history?days=' + range)
-        .then(r => r.json())
-        .then(d => { setData(d.history ?? []); setLoading(false); })
-        .catch(() => setLoading(false));
-    } else {
-      setLoading(false);
-    }
+    fetch('/api/sync/instagram/history?days=' + range)
+      .then(r => r.json())
+      .then(d => { setData(d.history ?? []); setLoading(false); })
+      .catch(() => setLoading(false));
   }, [accountId, range]);
+
+  const handleMouseMove = (e: React.MouseEvent<SVGSVGElement>) => {
+    if (!svgRef.current || data.length < 2) return;
+    const rect = svgRef.current.getBoundingClientRect();
+    const mouseX = e.clientX - rect.left;
+    const padL = 40, padR = 12;
+    const innerW = w - padL - padR;
+    const idx = Math.round(((mouseX - padL) / innerW) * (data.length - 1));
+    const clamped = Math.max(0, Math.min(data.length - 1, idx));
+    const px = padL + (clamped / (data.length - 1)) * innerW;
+    setHoverX(px);
+    setHovered(data[clamped]);
+  };
+
+  const handleMouseLeave = () => {
+    setHoverX(null);
+    setHovered(null);
+  };
 
   if (loading) return (
     <div style={{ background: colorSoft, borderRadius: 12, padding: '20px', textAlign: 'center' }}>
@@ -1140,7 +1160,7 @@ const FollowerGraph = ({ accountId, color, colorSoft }: { accountId?: string; co
         </div>
         <div style={{ display: 'flex', background: '#f6f3ee', border: '1px solid #e8e0d4', borderRadius: 20, padding: 2, gap: 1 }}>
           {[['7', '7d'], ['14', '14d'], ['30', '30d'], ['90', '90d']].map(([val, label]) => (
-            <button key={val} onClick={() => { setRange(val); setSelected(null); }}
+            <button key={val} onClick={() => { setRange(val); setHovered(null); setHoverX(null); }}
               style={{ background: range === val ? '#1e1a16' : 'none', color: range === val ? '#ffffff' : '#8a8078', border: 'none', borderRadius: 16, padding: '3px 9px', fontSize: 10, fontWeight: 600, cursor: 'pointer', fontFamily: "'DM Mono', monospace", transition: 'all 0.15s' }}>
               {label}
             </button>
@@ -1148,24 +1168,13 @@ const FollowerGraph = ({ accountId, color, colorSoft }: { accountId?: string; co
         </div>
       </div>
 
-      {/* Selected day detail */}
-      {selected && (
-        <div style={{ background: colorSoft, borderRadius: 10, padding: '10px 13px', marginBottom: 10, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-          <div>
-            <div style={{ fontSize: 11, color: '#8a8078', fontFamily: "'DM Mono', monospace" }}>{formatDate(selected.date)}</div>
-            <div style={{ fontSize: 18, fontWeight: 700, fontFamily: "'Fraunces', serif", color: '#1e1a16' }}>{selected.followers.toLocaleString()}</div>
-          </div>
-          <div style={{ textAlign: 'right' }}>
-            <div style={{ fontSize: 9, color: '#8a8078', fontFamily: "'DM Mono', monospace" }}>CHANGE</div>
-            <div style={{ fontSize: 16, fontWeight: 700, color: selected.delta > 0 ? '#5a9e66' : selected.delta < 0 ? '#c4849a' : '#8a8078', fontFamily: "'Fraunces', serif" }}>
-              {selected.delta > 0 ? '+' : ''}{selected.delta}
-            </div>
-          </div>
-        </div>
-      )}
-
       {/* SVG graph */}
-      <svg ref={svgRef} width={w} height={h} style={{ display: 'block', width: '100%', overflow: 'visible' }}>
+      <div ref={containerRef} style={{ width: '100%' }}>
+      <svg ref={svgRef} width={w} height={h}
+        style={{ display: 'block', width: '100%', overflow: 'visible', cursor: 'crosshair' }}
+        onMouseMove={handleMouseMove}
+        onMouseLeave={handleMouseLeave}
+      >
         {/* Area fill */}
         <path d={areaD} fill={color} opacity={0.12} />
         {/* Line */}
@@ -1196,30 +1205,51 @@ const FollowerGraph = ({ accountId, color, colorSoft }: { accountId?: string; co
           );
         })}
 
-        {/* Interactive dots */}
-        {points.map((p, i) => (
-          <circle key={i} cx={p.x} cy={p.y} r={selected?.date === data[i].date ? 5 : 3}
-            fill={selected?.date === data[i].date ? color : '#ffffff'}
-            stroke={color} strokeWidth="1.5"
-            style={{ cursor: 'pointer' }}
-            onClick={() => setSelected(selected?.date === data[i].date ? null : data[i])}
-          />
-        ))}
+        {/* Hover vertical line */}
+        {hoverX !== null && (
+          <line x1={hoverX} y1={padT} x2={hoverX} y2={padT + innerH}
+            stroke={color} strokeWidth="1" strokeDasharray="3,3" opacity={0.6} />
+        )}
 
-        {/* Delta bars below x axis — green for gains, red for losses */}
+        {/* Hover dot on line */}
+        {hoverX !== null && hovered && (() => {
+          const idx = data.findIndex((d: any) => d.date === hovered.date);
+          const p = points[idx];
+          return p ? <circle cx={p.x} cy={p.y} r={5} fill={color} stroke="#fff" strokeWidth="2" /> : null;
+        })()}
+
+        {/* Delta bars — green gains, red losses, taller for visibility */}
         {points.map((p, i) => {
           const delta = data[i].delta ?? 0;
           if (delta === 0) return null;
-          const barH = Math.min(Math.abs(delta) * 2, 8);
+          const barH = Math.max(Math.abs(delta) * 3, 3);
           const barColor = delta > 0 ? '#5a9e66' : '#c4849a';
           return (
             <rect key={i} x={p.x - 2} y={padT + innerH + 4}
               width={4} height={barH}
-              fill={barColor} opacity={0.7} rx={1}
+              fill={barColor} opacity={0.85} rx={1}
             />
           );
         })}
       </svg>
+      </div>
+
+      {/* Hover tooltip */}
+      {hovered && (
+        <div style={{ background: colorSoft, borderRadius: 10, padding: '8px 12px', marginTop: 8, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+          <div>
+            <div style={{ fontSize: 10, color: '#8a8078', fontFamily: "'DM Mono', monospace" }}>{formatDate(hovered.date)}</div>
+            <div style={{ fontSize: 17, fontWeight: 700, fontFamily: "'Fraunces', serif", color: '#1e1a16' }}>{hovered.followers.toLocaleString()}</div>
+          </div>
+          <div style={{ textAlign: 'right' }}>
+            <div style={{ fontSize: 9, color: '#8a8078', fontFamily: "'DM Mono', monospace" }}>CHANGE</div>
+            <div style={{ fontSize: 15, fontWeight: 700, fontFamily: "'Fraunces', serif",
+              color: hovered.delta > 0 ? '#5a9e66' : hovered.delta < 0 ? '#c4849a' : '#8a8078' }}>
+              {hovered.delta > 0 ? '+' : ''}{hovered.delta}
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* Summary stats */}
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, minmax(0, 1fr))', gap: 6, marginTop: 10 }}>
