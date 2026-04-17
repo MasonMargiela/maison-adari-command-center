@@ -44,7 +44,7 @@ export default function ConnectPage() {
       connectPath: '/api/connect/snapchat',
       desc: 'Snaps · Stories · Spotlight · Views · Subscribers',
       metrics: ['Subscribers', 'Story Views', 'Snap Views', 'Spotlight Views', 'Story Reach', 'Engagement Rate', 'Profile Views'],
-      gradient: 'linear-gradient(135deg, #FFFC00 0%, #FFE000 100%)',
+      gradient: 'linear-gradient(135deg, #1a1a00 0%, #111100 100%)',
       hoverGradient: 'linear-gradient(135deg, #1a1a00 0%, #2a2a00 100%)',
       hoverClass: 'connect-btn-snap',
       requiresSetup: true,
@@ -192,7 +192,7 @@ export default function ConnectPage() {
           text-shadow: none !important;
         }
         .connect-btn-snap:hover {
-          background: linear-gradient(135deg, #FFFC00 0%, #FFE500 50%, #FFD700 100%) !important;
+          background: linear-gradient(135deg, #FFFC00 0%, #FFE000 100%) !important;
           border-color: rgba(255,252,0,0.4) !important;
           box-shadow: 0 8px 36px rgba(255,220,0,0.35) !important;
           color: #1a1400 !important; text-shadow: none !important;
@@ -210,9 +210,9 @@ export default function ConnectPage() {
           color: #fff !important;
         }
         .connect-btn-yt:hover {
-          background: linear-gradient(135deg, #ff4444 0%, #FF0000 100%) !important;
-          border-color: rgba(255,0,0,0.3) !important;
-          box-shadow: 0 8px 40px rgba(255,0,0,0.4) !important;
+          background: linear-gradient(135deg, #cc0000 0%, #FF0000 50%, #cc0000 100%) !important;
+          border-color: rgba(150,0,0,0.2) !important;
+          box-shadow: 0 8px 28px rgba(150,0,0,0.4) !important;
           color: #fff !important;
         }
         .connect-btn-x:hover {
@@ -221,8 +221,8 @@ export default function ConnectPage() {
           color: #fff !important;
         }
         .connect-btn-threads:hover {
-          background: linear-gradient(135deg, #2a2a2a 0%, #111 100%) !important;
-          border-color: rgba(255,255,255,0.1) !important;
+          background: linear-gradient(135deg, #101010 0%, #1a1a1a 50%, #101010 100%) !important;
+          border-color: rgba(255,255,255,0.05) !important;
           color: #fff !important;
         }
         .platform-card { transition: border-color 0.25s ease; }
