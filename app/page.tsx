@@ -866,10 +866,18 @@ const PersonCard = ({ name, avatar, color, colorSoft, colorDeep, accounts, conte
 // ── OVERVIEW TAB ───────────────────────────────────────────────────────────
 const OverviewTab = ({ igMetrics, igLoading, igGoal, handleSetIgGoal, today }: any) => {
   const [timePeriod, setTimePeriod] = useState('month');
+  const [igHistory, setIgHistory] = useState<any[]>([]);
   const [mattGoal, setMattGoal] = useState(() => {
     if (typeof window !== 'undefined') return parseInt(localStorage.getItem('matt_goal') ?? '100000');
     return 100000;
   });
+
+  useEffect(() => {
+    fetch('/api/sync/instagram/history?days=365')
+      .then(r => r.json())
+      .then(d => setIgHistory(d.history ?? []))
+      .catch(() => {});
+  }, []);
 
   const handleSetMattGoal = (v: number) => {
     setMattGoal(v);
@@ -914,9 +922,12 @@ const OverviewTab = ({ igMetrics, igLoading, igGoal, handleSetIgGoal, today }: a
 
       {/* Combined totals banner — updates with time period */}
       {(() => {
-        const { value: combinedDelta, label: combinedLabel } = applyTimePeriod(combinedWeeklyDelta, timePeriod);
-        const { value: masonDelta } = applyTimePeriod(masonWeeklyDelta, timePeriod);
-        const { value: mattDelta } = applyTimePeriod(mattWeeklyDelta, timePeriod);
+        const masonHistoryDelta = igHistory.length >= 2 ? applyTimePeriodFromHistory(igHistory, timePeriod).value : 0;
+        const { value: combinedDelta, label: combinedLabel } = igHistory.length >= 2
+          ? applyTimePeriodFromHistory(igHistory, timePeriod)
+          : applyTimePeriod(combinedWeeklyDelta, timePeriod);
+        const masonDelta = masonHistoryDelta;
+        const mattDelta = 0;
         return (
           <div style={{ background: P.dark, borderRadius: 14, padding: '14px 16px', marginBottom: 12, display: 'grid', gridTemplateColumns: 'repeat(3, minmax(0, 1fr))', gap: 10 }}>
             <div>
