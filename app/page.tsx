@@ -617,7 +617,7 @@ const CLIENTS = [
     accounts: [
       {
         platform: 'Instagram', icon: '📸', handle: '@masondoesnumbers', tiktokHandle: '@masondoesnumbers',
-        followers: 370, followerDelta: '+0', reach: 56, engagement: '0%',
+        followers: 370, followerDelta: '—', reach: 56, engagement: '0%',
         color: P.rose, colorSoft: P.roseSoft, colorDeep: P.roseDeep,
         insight: 'Your account is connected and live. Post consistently to generate engagement data. Process reveals and contrarian takes on restaurant marketing tend to outperform lifestyle content 3–4× for agency operator accounts.',
         posts: [],
@@ -627,7 +627,7 @@ const CLIENTS = [
       },
       {
         platform: 'TikTok', icon: '🎵', handle: '@masondoesnumbers',
-        followers: 0, followerDelta: '+0', reach: 0, engagement: '—',
+        followers: 0, followerDelta: '—', reach: 0, engagement: '—',
         color: P.sky, colorSoft: P.skySoft, colorDeep: P.skyDeep,
         insight: 'TikTok not yet connected. Once connected, POV cold call content and agency process content will be tracked here.',
         posts: [],
@@ -647,7 +647,7 @@ const CLIENTS = [
     accounts: [
       {
         platform: 'TikTok', icon: '🎵', handle: '@macroswitmatt',
-        followers: 0, followerDelta: '+0', reach: 0, engagement: '—',
+        followers: 0, followerDelta: '—', reach: 0, engagement: '—',
         color: P.sage, colorSoft: P.sageSoft, colorDeep: P.sageDeep,
         notConnected: true,
         insight: 'Connect TikTok to see real analytics.',
@@ -657,7 +657,7 @@ const CLIENTS = [
       },
       {
         platform: 'Instagram', icon: '📸', handle: '@macroswithmatt',
-        followers: 0, followerDelta: '+0', reach: 0, engagement: '—',
+        followers: 0, followerDelta: '—', reach: 0, engagement: '—',
         color: P.peach, colorSoft: P.peachSoft, colorDeep: P.peachDeep,
         notConnected: true,
         insight: 'Connect Instagram to see real analytics.',
@@ -817,13 +817,13 @@ const PersonCard = ({ name, avatar, color, colorSoft, colorDeep, accounts, conte
           <div style={{ fontSize: 9, color: P.inkFaint, fontFamily: F.mono, marginBottom: 3, textTransform: 'uppercase', letterSpacing: '0.1em' }}>Engagement</div>
           <div style={{ fontSize: 16, fontWeight: 700, fontFamily: F.display, color: P.ink }}>{displayEngagement}</div>
           {name === 'Mason' && liveMetrics && <div style={{ fontSize: 9, color: P.sageDeep, marginTop: 2, fontFamily: F.mono }}>live ✓</div>}
-          {name !== 'Mason' && <div style={{ fontSize: 9, color: P.inkFaint, marginTop: 2, fontFamily: F.mono }}>mock</div>}
+          
         </div>
         <div style={{ background: colorSoft, borderRadius: 9, padding: '9px 11px' }}>
           <div style={{ fontSize: 9, color: P.inkFaint, fontFamily: F.mono, marginBottom: 3, textTransform: 'uppercase', letterSpacing: '0.1em' }}>Reach</div>
           <div style={{ fontSize: 16, fontWeight: 700, fontFamily: F.display, color: P.ink }}>{totalReach}</div>
           {name === 'Mason' && liveMetrics && <div style={{ fontSize: 9, color: P.sageDeep, marginTop: 2, fontFamily: F.mono }}>derived ✓</div>}
-          {name !== 'Mason' && <div style={{ fontSize: 9, color: P.inkFaint, marginTop: 2, fontFamily: F.mono }}>mock</div>}
+          
         </div>
       </div>
 
@@ -877,13 +877,13 @@ const OverviewTab = ({ igMetrics, igLoading, igGoal, handleSetIgGoal, today }: a
   };
 
   const masonAccounts = [
-    { platform: 'TikTok', followers: 0, followerDelta: '+0', reach: '0' },
-    { platform: 'Instagram', followers: igMetrics?.followers ?? 370, followerDelta: '+0', reach: igMetrics?.reach ?? '56' },
+    { platform: 'TikTok', followers: 0, followerDelta: '—', reach: '0' },
+    { platform: 'Instagram', followers: igMetrics?.followers ?? 370, followerDelta: '—', reach: igMetrics?.reach ?? '56' },
   ];
 
   const mattAccounts = [
-    { platform: 'TikTok', followers: 0, followerDelta: '+0', reach: '—' },
-    { platform: 'Instagram', followers: 0, followerDelta: '+0', reach: '—' },
+    { platform: 'TikTok', followers: 0, followerDelta: '—', reach: '—' },
+    { platform: 'Instagram', followers: 0, followerDelta: '—', reach: '—' },
   ];
 
   // Combined totals
@@ -998,7 +998,7 @@ const OverviewTab = ({ igMetrics, igLoading, igGoal, handleSetIgGoal, today }: a
               {!igMetrics && <span style={{ fontSize: 11, color: P.inkFaint, fontWeight: 400, marginLeft: 8 }}>connect accounts to populate</span>}
             </div>
           </div>
-          <Tag color={igMetrics ? P.sageDeep : P.inkFaint} bg={igMetrics ? P.sageSoft : P.card}>{igMetrics ? '🟢 Live' : 'no data'}</Tag>
+          
         </div>
         {igMetrics && <Spark data={REACH_DATA} color={P.lavDeep} h={44} />}
         {!igMetrics && (
@@ -1373,13 +1373,13 @@ const UnifiedAccountView = ({ acc, igData, goal, setGoal }: { acc: any; igData: 
         <div style={{ background: P.white, border: `1px solid ${P.border}`, borderRadius: 14, padding: '12px 13px', borderTop: `2.5px solid ${acc.color}` }}>
           <div style={{ fontSize: 9, color: P.inkFaint, textTransform: 'uppercase', letterSpacing: '0.12em', fontFamily: F.mono, marginBottom: 4 }}>Engagement</div>
           <div style={{ fontSize: 18, fontWeight: 700, fontFamily: F.display, color: P.ink }}>{engagementDisplay}</div>
-          <div style={{ fontSize: 9, color: isLive ? P.sageDeep : P.inkFaint, fontFamily: F.mono, marginBottom: 6 }}>{isLive ? 'live ✓' : 'mock'}</div>
+          <div style={{ fontSize: 9, color: isLive ? P.sageDeep : P.inkFaint, fontFamily: F.mono, marginBottom: 6 }}>{isLive ? 'live ✓' : '—'}</div>
           <Spark data={engHistory} color={acc.color} h={28} />
         </div>
         <div style={{ background: P.white, border: `1px solid ${P.border}`, borderRadius: 14, padding: '12px 13px', borderTop: `2.5px solid ${acc.color}` }}>
           <div style={{ fontSize: 9, color: P.inkFaint, textTransform: 'uppercase', letterSpacing: '0.12em', fontFamily: F.mono, marginBottom: 4 }}>Reach</div>
           <div style={{ fontSize: 18, fontWeight: 700, fontFamily: F.display, color: P.ink }}>{reachDisplay}</div>
-          <div style={{ fontSize: 9, color: isLive ? P.sageDeep : P.inkFaint, fontFamily: F.mono, marginBottom: 6 }}>{isLive ? 'derived ✓' : 'mock'}</div>
+          <div style={{ fontSize: 9, color: isLive ? P.sageDeep : P.inkFaint, fontFamily: F.mono, marginBottom: 6 }}>{isLive ? 'derived ✓' : '—'}</div>
           <Spark data={reachHistory} color={acc.color} h={28} />
         </div>
         {following != null && (
@@ -1392,7 +1392,7 @@ const UnifiedAccountView = ({ acc, igData, goal, setGoal }: { acc: any; igData: 
         <div style={{ background: P.white, border: `1px solid ${P.border}`, borderRadius: 14, padding: '12px 13px', borderTop: `2.5px solid ${acc.color}` }}>
           <div style={{ fontSize: 9, color: P.inkFaint, textTransform: 'uppercase', letterSpacing: '0.12em', fontFamily: F.mono, marginBottom: 4 }}>Posts</div>
           <div style={{ fontSize: 18, fontWeight: 700, fontFamily: F.display, color: P.ink }}>{mediaCount}</div>
-          <div style={{ fontSize: 9, color: isLive ? P.sageDeep : P.inkFaint, fontFamily: F.mono }}>{isLive ? 'live ✓' : 'mock'}</div>
+          <div style={{ fontSize: 9, color: isLive ? P.sageDeep : P.inkFaint, fontFamily: F.mono }}>{isLive ? 'live ✓' : '—'}</div>
         </div>
       </div>
 
@@ -1447,7 +1447,7 @@ const UnifiedAccountView = ({ acc, igData, goal, setGoal }: { acc: any; igData: 
               {paceByPeriod[timePeriod] !== '—' ? '+' + paceByPeriod[timePeriod] : '—'}
             </div>
             <div style={{ fontSize: 9, color: isLive && paceSource === 'historical_data' ? P.sageDeep : P.inkFaint, fontFamily: F.mono, marginTop: 2 }}>
-              {isLive ? (paceSource === 'historical_data' ? 'tracked ✓' : paceSource === 'early_estimate' ? 'early data' : 'est. baseline') : 'mock data'}
+              {isLive ? (paceSource === 'historical_data' ? 'tracked ✓' : paceSource === 'early_estimate' ? 'early data' : 'est. baseline') : '—'}
             </div>
           </div>
           <div>
@@ -1664,7 +1664,7 @@ const DynamicClientView = ({ client, igData, igGoal, setIgGoal }: { client: any;
                 icon: pc.icon,
                 handle,
                 followers,
-                followerDelta: '+0',
+                followerDelta: '—',
                 reach: isIGLive ? metrics.reach : 0,
                 engagement: isIGLive ? metrics.engagementRate.toFixed(1) + '%' : '—',
                 color: pc.color,
