@@ -1270,6 +1270,19 @@ const FollowerGraph = ({ accountId, color, colorSoft }: { accountId?: string; co
   );
 };
 
+function applyTimePeriodFromHistory(history: any[], periodId: string): { value: number; label: string } {
+  const labels: Record<string, string> = { day: 'today', week: 'this week', month: 'this month', year: 'this year' };
+  const days: Record<string, number> = { day: 1, week: 7, month: 30, year: 365 };
+  if (!history || history.length < 2) return { value: 0, label: labels[periodId] ?? 'this week' };
+  const d = days[periodId] ?? 7;
+  const cutoff = new Date(Date.now() - d * 24 * 60 * 60 * 1000).toISOString().split('T')[0];
+  const filtered = history.filter((h: any) => h.date >= cutoff);
+  if (filtered.length < 1) return { value: 0, label: labels[periodId] };
+  const first = filtered[0].followers ?? 0;
+  const last = filtered[filtered.length - 1].followers ?? 0;
+  return { value: last - first, label: labels[periodId] };
+}
+
 const UnifiedAccountView = ({ acc, igData, goal, setGoal }: { acc: any; igData: any; goal: number; setGoal: (v: number) => void }) => {
   const [timePeriod, setTimePeriod] = useState('week');
   const [goalPlatform, setGoalPlatform] = useState(acc.platform.toLowerCase());
@@ -1278,6 +1291,16 @@ const UnifiedAccountView = ({ acc, igData, goal, setGoal }: { acc: any; igData: 
   const media = igData?.media ?? [];
   const analytics = igData?.analytics;
   const isLive = !!metrics && acc.platform === 'Instagram';
+  const [history, setHistory] = useState<any[]>([]);
+
+  useEffect(() => {
+    if (acc.platform === 'Instagram') {
+      fetch('/api/sync/instagram/history?days=365')
+        .then(r => r.json())
+        .then(d => setHistory(d.history ?? []))
+        .catch(() => {});
+    }
+  }, [acc.platform]);
 
   // If account not connected, show clean placeholder
   if (acc.notConnected) {
@@ -1325,7 +1348,9 @@ const UnifiedAccountView = ({ acc, igData, goal, setGoal }: { acc: any; igData: 
     day: 'per day', week: 'per week', month: 'per month', year: 'per year',
   };
 
-  const { value: deltaVal, label: deltaLabel } = applyTimePeriod(weeklyDelta, timePeriod);
+  const { value: deltaVal, label: deltaLabel } = history.length >= 2
+    ? applyTimePeriodFromHistory(history, timePeriod)
+    : applyTimePeriod(weeklyDelta, timePeriod);
 
   // ETA
   const goalFollowers = followers;
