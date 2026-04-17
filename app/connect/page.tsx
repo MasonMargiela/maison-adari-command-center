@@ -351,7 +351,7 @@ export default function ConnectPage() {
                         border: `1px solid ${isConnected ? 'rgba(90,158,102,0.3)' : 'rgba(255,255,255,0.12)'}`,
                         borderRadius: 13,
                         padding: '13px 16px',
-                        color: isConnected ? '#5a9e66' : 'rgba(255,255,255,0.95)',
+                        color: isConnected ? '#5a9e66' : (platform.id === 'snapchat' ? '#1a1600' : 'rgba(255,255,255,0.95)'),
                         fontSize: 13,
                         fontWeight: 600,
                         cursor: isConnected ? 'default' : 'pointer',
