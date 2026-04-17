@@ -1451,9 +1451,11 @@ const UnifiedAccountView = ({ acc, igData, goal, setGoal }: { acc: any; igData: 
             </div>
           </div>
           <div>
-            <div style={{ fontSize: 9, color: P.inkFaint, fontFamily: F.mono, marginBottom: 3, textTransform: 'uppercase' }}>Est. Goal Date</div>
-            <div style={{ fontSize: 14, fontWeight: 700, fontFamily: F.display, color: P.ink }}>{estDate}</div>
-            <div style={{ fontSize: 9, color: P.inkFaint, fontFamily: F.mono, marginTop: 2 }}>at {timePeriod} rate</div>
+            <div style={{ fontSize: 9, color: P.inkFaint, fontFamily: F.mono, marginBottom: 3, textTransform: 'uppercase' }}>Goal: {fmtNum(goal)} followers</div>
+            <div style={{ fontSize: 14, fontWeight: 700, fontFamily: F.display, color: P.ink }}>{paceMonthly > 0 ? estDate : '—'}</div>
+            <div style={{ fontSize: 9, color: P.inkFaint, fontFamily: F.mono, marginTop: 2 }}>
+              {paceMonthly > 0 ? `${fmtNum(Math.max(0, goal - followers))} to go at ${timePeriod} rate` : 'Connect to track'}
+            </div>
           </div>
         </div>
         <div style={{ display: 'flex', background: P.white, border: `1px solid ${P.border}`, borderRadius: 20, padding: 2, gap: 1 }}>
@@ -1470,9 +1472,10 @@ const UnifiedAccountView = ({ acc, igData, goal, setGoal }: { acc: any; igData: 
       <SH>Follower Goal</SH>
       <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 8 }}>
         <div style={{ fontSize: 10, color: P.inkSoft }}>Target:</div>
-        <input type="number" value={goal}
-          onChange={(e: any) => { const v = parseInt(e.target.value); if (v > 0) setGoal(v); }}
-          style={{ width: 90, border: `1px solid ${P.border}`, borderRadius: 7, padding: '4px 8px', fontSize: 12, fontFamily: F.mono, background: P.white, color: P.ink, textAlign: 'right' }}
+        <input type="text" inputMode="numeric" defaultValue={String(goal)}
+          onBlur={(e: any) => { const v = parseInt(e.target.value.replace(/,/g, '')); if (v > 0) setGoal(v); else e.target.value = String(goal); }}
+          onKeyDown={(e: any) => { if (e.key === 'Enter') { const v = parseInt(e.target.value.replace(/,/g, '')); if (v > 0) { setGoal(v); e.target.blur(); } } }}
+          style={{ width: 90, border: `1px solid ${P.border}`, borderRadius: 7, padding: '4px 8px', fontSize: 12, fontFamily: F.mono, background: P.white, color: P.ink, textAlign: 'right', outline: 'none' }}
         />
       </div>
       <GoalBar
@@ -1788,6 +1791,81 @@ const BiggestFollowerDeck = () => {
 const REACH_DATA = [12, 18, 14, 22, 19, 28, 31, 26, 38, 42, 35, 51, 48, 63, 71, 58, 82, 94, 87, 110, 103, 128, 141, 163];
 
 // ── MAIN COMPONENT ─────────────────────────────────────────────────────────
+// ── NEW CLIENT PANEL ───────────────────────────────────────────────────────
+const NewClientPanel = () => {
+  const [clientId, setClientId] = useState('');
+  const [generatedLink, setGeneratedLink] = useState('');
+  const [copied, setCopied] = useState(false);
+
+  const generate = () => {
+    const id = clientId.trim().toLowerCase().replace(/\s+/g, '-').replace(/[^a-z0-9-]/g, '');
+    if (!id) return;
+    const link = `${window.location.origin}/connect/invite?invite=${id}`;
+    setGeneratedLink(link);
+    setCopied(false);
+  };
+
+  const copy = () => {
+    if (navigator.clipboard) {
+      navigator.clipboard.writeText(generatedLink).then(() => { setCopied(true); setTimeout(() => setCopied(false), 2000); });
+    } else {
+      const el = document.createElement('textarea');
+      el.value = generatedLink;
+      document.body.appendChild(el);
+      el.select();
+      document.execCommand('copy');
+      document.body.removeChild(el);
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000);
+    }
+  };
+
+  return (
+    <div style={{ background: P.white, border: `1px solid ${P.border}`, borderRadius: 14, padding: '16px' }}>
+      <div style={{ fontSize: 12, color: P.inkMid, lineHeight: 1.7, marginBottom: 14 }}>
+        Enter a client ID to generate their invite link. They open it on their phone, connect accounts, and their tab appears automatically.
+      </div>
+      <div style={{ display: 'flex', gap: 8, marginBottom: 12 }}>
+        <input
+          value={clientId}
+          onChange={e => { setClientId(e.target.value); setGeneratedLink(''); }}
+          onKeyDown={e => e.key === 'Enter' && generate()}
+          placeholder="e.g. sarah or la-birria-co"
+          style={{ flex: 1, border: `1px solid ${P.border}`, borderRadius: 9, padding: '10px 12px', fontSize: 12, fontFamily: F.mono, background: P.white, color: P.ink, outline: 'none' }}
+        />
+        <button onClick={generate}
+          style={{ background: P.ink, border: 'none', borderRadius: 9, padding: '10px 16px', fontSize: 12, fontWeight: 600, cursor: 'pointer', color: P.white, fontFamily: F.body, whiteSpace: 'nowrap' }}>
+          Generate
+        </button>
+      </div>
+
+      {generatedLink && (
+        <div style={{ background: P.sageSoft, border: `1px solid ${P.sage}`, borderRadius: 11, padding: '12px 14px' }}>
+          <div style={{ fontSize: 9, color: P.sageDeep, fontFamily: F.mono, textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: 8 }}>✓ Link ready — send this to your client</div>
+          <div style={{ fontSize: 11, color: P.ink, fontFamily: F.mono, wordBreak: 'break-all', lineHeight: 1.6, marginBottom: 10, background: P.white, borderRadius: 7, padding: '8px 10px', border: `1px solid ${P.border}` }}>
+            {generatedLink}
+          </div>
+          <div style={{ display: 'flex', gap: 8 }}>
+            <button onClick={copy}
+              style={{ flex: 1, background: copied ? P.sageDeep : P.white, border: `1px solid ${copied ? P.sageDeep : P.border}`, borderRadius: 9, padding: '9px', fontSize: 12, fontWeight: 600, cursor: 'pointer', color: copied ? P.white : P.ink, fontFamily: F.body, transition: 'all 0.2s' }}>
+              {copied ? '✓ Copied!' : 'Copy Link'}
+            </button>
+            <a href={generatedLink} target="_blank" rel="noreferrer"
+              style={{ flex: 1, background: P.white, border: `1px solid ${P.border}`, borderRadius: 9, padding: '9px', fontSize: 12, fontWeight: 600, cursor: 'pointer', color: P.ink, fontFamily: F.body, textDecoration: 'none', textAlign: 'center', display: 'block' }}>
+              Preview →
+            </a>
+          </div>
+        </div>
+      )}
+
+      <div style={{ fontSize: 10, color: P.inkFaint, fontFamily: F.mono, lineHeight: 1.6, marginTop: 10 }}>
+        Colors auto-assigned · Works for any client name · Link never expires
+      </div>
+    </div>
+  );
+};
+
+
 export default function AdariCommandCenter() {
   const [view, setView] = useState('overview');
   const [time, setTime] = useState(new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }));
@@ -2113,6 +2191,7 @@ export default function AdariCommandCenter() {
         )}
 
         {/* AFE ENGINE */}
+
         {/* CLIENT MANAGEMENT */}
         {view === 'settings' && (
           <div>
@@ -2153,53 +2232,27 @@ export default function AdariCommandCenter() {
 
             {/* Add new client */}
             <SH>Add New Client</SH>
-            <div style={{ background: P.white, border: `1px solid ${P.border}`, borderRadius: 14, padding: '16px' }}>
-              <div style={{ fontSize: 12, color: P.inkMid, lineHeight: 1.7, marginBottom: 14 }}>
-                To add a new client, send them their personalized invite link. They connect their accounts and their tab appears automatically.
-              </div>
-              <div style={{ display: 'flex', gap: 8, marginBottom: 10 }}>
-                <input
-                  id="new-client-id"
-                  placeholder="client-id (e.g. sarah, la-birria-co)"
-                  style={{ flex: 1, border: `1px solid ${P.border}`, borderRadius: 9, padding: '9px 12px', fontSize: 12, fontFamily: F.mono, background: P.white, color: P.ink, outline: 'none' }}
-                />
-                <button
-                  onClick={() => {
-                    const input = document.getElementById('new-client-id') as HTMLInputElement;
-                    const id = input?.value?.trim().toLowerCase().replace(/\s+/g, '-');
-                    if (!id) return;
-                    const link = `${window.location.origin}/connect/invite?invite=${id}`;
-                    navigator.clipboard.writeText(link).then(() => {
-                      alert(`Invite link for "${id}" copied!
+            <NewClientPanel />
 
-${link}
-
-Send this link to your new client. Once they connect their accounts, their tab will appear on the dashboard.`);
-                      if (input) input.value = '';
-                    });
-                  }}
-                  style={{ background: P.ink, border: 'none', borderRadius: 9, padding: '9px 16px', fontSize: 12, fontWeight: 600, cursor: 'pointer', color: P.white, fontFamily: F.body, whiteSpace: 'nowrap' }}>
-                  Generate Link
-                </button>
-              </div>
-              <div style={{ fontSize: 10, color: P.inkFaint, fontFamily: F.mono, lineHeight: 1.6 }}>
-                The client opens the link on their phone → connects Instagram/TikTok → their tab appears here automatically. Colors are auto-assigned from the palette.
-              </div>
-            </div>
-
-            {/* Connect page links */}
+            {/* Quick Links */}
             <SH>Quick Links</SH>
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, minmax(0, 1fr))', gap: 8 }}>
-              {[
-                { label: 'Connect Page', url: '/connect', desc: 'Generic connect page' },
-                { label: 'Token Refresh', url: '/api/cron/refresh-token', desc: 'Runs every Sunday auto' },
-              ].map((link, i) => (
-                <a key={i} href={link.url} target="_blank" rel="noreferrer"
-                  style={{ background: P.card, border: `1px solid ${P.border}`, borderRadius: 12, padding: '12px 14px', textDecoration: 'none', display: 'block' }}>
-                  <div style={{ fontSize: 12, fontWeight: 600, color: P.ink, marginBottom: 3 }}>{link.label}</div>
-                  <div style={{ fontSize: 10, color: P.inkFaint, fontFamily: F.mono }}>{link.desc}</div>
-                </a>
-              ))}
+              <a href="/connect" target="_blank" rel="noreferrer"
+                style={{ background: P.card, border: `1px solid ${P.border}`, borderRadius: 12, padding: '12px 14px', textDecoration: 'none', display: 'block' }}>
+                <div style={{ fontSize: 12, fontWeight: 600, color: P.ink, marginBottom: 3 }}>Connect Page</div>
+                <div style={{ fontSize: 10, color: P.inkFaint, fontFamily: F.mono }}>Generic connect page for any client</div>
+              </a>
+              <button
+                onClick={() => {
+                  fetch('/api/cron/refresh-token', { headers: { 'Authorization': 'Bearer maison-adari-cron-2026' } })
+                    .then(r => r.json())
+                    .then(d => alert('Refresh done! Refreshed: ' + (d.refreshed ?? 0) + ' Skipped: ' + (d.skipped ?? 0)))
+                    .catch(() => alert('Refresh triggered.'));
+                }}
+                style={{ background: P.card, border: `1px solid ${P.border}`, borderRadius: 12, padding: '12px 14px', textAlign: 'left', cursor: 'pointer', width: '100%' }}>
+                <div style={{ fontSize: 12, fontWeight: 600, color: P.ink, marginBottom: 3 }}>Refresh All Tokens</div>
+                <div style={{ fontSize: 10, color: P.inkFaint, fontFamily: F.mono }}>Runs every Sunday · tap to force now</div>
+              </button>
             </div>
           </div>
         )}
