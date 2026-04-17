@@ -193,9 +193,10 @@ export default function ConnectPage() {
         }
         .connect-btn-snap:hover {
           background: linear-gradient(135deg, #FFFC00 0%, #FFE000 100%) !important;
-          border-color: rgba(255,252,0,0.4) !important;
-          box-shadow: 0 8px 36px rgba(255,220,0,0.35) !important;
+          border-color: rgba(255,255,255,0.55) !important;
+          box-shadow: 0 8px 36px rgba(255,220,0,0.35), 0 0 0 1px rgba(255,255,255,0.25), inset 0 1px 0 rgba(255,255,255,0.6) !important;
           color: #1a1400 !important; text-shadow: none !important;
+          backdrop-filter: blur(2px) !important;
         }
         .connect-btn-kick:hover {
           background: linear-gradient(135deg, #53fc18 0%, #3dd10f 50%, #2aaa08 100%) !important;
@@ -221,9 +222,17 @@ export default function ConnectPage() {
           color: #fff !important;
         }
         .connect-btn-threads:hover {
-          background: linear-gradient(135deg, #101010 0%, #1a1a1a 50%, #101010 100%) !important;
-          border-color: rgba(255,255,255,0.05) !important;
+          background: linear-gradient(135deg, #000000 0%, #111111 50%, #000000 100%) !important;
+          border-color: rgba(255,255,255,0.08) !important;
           color: #fff !important;
+        }
+        .connect-btn-twitch-rest {
+          border-color: rgba(145,70,255,0.35) !important;
+          box-shadow: 0 0 0 1px rgba(145,70,255,0.15), inset 0 1px 0 rgba(255,255,255,0.08) !important;
+        }
+        .connect-btn-yt-rest {
+          border-color: rgba(255,60,60,0.35) !important;
+          box-shadow: 0 0 0 1px rgba(255,60,60,0.15), inset 0 1px 0 rgba(255,255,255,0.08) !important;
         }
         .platform-card { transition: border-color 0.25s ease; }
 
@@ -340,7 +349,7 @@ export default function ConnectPage() {
 
                     {/* Connect button */}
                     <button
-                      className={`connect-btn ${(platform as any).hoverClass || ''}`}
+                      className={`connect-btn ${(platform as any).hoverClass || ''}${platform.id === 'twitch' ? ' connect-btn-twitch-rest' : ''}${platform.id === 'youtube' ? ' connect-btn-yt-rest' : ''}`}
                       onClick={() => !isConnected && (window.location.href = platform.connectPath)}
                       disabled={isConnected}
                       style={{
