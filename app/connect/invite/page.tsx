@@ -123,7 +123,39 @@ function ConnectInviteContent() {
   return (
     <>
       <link href="https://fonts.googleapis.com/css2?family=Fraunces:wght@700;800&family=DM+Sans:wght@400;500;600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet" />
-      <style>{'* { box-sizing: border-box; margin: 0; padding: 0; }'}</style>
+      <style>{`
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body { background: #1a1612; }
+
+        .connect-btn {
+          position: relative;
+          overflow: hidden;
+          transition: all 0.22s cubic-bezier(0.34, 1.56, 0.64, 1);
+        }
+        .connect-btn:not(:disabled):hover { transform: translateY(-1px) scale(1.005); }
+        .connect-btn:not(:disabled):active { transform: scale(0.97); transition-duration: 0.08s; }
+        .connect-btn::before {
+          content: '';
+          position: absolute;
+          top: 0; left: 0; right: 0;
+          height: 1px;
+          background: linear-gradient(90deg, transparent, rgba(255,255,255,0.25), transparent);
+          z-index: 3;
+        }
+        .connect-btn-ig:hover {
+          background: linear-gradient(115deg, #f5c400 0%, #f55f00 20%, #e8264e 45%, #b02f7a 70%, #6f32a0 100%) !important;
+          border-color: rgba(255,255,255,0.04) !important;
+          box-shadow: 0 0 0 1px rgba(220,80,80,0.25), 0 8px 36px rgba(200,40,90,0.5), 0 4px 14px rgba(240,90,0,0.3) !important;
+          text-shadow: 0 1px 3px rgba(0,0,0,0.2) !important;
+        }
+        .connect-btn-tt:hover {
+          background: linear-gradient(115deg, #ffffff 0%, #f9f9f9 30%, #f3f3f3 60%, #fafafa 100%) !important;
+          border-color: rgba(255,255,255,0.03) !important;
+          box-shadow: 0 0 0 1px rgba(255,255,255,0.6), 0 8px 38px rgba(255,255,255,0.32), 0 4px 18px rgba(255,255,255,0.2) !important;
+          color: #0a0a0a !important;
+          text-shadow: none !important;
+        }
+      `}</style>
 
       <div style={{ minHeight: '100vh', background: '#1a1612', color: '#f0e8dc', fontFamily: "'DM Sans', sans-serif", paddingBottom: 60 }}>
 

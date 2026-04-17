@@ -20,7 +20,7 @@ export default function ConnectPage() {
       connectPath: '/api/connect/instagram',
       desc: 'Followers · Reach · Engagement · Posts · Stories',
       metrics: ['Followers', 'Following', 'Posts', 'Reach', 'Engagement Rate', 'Profile Views', 'Story Views'],
-      gradient: 'linear-gradient(160deg, #e8a0b8 0%, #c4769a 25%, #9860b0 65%, #7040a0 100%)',
+      gradient: 'linear-gradient(115deg, #feda77 0%, #f5a623 12%, #f56040 25%, #e1306c 45%, #c13584 62%, #833ab4 78%, #405de6 100%)',
       logo: (
         `<svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" style="width:28px;height:28px;">
           <defs><linearGradient id="ig" x1="0%" y1="100%" x2="100%" y2="0%">
@@ -43,7 +43,7 @@ export default function ConnectPage() {
       connectPath: '/api/connect/tiktok',
       desc: 'Followers · Video Views · Likes · Comments · FYP Reach',
       metrics: ['Followers', 'Following', 'Video Views', 'Likes', 'Comments', 'Shares', 'Profile Views'],
-      gradient: 'linear-gradient(160deg, #0d1117 0%, #0f1f35 40%, #0a1628 70%, #111827 100%)',
+      gradient: '#0d0d14',
       logo: (
         `<svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" style="width:28px;height:28px;">
           <rect width="24" height="24" rx="6" fill="#010101"/>
@@ -114,9 +114,25 @@ export default function ConnectPage() {
       <style>{`
         * { box-sizing: border-box; margin: 0; padding: 0; }
         body { background: #1a1612; }
-        .connect-btn { transition: opacity 0.2s, transform 0.1s; }
-        .connect-btn:active { transform: scale(0.98); }
-        .platform-card { transition: border-color 0.2s; }
+        .connect-btn { transition: all 0.22s cubic-bezier(0.34, 1.56, 0.64, 1); position: relative; overflow: hidden; }
+        .connect-btn::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 1px; background: linear-gradient(90deg, transparent, rgba(255,255,255,0.25), transparent); }
+        .connect-btn:not(:disabled):hover { transform: translateY(-1px) scale(1.005); }
+        .connect-btn:not(:disabled):active { transform: scale(0.97); transition-duration: 0.08s; }
+        .connect-btn-ig:hover {
+          background: linear-gradient(115deg, #f5c400 0%, #f55f00 20%, #e8264e 45%, #b02f7a 70%, #6f32a0 100%) !important;
+          border-color: rgba(255,255,255,0.04) !important;
+          box-shadow: 0 8px 36px rgba(200,40,90,0.5) !important;
+          text-shadow: 0 1px 3px rgba(0,0,0,0.2) !important;
+          color: rgba(255,255,255,0.95) !important;
+        }
+        .connect-btn-tt:hover {
+          background: linear-gradient(115deg, #ffffff 0%, #f9f9f9 30%, #f3f3f3 60%, #fafafa 100%) !important;
+          border-color: rgba(255,255,255,0.03) !important;
+          box-shadow: 0 8px 38px rgba(255,255,255,0.32) !important;
+          color: #0a0a0a !important;
+          text-shadow: none !important;
+        }
+        .platform-card { transition: border-color 0.25s ease; }
       `}</style>
 
       <div style={{
@@ -134,18 +150,31 @@ export default function ConnectPage() {
           <div style={{ fontSize: 10, letterSpacing: '0.2em', textTransform: 'uppercase', color: '#7a7268', fontFamily: "'DM Mono', monospace", marginBottom: 8 }}>
             Maison Adari · Command Center
           </div>
-          <div style={{ fontSize: 28, fontWeight: 800, fontFamily: "'Fraunces', serif", letterSpacing: '-0.02em', lineHeight: 1.1, marginBottom: 10 }}>
-            Connect Your Accounts
-          </div>
-          <div style={{ fontSize: 13, color: '#7a7268', lineHeight: 1.7, maxWidth: 380 }}>
-            Link your social profiles so your analytics sync automatically. Read-only access — we never post on your behalf.
+          <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', gap: 16 }}>
+            <div style={{ flex: 1 }}>
+              <div style={{ fontSize: 28, fontWeight: 800, fontFamily: "'Fraunces', serif", letterSpacing: '-0.02em', lineHeight: 1.1, marginBottom: 10 }}>
+                Connect Your Accounts
+              </div>
+              <div style={{ fontSize: 13, color: '#7a7268', lineHeight: 1.7, maxWidth: 320 }}>
+                Link your social profiles so your analytics sync automatically. Read-only access — we never post on your behalf.
+              </div>
+            </div>
+            <div style={{ flexShrink: 0, display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: 6, paddingTop: 4 }}>
+              <div style={{ fontSize: 9, color: 'rgba(255,255,255,0.2)', fontFamily: "'DM Mono', monospace", letterSpacing: '0.1em', textTransform: 'uppercase' }}>The AFE</div>
+              <div style={{ display: 'flex', gap: 5 }}>
+                {['📸','🎵','▶️','𝕏','🧵'].map((icon, i) => (
+                  <div key={i} style={{ width: 28, height: 28, borderRadius: 8, background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.06)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 13 }}>{icon}</div>
+                ))}
+              </div>
+              <div style={{ fontSize: 9, color: 'rgba(255,255,255,0.15)', fontFamily: "'DM Mono', monospace" }}>5 platforms · read-only</div>
+            </div>
           </div>
         </div>
 
         <div style={{ padding: '24px 20px 0' }}>
           {/* What gets tracked */}
           <div style={{ background: '#242018', border: '1px solid #3a342c', borderRadius: 16, padding: '16px 18px', marginBottom: 24 }}>
-            <div style={{ fontSize: 9, color: '#7a7268', fontFamily: "'DM Mono', monospace", letterSpacing: '0.15em', textTransform: 'uppercase', marginBottom: 14 }}>What gets tracked after connecting</div>
+            <div style={{ fontSize: 9, color: 'rgba(255,255,255,0.5)', fontFamily: "'DM Mono', monospace", letterSpacing: '0.15em', textTransform: 'uppercase', marginBottom: 14 }}>What gets tracked after connecting</div>
             <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10 }}>
               {[
                 ['Followers & Following', 'Updated every 5 min'],
@@ -219,7 +248,7 @@ export default function ConnectPage() {
                     {/* Connect button */}
                     {!platform.requiresSetup ? (
                       <button
-                        className="connect-btn"
+                        className={`connect-btn${platform.id === 'instagram' ? ' connect-btn-ig' : platform.id === 'tiktok' ? ' connect-btn-tt' : ''}`}
                         onClick={() => { window.location.href = platform.connectPath; }}
                         disabled={isConnected}
                         style={{
