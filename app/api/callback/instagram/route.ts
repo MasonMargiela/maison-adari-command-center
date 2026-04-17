@@ -80,7 +80,7 @@ export async function GET(request: NextRequest) {
   if (accounts.length === 1) {
     const acc = accounts[0];
     // Save token to Supabase
-    await saveAccount(acc);
+    await saveAccount(acc, request.cookies.get('invite_client_id')?.value ?? null);
     return NextResponse.redirect(`${baseUrl}/connect?ig_success=${acc.username}`);
   }
 
@@ -103,7 +103,7 @@ export async function GET(request: NextRequest) {
   return response;
 }
 
-async function saveAccount(acc: any) {
+async function saveAccount(acc: any, clientId?: string | null) {
   try {
     const supaUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
     const supaKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
@@ -119,6 +119,7 @@ async function saveAccount(acc: any) {
       display_name: acc.username,
       access_token: acc.token,
       is_active: true,
+      client_id: clientId ?? null,
       updated_at: new Date().toISOString(),
     }, { onConflict: 'platform,platform_user_id' });
   } catch (e) {
