@@ -136,7 +136,7 @@ export default function ConnectPage() {
       connectPath: '/api/connect/threads',
       desc: 'Followers · Views · Likes · Replies · Reposts',
       metrics: ['Followers', 'Following', 'Views', 'Likes', 'Replies', 'Reposts', 'Reach', 'Engagement Rate'],
-      gradient: 'linear-gradient(135deg, #101010 0%, #1c1c1c 100%)',
+      gradient: 'linear-gradient(135deg, #333333 0%, #111111 100%)',
       hoverGradient: 'linear-gradient(135deg, #2a2a2a 0%, #111111 100%)',
       hoverClass: 'connect-btn-threads',
       requiresSetup: true,
