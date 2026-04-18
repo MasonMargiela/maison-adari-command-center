@@ -1,26 +1,198 @@
 @import "tailwindcss";
 
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --background: #f7f5f1;
+  --foreground: #1a1713;
+  --spring: cubic-bezier(0.34, 1.56, 0.64, 1);
+  --smooth: cubic-bezier(0.4, 0, 0.2, 1);
+  --glass-bg: rgba(255,255,255,0.72);
+  --glass-border: rgba(255,255,255,0.55);
+  --glass-shadow: 0 8px 32px rgba(0,0,0,0.08), 0 1px 0 rgba(255,255,255,0.9) inset;
 }
 
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
-}
+* { box-sizing: border-box; }
 
 body {
   background: var(--background);
   color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: 'DM Sans', sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  overscroll-behavior: none;
 }
+
+/* ── SCROLL BAR HIDE ── */
+::-webkit-scrollbar { display: none; }
+* { scrollbar-width: none; -ms-overflow-style: none; }
+
+/* ── SPRING BUTTON ── */
+.btn-spring {
+  transition: transform 0.18s var(--spring), box-shadow 0.18s var(--smooth), background 0.15s var(--smooth);
+  will-change: transform;
+  cursor: pointer;
+}
+.btn-spring:active {
+  transform: scale(0.94) !important;
+}
+
+/* ── CARD LIFT ── */
+.card-lift {
+  transition: transform 0.22s var(--spring), box-shadow 0.22s var(--smooth), border-color 0.18s var(--smooth);
+  will-change: transform;
+}
+.card-lift:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 12px 40px rgba(0,0,0,0.10), 0 2px 8px rgba(0,0,0,0.06);
+}
+.card-lift:active {
+  transform: translateY(-1px) scale(0.99);
+}
+
+/* ── TAB PRESS ── */
+.tab-btn {
+  transition: color 0.15s var(--smooth), border-color 0.15s var(--smooth), transform 0.12s var(--spring);
+}
+.tab-btn:active { transform: scale(0.96); }
+
+/* ── GLASS MORPHISM ── */
+.glass {
+  background: var(--glass-bg);
+  backdrop-filter: blur(20px) saturate(180%);
+  -webkit-backdrop-filter: blur(20px) saturate(180%);
+  border: 1px solid var(--glass-border);
+  box-shadow: var(--glass-shadow);
+}
+
+.glass-dark {
+  background: rgba(21,18,16,0.82);
+  backdrop-filter: blur(24px) saturate(160%);
+  -webkit-backdrop-filter: blur(24px) saturate(160%);
+  border: 1px solid rgba(255,255,255,0.08);
+  box-shadow: 0 8px 32px rgba(0,0,0,0.28), 0 1px 0 rgba(255,255,255,0.06) inset;
+}
+
+/* ── SHIMMER SKELETON ── */
+@keyframes shimmer {
+  0% { background-position: -400px 0; }
+  100% { background-position: 400px 0; }
+}
+.shimmer {
+  background: linear-gradient(90deg, #f0ebe3 25%, #faf7f2 50%, #f0ebe3 75%);
+  background-size: 800px 100%;
+  animation: shimmer 1.6s infinite linear;
+  border-radius: 8px;
+}
+
+/* ── COUNT UP ── */
+@keyframes fadeSlideUp {
+  from { opacity: 0; transform: translateY(10px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+.fade-up {
+  animation: fadeSlideUp 0.45s var(--spring) both;
+}
+
+/* ── STAGGER CHILDREN ── */
+.stagger > *:nth-child(1) { animation-delay: 0.04s; }
+.stagger > *:nth-child(2) { animation-delay: 0.08s; }
+.stagger > *:nth-child(3) { animation-delay: 0.12s; }
+.stagger > *:nth-child(4) { animation-delay: 0.16s; }
+.stagger > *:nth-child(5) { animation-delay: 0.20s; }
+.stagger > *:nth-child(6) { animation-delay: 0.24s; }
+
+/* ── LIVE PULSE ── */
+@keyframes livePulse {
+  0%, 100% { opacity: 1; box-shadow: 0 0 0 0 currentColor; }
+  50% { opacity: 0.7; box-shadow: 0 0 0 5px transparent; }
+}
+.live-pulse { animation: livePulse 2s ease-in-out infinite; }
+
+/* ── SLIDE IN ── */
+@keyframes slideIn {
+  from { opacity: 0; transform: translateX(-8px); }
+  to   { opacity: 1; transform: translateX(0); }
+}
+.slide-in { animation: slideIn 0.3s var(--spring) both; }
+
+/* ── FLOAT ── */
+@keyframes float {
+  0%, 100% { transform: translateY(0px); }
+  50% { transform: translateY(-4px); }
+}
+.float { animation: float 4s ease-in-out infinite; }
+
+/* ── TOGGLE SWITCH ── */
+.toggle-track {
+  transition: background 0.22s var(--smooth);
+}
+.toggle-thumb {
+  transition: transform 0.22s var(--spring), box-shadow 0.18s var(--smooth);
+  box-shadow: 0 2px 6px rgba(0,0,0,0.20);
+}
+
+/* ── GRADIENT MESH BG ── */
+.mesh-bg {
+  background: 
+    radial-gradient(ellipse at 20% 50%, rgba(194,174,232,0.18) 0%, transparent 60%),
+    radial-gradient(ellipse at 80% 20%, rgba(168,206,158,0.15) 0%, transparent 55%),
+    radial-gradient(ellipse at 60% 80%, rgba(232,175,192,0.14) 0%, transparent 50%),
+    #f7f5f1;
+}
+
+/* ── HEADER GRADIENT ── */
+.header-gradient {
+  background: rgba(255,255,255,0.88);
+  backdrop-filter: blur(20px) saturate(180%);
+  -webkit-backdrop-filter: blur(20px) saturate(180%);
+  border-bottom: 1px solid rgba(230,224,214,0.7);
+}
+
+/* ── POPPI PILL BUTTON ── */
+.poppi-btn {
+  border-radius: 100px;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  transition: transform 0.16s var(--spring), box-shadow 0.16s var(--smooth), filter 0.16s var(--smooth);
+}
+.poppi-btn:hover {
+  transform: translateY(-1px);
+  filter: brightness(1.04);
+  box-shadow: 0 6px 20px rgba(0,0,0,0.12);
+}
+.poppi-btn:active {
+  transform: scale(0.95);
+  box-shadow: none;
+}
+
+/* ── INPUT FOCUS ── */
+input:focus, textarea:focus {
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(124,92,191,0.18);
+  border-color: #c2aee8 !important;
+  transition: box-shadow 0.2s var(--smooth), border-color 0.2s var(--smooth);
+}
+
+/* ── SCROLL AREA ── */
+.scroll-fade {
+  mask-image: linear-gradient(to right, transparent, black 16px, black calc(100% - 16px), transparent);
+}
+
+/* ── GLOW CARD ── */
+.glow-card {
+  position: relative;
+}
+.glow-card::before {
+  content: '';
+  position: absolute;
+  inset: -1px;
+  border-radius: inherit;
+  background: linear-gradient(135deg, rgba(255,255,255,0.6), rgba(255,255,255,0.1));
+  pointer-events: none;
+  z-index: 0;
+}
+
+/* ── RANGE PILL ACTIVE ── */
+.range-pill {
+  transition: background 0.18s var(--smooth), color 0.18s var(--smooth), transform 0.14s var(--spring);
+}
+.range-pill:active { transform: scale(0.92); }
