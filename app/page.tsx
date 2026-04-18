@@ -826,69 +826,6 @@ const SpinPieChart = ({ slices, size = 80 }: { slices: { value: number; color: s
     </div>
   );
 };
-  const total = slices.reduce((s, sl) => s + sl.value, 0);
-  if (total === 0) return (
-    <div style={{ width: size, height: size, borderRadius: '50%', background: P.borderLight, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 9, color: P.inkFaint, textAlign: 'center', flexShrink: 0 }}>
-      <span style={{ lineHeight: 1.3 }}>No<br/>data</span>
-    </div>
-  );
-  // Single slice — render as full colored donut ring
-  if (slices.filter(s => s.value > 0).length === 1) {
-    const s = slices.find(sl => sl.value > 0)!;
-    const cx = size / 2, cy = size / 2, r = size / 2 - 4;
-    const innerR = r * 0.45;
-    return (
-      <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-        <svg width={size} height={size} style={{ flexShrink: 0 }}>
-          <circle cx={cx} cy={cy} r={r} fill={s.color} opacity={0.85} />
-          <circle cx={cx} cy={cy} r={innerR} fill={P.white} />
-        </svg>
-        <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: 5 }}>
-            <div style={{ width: 7, height: 7, borderRadius: '50%', background: s.color, flexShrink: 0 }} />
-            <div style={{ fontSize: 10, color: P.inkMid }}>{s.label}</div>
-            <div style={{ fontSize: 10, color: P.inkFaint, fontFamily: F.mono }}>100%</div>
-          </div>
-        </div>
-      </div>
-    );
-  }
-  let cumAngle = -90;
-  const cx = size / 2, cy = size / 2, r = size / 2 - 4;
-  const paths = slices.map(sl => {
-    if (sl.value === 0) return null;
-    const startAngle = cumAngle;
-    const angle = (sl.value / total) * 360;
-    cumAngle += angle;
-    const endAngle = cumAngle;
-    const startRad = (startAngle * Math.PI) / 180;
-    const endRad = (endAngle * Math.PI) / 180;
-    const x1 = cx + r * Math.cos(startRad);
-    const y1 = cy + r * Math.sin(startRad);
-    const x2 = cx + r * Math.cos(endRad);
-    const y2 = cy + r * Math.sin(endRad);
-    const largeArc = angle > 180 ? 1 : 0;
-    const pct = Math.round((sl.value / total) * 100);
-    return { d: `M ${cx} ${cy} L ${x1.toFixed(2)} ${y1.toFixed(2)} A ${r} ${r} 0 ${largeArc} 1 ${x2.toFixed(2)} ${y2.toFixed(2)} Z`, color: sl.color, label: sl.label, value: sl.value, pct };
-  }).filter(Boolean);
-  return (
-    <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-      <svg width={size} height={size} style={{ flexShrink: 0 }}>
-        {paths.map((p: any, i) => <path key={i} d={p.d} fill={p.color} opacity={0.85} />)}
-        <circle cx={cx} cy={cy} r={r * 0.45} fill={P.white} />
-      </svg>
-      <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
-        {paths.filter((p: any) => p.value > 0).map((p: any, i) => (
-          <div key={i} style={{ display: 'flex', alignItems: 'center', gap: 5 }}>
-            <div style={{ width: 7, height: 7, borderRadius: '50%', background: p.color, flexShrink: 0 }} />
-            <div style={{ fontSize: 10, color: P.inkMid }}>{p.label}</div>
-            <div style={{ fontSize: 10, color: P.inkFaint, fontFamily: F.mono }}>{p.pct}%</div>
-          </div>
-        ))}
-      </div>
-    </div>
-  );
-};
 
 // ── TIME PERIOD UTILS ──────────────────────────────────────────────────────
 const TIME_PERIODS = [
