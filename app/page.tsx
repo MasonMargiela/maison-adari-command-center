@@ -168,7 +168,7 @@ const SH = ({ children, sub }: { children: React.ReactNode; sub?: string }) => (
 const StatCard = ({ label, value, sub, accent, live, children }: {
   label: string; value?: string; sub?: string; accent: string; live?: boolean; children?: React.ReactNode;
 }) => (
-  <div className="card-lift" style={{
+  <div className="" style={{
     background: 'rgba(255,255,255,0.85)',
     backdropFilter: 'blur(16px)',
     WebkitBackdropFilter: 'blur(16px)',
@@ -263,7 +263,7 @@ const PostCard = ({ post, accent, accentSoft, accentDeep }: { post: any; accent:
   const ICONS: Record<string, string> = { VIDEO: '🎬', REEL: '🎬', CAROUSEL_ALBUM: '🖼️', IMAGE: '📸' };
   const maxVal = Math.max(post.like_count ?? 0, (post.saves ?? 0) * 3, (post.comments_count ?? 0) * 15);
   return (
-    <div className="card-lift" style={{ background: 'rgba(255,255,255,0.88)', backdropFilter: 'blur(12px)', WebkitBackdropFilter: 'blur(12px)', border: `1px solid rgba(255,255,255,0.65)`, borderRadius: 16, overflow: 'hidden', marginBottom: 8, boxShadow: P.shadowSm }}>
+    <div className="" style={{ background: 'rgba(255,255,255,0.88)', backdropFilter: 'blur(12px)', WebkitBackdropFilter: 'blur(12px)', border: `1px solid rgba(255,255,255,0.65)`, borderRadius: 16, overflow: 'hidden', marginBottom: 8, boxShadow: P.shadowSm }}>
       <div style={{ display: 'flex' }}>
         <div style={{ width: 68, background: `linear-gradient(135deg, ${accentSoft}, ${accent}20)`, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 24, flexShrink: 0, borderRight: `1px solid ${accent}20` }}>
           {ICONS[post.media_type] ?? '📱'}
@@ -319,11 +319,11 @@ const AIInsight = ({ text, platform }: { text: string; platform: string }) => (
 // ── WHAT'S WORKING ─────────────────────────────────────────────────────────
 const WW = ({ working, flopping }: { working: string; flopping: string }) => (
   <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, minmax(0, 1fr))', gap: 8 }}>
-    <div className="card-lift" style={{ background: `linear-gradient(135deg, ${P.sageSoft}, rgba(255,255,255,0.9))`, border: `1px solid ${P.sage}50`, borderRadius: 14, padding: '13px', boxShadow: `0 4px 16px ${P.sage}15` }}>
+    <div className="" style={{ background: `linear-gradient(135deg, ${P.sageSoft}, rgba(255,255,255,0.9))`, border: `1px solid ${P.sage}50`, borderRadius: 14, padding: '13px', boxShadow: `0 4px 16px ${P.sage}15` }}>
       <div style={{ fontSize: 9, color: P.sageDeep, letterSpacing: '0.14em', textTransform: 'uppercase', fontFamily: F.mono, marginBottom: 7, fontWeight: 700 }}>✓ Working</div>
       <div style={{ fontSize: 11, color: P.inkMid, lineHeight: 1.75 }}>{working}</div>
     </div>
-    <div className="card-lift" style={{ background: `linear-gradient(135deg, ${P.roseSoft}, rgba(255,255,255,0.9))`, border: `1px solid ${P.rose}50`, borderRadius: 14, padding: '13px', boxShadow: `0 4px 16px ${P.rose}15` }}>
+    <div className="" style={{ background: `linear-gradient(135deg, ${P.roseSoft}, rgba(255,255,255,0.9))`, border: `1px solid ${P.rose}50`, borderRadius: 14, padding: '13px', boxShadow: `0 4px 16px ${P.rose}15` }}>
       <div style={{ fontSize: 9, color: P.roseDeep, letterSpacing: '0.14em', textTransform: 'uppercase', fontFamily: F.mono, marginBottom: 7, fontWeight: 700 }}>✗ Flopping</div>
       <div style={{ fontSize: 11, color: P.inkMid, lineHeight: 1.75 }}>{flopping}</div>
     </div>
@@ -886,7 +886,7 @@ const PersonCard = ({ name, avatar, color, colorSoft, colorDeep, accounts, conte
   const goalMonthly = name === 'Mason' && liveMetrics && goalPlatform === 'instagram' ? liveMetrics.monthlyGrowthRate : 0;
 
   return (
-    <div className="card-lift" style={{
+    <div className="" style={{
       background: 'rgba(255,255,255,0.82)',
       backdropFilter: 'blur(20px)',
       WebkitBackdropFilter: 'blur(20px)',
@@ -1556,7 +1556,7 @@ const UnifiedAccountView = ({ acc, igData, goal, setGoal }: { acc: any; igData: 
       </div>
 
       {/* Followers card with pie chart and time switcher */}
-      <div className="card-lift" style={{
+      <div className="" style={{
         background: 'rgba(255,255,255,0.88)',
         backdropFilter: 'blur(16px)',
         WebkitBackdropFilter: 'blur(16px)',
@@ -1613,14 +1613,14 @@ const UnifiedAccountView = ({ acc, igData, goal, setGoal }: { acc: any; igData: 
 
       {/* Engagement + Reach with sparklines */}
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, minmax(0, 1fr))', gap: 8, marginBottom: 10 }}>
-        <div className="card-lift" style={{ background: 'rgba(255,255,255,0.85)', backdropFilter: 'blur(12px)', WebkitBackdropFilter: 'blur(12px)', border: `1px solid rgba(255,255,255,0.65)`, borderRadius: 16, padding: '13px 14px', boxShadow: P.shadowSm, position: 'relative', overflow: 'hidden' }}>
+        <div className="" style={{ background: 'rgba(255,255,255,0.85)', backdropFilter: 'blur(12px)', WebkitBackdropFilter: 'blur(12px)', border: `1px solid rgba(255,255,255,0.65)`, borderRadius: 16, padding: '13px 14px', boxShadow: P.shadowSm, position: 'relative', overflow: 'hidden' }}>
           <div style={{ position: 'absolute', top: 0, left: 0, right: 0, height: 2.5, background: `linear-gradient(90deg, ${acc.color}, ${acc.colorDeep})`, borderRadius: '16px 16px 0 0' }} />
           <div style={{ fontSize: 9, color: P.inkFaint, textTransform: 'uppercase', letterSpacing: '0.14em', fontFamily: F.mono, marginBottom: 4 }}>Engagement</div>
           <div style={{ fontSize: 20, fontWeight: 700, fontFamily: F.display, color: P.ink, letterSpacing: '-0.02em' }}>{engagementDisplay}</div>
           <div style={{ fontSize: 9, color: isLive ? P.sageDeep : P.inkFaint, fontFamily: F.mono, marginBottom: 7, fontWeight: 600 }}>{isLive ? 'live ✓' : '—'}</div>
           <Spark data={engHistory} color={acc.color} h={28} />
         </div>
-        <div className="card-lift" style={{ background: 'rgba(255,255,255,0.85)', backdropFilter: 'blur(12px)', WebkitBackdropFilter: 'blur(12px)', border: `1px solid rgba(255,255,255,0.65)`, borderRadius: 16, padding: '13px 14px', boxShadow: P.shadowSm, position: 'relative', overflow: 'hidden' }}>
+        <div className="" style={{ background: 'rgba(255,255,255,0.85)', backdropFilter: 'blur(12px)', WebkitBackdropFilter: 'blur(12px)', border: `1px solid rgba(255,255,255,0.65)`, borderRadius: 16, padding: '13px 14px', boxShadow: P.shadowSm, position: 'relative', overflow: 'hidden' }}>
           <div style={{ position: 'absolute', top: 0, left: 0, right: 0, height: 2.5, background: `linear-gradient(90deg, ${acc.color}, ${acc.colorDeep})`, borderRadius: '16px 16px 0 0' }} />
           <div style={{ fontSize: 9, color: P.inkFaint, textTransform: 'uppercase', letterSpacing: '0.14em', fontFamily: F.mono, marginBottom: 4 }}>Reach</div>
           <div style={{ fontSize: 20, fontWeight: 700, fontFamily: F.display, color: P.ink, letterSpacing: '-0.02em' }}>{reachDisplay}</div>
@@ -1758,7 +1758,7 @@ const UnifiedAccountView = ({ acc, igData, goal, setGoal }: { acc: any; igData: 
         </>
       )}
       {posts.length === 0 && (
-        <div className="card-lift" style={{ background: `linear-gradient(135deg, ${acc.colorSoft}, rgba(255,255,255,0.9))`, border: `1px solid ${acc.color}30`, borderRadius: 16, padding: '22px', textAlign: 'center', margin: '12px 0' }}>
+        <div className="" style={{ background: `linear-gradient(135deg, ${acc.colorSoft}, rgba(255,255,255,0.9))`, border: `1px solid ${acc.color}30`, borderRadius: 16, padding: '22px', textAlign: 'center', margin: '12px 0' }}>
           <div style={{ fontSize: 24, marginBottom: 8 }}>📭</div>
           <div style={{ fontSize: 14, fontWeight: 700, color: P.ink, marginBottom: 5, fontFamily: F.display }}>No content tested yet</div>
           <div style={{ fontSize: 12, color: P.inkSoft, lineHeight: 1.7 }}>This is where your first viral clip starts. Post and watch the data come in.</div>
@@ -1851,7 +1851,7 @@ const DynamicClientView = ({ client, igData, igGoal, setIgGoal }: { client: any;
   return (
     <div>
       {/* Client header */}
-      <div className="card-lift" style={{
+      <div className="" style={{
         background: 'rgba(255,255,255,0.85)',
         backdropFilter: 'blur(20px)',
         WebkitBackdropFilter: 'blur(20px)',
@@ -1939,7 +1939,7 @@ const DynamicClientView = ({ client, igData, igGoal, setIgGoal }: { client: any;
               };
 
               return (
-                <div key={accId} className="card-lift" style={{
+                <div key={accId} className="" style={{
                   background: isOpen ? 'rgba(255,255,255,0.88)' : 'rgba(250,249,246,0.7)',
                   backdropFilter: 'blur(16px)',
                   WebkitBackdropFilter: 'blur(16px)',
@@ -2049,7 +2049,7 @@ const DynamicClientView = ({ client, igData, igGoal, setIgGoal }: { client: any;
 
           {/* Add account CTA */}
           <a href="/connect"
-            className="card-lift"
+            className=""
             style={{ display: 'flex', alignItems: 'center', gap: 10, background: 'rgba(255,255,255,0.7)', backdropFilter: 'blur(12px)', WebkitBackdropFilter: 'blur(12px)', border: `1.5px dashed ${P.border}`, borderRadius: 18, padding: '14px 16px', textDecoration: 'none', marginBottom: 10 }}>
             <div style={{ width: 34, height: 34, borderRadius: 10, background: `linear-gradient(135deg, ${client.colorSoft}, ${client.color}30)`, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 17, color: client.colorDeep, flexShrink: 0, boxShadow: `0 3px 8px ${client.color}30` }}>+</div>
             <div>
