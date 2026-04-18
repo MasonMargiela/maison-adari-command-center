@@ -306,7 +306,7 @@ const CmtCard = ({ c, accent, accentSoft }: { c: any; accent: string; accentSoft
 
 // ── AI INSIGHT BLOCK ───────────────────────────────────────────────────────
 const AIInsight = ({ text, platform }: { text: string; platform: string }) => (
-  <div className="glass-dark" style={{ borderRadius: 16, padding: '16px 18px', marginTop: 8, position: 'relative', overflow: 'hidden' }}>
+  <div className="liquid-glass-dark" style={{ borderRadius: 16, padding: '16px 18px', marginTop: 8, position: 'relative', overflow: 'hidden' }}>
     <div style={{ position: 'absolute', top: 0, right: 0, width: 80, height: 80, background: `radial-gradient(circle, ${P.lavender}20, transparent 70%)`, pointerEvents: 'none' }} />
     <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 10 }}>
       <div style={{ width: 22, height: 22, borderRadius: 6, background: `linear-gradient(135deg, ${P.lavSoft}, ${P.lavender})`, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 11, boxShadow: `0 2px 8px ${P.lavDeep}40` }}>✦</div>
@@ -729,8 +729,103 @@ const CLIENTS = [
   },
 ];
 
-// ── PIE CHART ─────────────────────────────────────────────────────────────
-const PieChart = ({ slices, size = 80 }: { slices: { value: number; color: string; label: string }[]; size?: number }) => {
+// ── SLIDING PERIOD PILL ────────────────────────────────────────────────────
+const PeriodPill = ({ periods, value, onChange, color = '#1a1713' }: {
+  periods: { id: string; label: string }[];
+  value: string;
+  onChange: (id: string) => void;
+  color?: string;
+}) => {
+  const trackRef = useRef<HTMLDivElement>(null);
+  const [thumbStyle, setThumbStyle] = useState({ left: 3, width: 0 });
+
+  useEffect(() => {
+    if (!trackRef.current) return;
+    const idx = periods.findIndex(p => p.id === value);
+    const btns = trackRef.current.querySelectorAll('.period-btn');
+    const btn = btns[idx] as HTMLElement;
+    if (btn) {
+      setThumbStyle({ left: btn.offsetLeft, width: btn.offsetWidth });
+    }
+  }, [value, periods]);
+
+  return (
+    <div ref={trackRef} className="period-track" style={{ position: 'relative' }}>
+      <div className="period-thumb" style={{ left: thumbStyle.left, width: thumbStyle.width }} />
+      {periods.map(p => (
+        <button key={p.id} className="period-btn btn-spring"
+          style={{ color: value === p.id ? '#fff' : '#8a8078' }}
+          onClick={() => onChange(p.id)}>
+          {p.label}
+        </button>
+      ))}
+    </div>
+  );
+};
+
+// ── SPINNING PIE CHART ─────────────────────────────────────────────────────
+const SpinPieChart = ({ slices, size = 80 }: { slices: { value: number; color: string; label: string }[]; size?: number }) => {
+  const [spinKey, setSpinKey] = useState(0);
+  const prevSlices = useRef(slices);
+
+  useEffect(() => {
+    // Spin when slices change meaningfully
+    const changed = slices.some((s, i) => s.value !== (prevSlices.current[i]?.value ?? -1));
+    if (changed) { setSpinKey(k => k + 1); prevSlices.current = slices; }
+  }, [slices]);
+
+  const total = slices.reduce((s, sl) => s + sl.value, 0);
+  const cx = size / 2, cy = size / 2, r = size / 2 - 4;
+
+  const svgContent = () => {
+    if (total === 0) return (
+      <circle cx={cx} cy={cy} r={r} fill={P.borderLight} />
+    );
+    if (slices.filter(s => s.value > 0).length === 1) {
+      const s = slices.find(sl => sl.value > 0)!;
+      return <circle cx={cx} cy={cy} r={r} fill={s.color} opacity={0.85} />;
+    }
+    let cumAngle = -90;
+    return slices.map((sl, i) => {
+      if (sl.value === 0) return null;
+      const startAngle = cumAngle;
+      const angle = (sl.value / total) * 360;
+      cumAngle += angle;
+      const endAngle = cumAngle;
+      const startRad = (startAngle * Math.PI) / 180;
+      const endRad = (endAngle * Math.PI) / 180;
+      const x1 = cx + r * Math.cos(startRad), y1 = cy + r * Math.sin(startRad);
+      const x2 = cx + r * Math.cos(endRad), y2 = cy + r * Math.sin(endRad);
+      const largeArc = angle > 180 ? 1 : 0;
+      return <path key={i} d={`M ${cx} ${cy} L ${x1.toFixed(2)} ${y1.toFixed(2)} A ${r} ${r} 0 ${largeArc} 1 ${x2.toFixed(2)} ${y2.toFixed(2)} Z`} fill={sl.color} opacity={0.85} />;
+    });
+  };
+
+  const activeSlices = slices.filter(s => s.value > 0);
+
+  return (
+    <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+      <svg key={spinKey} width={size} height={size} className={spinKey > 0 ? 'pie-spin' : ''} style={{ flexShrink: 0 }}>
+        {svgContent()}
+        <circle cx={cx} cy={cy} r={r * 0.45} fill="rgba(255,255,255,0.95)" />
+      </svg>
+      <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
+        {total === 0 ? (
+          <div style={{ fontSize: 10, color: P.inkFaint, fontFamily: F.mono }}>No data</div>
+        ) : activeSlices.map((s, i) => {
+          const pct = Math.round((s.value / total) * 100);
+          return (
+            <div key={i} style={{ display: 'flex', alignItems: 'center', gap: 5 }}>
+              <div style={{ width: 7, height: 7, borderRadius: '50%', background: s.color, flexShrink: 0 }} />
+              <div style={{ fontSize: 10, color: P.inkMid }}>{s.label}</div>
+              <div style={{ fontSize: 10, color: P.inkFaint, fontFamily: F.mono }}>{pct}%</div>
+            </div>
+          );
+        })}
+      </div>
+    </div>
+  );
+};
   const total = slices.reduce((s, sl) => s + sl.value, 0);
   if (total === 0) return (
     <div style={{ width: size, height: size, borderRadius: '50%', background: P.borderLight, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 9, color: P.inkFaint, textAlign: 'center', flexShrink: 0 }}>
@@ -811,20 +906,24 @@ function applyTimePeriod(weeklyDelta: number, periodId: string): { value: number
 }
 
 // ── PERSON SUMMARY CARD ────────────────────────────────────────────────────
-const PersonCard = ({ name, avatar, color, colorSoft, colorDeep, accounts, contentScore, engagement, reach, liveMetrics, timePeriod, igGoal, setIgGoal, mattGoal, setMattGoal }: any) => {
+const PersonCard = ({ name, avatar, color, colorSoft, colorDeep, accounts, contentScore, engagement, reach, liveMetrics, timePeriod, igGoal, setIgGoal, mattGoal, setMattGoal, igHistory }: any) => {
   const [goalPlatform, setGoalPlatform] = useState('instagram');
 
   const totalFollowers = name === 'Mason' && liveMetrics
     ? liveMetrics.followers
     : accounts.reduce((s: number, a: any) => s + (a.followers ?? 0), 0);
 
-  // Weekly delta from accounts
-  const weeklyDelta = accounts.reduce((s: number, a: any) => {
-    const d = parseInt((a.followerDelta ?? '+0').replace('+', '').replace(',', ''));
-    return s + (isNaN(d) ? 0 : d);
-  }, 0);
-
-  const { value: deltaVal, label: deltaLabel } = applyTimePeriod(weeklyDelta, timePeriod);
+  // Use real history for Mason, fallback to computed delta for others
+  const { value: deltaVal, label: deltaLabel } = (() => {
+    if (name === 'Mason' && igHistory && igHistory.length >= 2) {
+      return applyTimePeriodFromHistory(igHistory, timePeriod);
+    }
+    const weeklyDelta = accounts.reduce((s: number, a: any) => {
+      const d = parseInt((a.followerDelta ?? '+0').replace('+', '').replace(',', ''));
+      return s + (isNaN(d) ? 0 : d);
+    }, 0);
+    return applyTimePeriod(weeklyDelta, timePeriod);
+  })();
 
   // Per-platform reach
   const totalReach = name === 'Mason' && liveMetrics ? liveMetrics.reach : reach;
@@ -881,7 +980,7 @@ const PersonCard = ({ name, avatar, color, colorSoft, colorDeep, accounts, conte
       {/* Follower source pie */}
       <div style={{ marginBottom: 12, paddingBottom: 12, borderBottom: `1px solid ${P.borderLight}` }}>
         <div style={{ fontSize: 9, color: P.inkFaint, fontFamily: F.mono, marginBottom: 7, textTransform: 'uppercase', letterSpacing: '0.12em' }}>Followers by Platform</div>
-        <PieChart slices={pieSlices} size={76} />
+        <SpinPieChart slices={pieSlices} size={76} />
       </div>
 
       {/* Stats row */}
@@ -983,7 +1082,7 @@ const OverviewTab = ({ igMetrics, igLoading, igGoal, handleSetIgGoal, today }: a
   return (
     <div>
       {/* Morning briefing */}
-      <div className="glass-dark" style={{ borderRadius: 18, padding: '15px 17px', marginBottom: 14, position: 'relative', overflow: 'hidden' }}>
+      <div className="liquid-glass-dark" style={{ borderRadius: 18, padding: '15px 17px', marginBottom: 14, position: 'relative', overflow: 'hidden' }}>
         <div style={{ position: 'absolute', top: -20, right: -20, width: 100, height: 100, background: `radial-gradient(circle, ${P.lavender}25, transparent 70%)`, pointerEvents: 'none' }} />
         <div style={{ fontSize: 9, letterSpacing: '0.18em', textTransform: 'uppercase', color: P.lavender, fontFamily: F.mono, marginBottom: 6, display: 'flex', alignItems: 'center', gap: 6 }}>
           <span>📰</span> Morning Briefing · {today}
@@ -1005,7 +1104,7 @@ const OverviewTab = ({ igMetrics, igLoading, igGoal, handleSetIgGoal, today }: a
         const masonDelta = masonHistoryDelta;
         const mattDelta = 0;
         return (
-          <div className="glass-dark" style={{ borderRadius: 18, padding: '16px 18px', marginBottom: 14, display: 'grid', gridTemplateColumns: 'repeat(3, minmax(0, 1fr))', gap: 12, position: 'relative', overflow: 'hidden' }}>
+          <div className="liquid-glass-dark" style={{ borderRadius: 18, padding: '16px 18px', marginBottom: 14, display: 'grid', gridTemplateColumns: 'repeat(3, minmax(0, 1fr))', gap: 12, position: 'relative', overflow: 'hidden' }}>
             <div style={{ position: 'absolute', bottom: -30, left: '50%', transform: 'translateX(-50%)', width: 200, height: 80, background: `radial-gradient(ellipse, ${P.lavender}18, transparent 70%)`, pointerEvents: 'none' }} />
             <div>
               <div style={{ fontSize: 9, color: P.darkMuted, fontFamily: F.mono, textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: 4 }}>Combined Followers</div>
@@ -1027,16 +1126,13 @@ const OverviewTab = ({ igMetrics, igLoading, igGoal, handleSetIgGoal, today }: a
       })()}
 
       {/* Time period switcher */}
-      <div style={{ display: 'flex', alignItems: 'center', gap: 7, marginBottom: 12 }}>
-        <div style={{ fontSize: 10, color: P.inkSoft, fontFamily: F.mono, flexShrink: 0 }}>Growth period:</div>
-        <div style={{ display: 'flex', background: P.card, border: `1px solid ${P.border}`, borderRadius: 20, padding: 2, gap: 1 }}>
-          {TIME_PERIODS.map(tp => (
-            <button key={tp.id} onClick={() => setTimePeriod(tp.id)}
-              style={{ background: timePeriod === tp.id ? P.ink : 'none', color: timePeriod === tp.id ? P.white : P.inkSoft, border: 'none', borderRadius: 16, padding: '4px 9px', fontSize: 10, fontWeight: 600, cursor: 'pointer', fontFamily: F.mono, transition: 'all 0.15s' }}>
-              {tp.label}
-            </button>
-          ))}
-        </div>
+      <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 14 }}>
+        <div style={{ fontSize: 10, color: P.inkSoft, fontFamily: F.mono, flexShrink: 0 }}>Period:</div>
+        <PeriodPill
+          periods={TIME_PERIODS.map(tp => ({ id: tp.id, label: tp.label }))}
+          value={timePeriod}
+          onChange={setTimePeriod}
+        />
       </div>
 
       {/* Person cards */}
@@ -1056,6 +1152,7 @@ const OverviewTab = ({ igMetrics, igLoading, igGoal, handleSetIgGoal, today }: a
         setIgGoal={handleSetIgGoal}
         mattGoal={igGoal}
         setMattGoal={handleSetIgGoal}
+        igHistory={igHistory}
       />
       <PersonCard
         name="Macros Wit Matt"
@@ -1097,7 +1194,7 @@ const OverviewTab = ({ igMetrics, igLoading, igGoal, handleSetIgGoal, today }: a
       </div>
 
       {/* Connect accounts */}
-      <div className="glass-dark" style={{ borderRadius: 18, padding: '15px 17px', marginBottom: 14, position: 'relative', overflow: 'hidden' }}>
+      <div className="liquid-glass-dark" style={{ borderRadius: 18, padding: '15px 17px', marginBottom: 14, position: 'relative', overflow: 'hidden' }}>
         <div style={{ position: 'absolute', top: -30, right: -20, width: 120, height: 120, background: `radial-gradient(circle, ${P.sky}15, transparent 70%)`, pointerEvents: 'none' }} />
         <div style={{ fontSize: 9, color: P.darkMuted, fontFamily: F.mono, letterSpacing: '0.16em', textTransform: 'uppercase', marginBottom: 12 }}>Connect More Accounts</div>
         {[
@@ -1190,7 +1287,7 @@ const FollowerGraph = ({ accountId, color, colorSoft }: { accountId?: string; co
     if (!svgRef.current || data.length < 2) return;
     const rect = svgRef.current.getBoundingClientRect();
     const mouseX = e.clientX - rect.left;
-    const padL = 40, padR = 12;
+    const padL = 44, padR = 0;
     const innerW = w - padL - padR;
     const idx = Math.round(((mouseX - padL) / innerW) * (data.length - 1));
     const clamped = Math.max(0, Math.min(data.length - 1, idx));
@@ -1225,8 +1322,8 @@ const FollowerGraph = ({ accountId, color, colorSoft }: { accountId?: string; co
     </div>
   );
 
-  const h = 180;
-  const padL = 40, padR = 16, padT = 14, padB = 44;
+  const h = 220;
+  const padL = 44, padR = 0, padT = 14, padB = 36;
   const innerW = w - padL - padR;
   const innerH = h - padT - padB;
 
@@ -1509,13 +1606,13 @@ const UnifiedAccountView = ({ acc, igData, goal, setGoal }: { acc: any; igData: 
   return (
     <div>
       {/* Account sub-header with score ring */}
-      <div style={{ background: P.white, border: `1px solid ${P.border}`, borderRadius: 14, padding: '13px 15px', marginBottom: 10, display: 'flex', alignItems: 'center', gap: 10 }}>
-        <div style={{ width: 32, height: 32, borderRadius: 8, background: acc.colorSoft, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 14, flexShrink: 0 }}>{acc.icon}</div>
+      <div className="liquid-glass" style={{ borderRadius: 16, padding: '13px 15px', marginBottom: 10, display: 'flex', alignItems: 'center', gap: 10 }}>
+        <div style={{ width: 34, height: 34, borderRadius: 9, background: `linear-gradient(135deg, ${acc.colorSoft}, ${acc.color}40)`, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 15, flexShrink: 0, boxShadow: `0 3px 8px ${acc.color}30` }}>{acc.icon}</div>
         <div style={{ flex: 1 }}>
-          <div style={{ fontSize: 12, fontWeight: 600, color: P.ink }}>{acc.platform}</div>
+          <div style={{ fontSize: 12, fontWeight: 700, color: P.ink }}>{acc.platform}</div>
           <div style={{ fontSize: 10, color: P.inkSoft, display: 'flex', alignItems: 'center', gap: 4 }}>
             {handle}
-            {isLive && <><LiveDot color={P.sageDeep} /><span style={{ fontSize: 9, color: P.sageDeep, fontFamily: F.mono }}>synced</span></>}
+            {isLive && <><LiveDot color={P.sageDeep} /><span style={{ fontSize: 9, color: P.sageDeep, fontFamily: F.mono, fontWeight: 600 }}>synced</span></>}
           </div>
         </div>
         <Ring val={contentScore} color={acc.colorDeep} size={44} />
@@ -1550,28 +1647,30 @@ const UnifiedAccountView = ({ acc, igData, goal, setGoal }: { acc: any; igData: 
               <span style={{ fontSize: 10, color: P.inkFaint }}>{deltaLabel}</span>
             </div>
             {/* Time period switcher */}
-            <div style={{ display: 'flex', background: P.card, border: `1px solid ${P.border}`, borderRadius: 20, padding: 2, gap: 1, marginTop: 8, width: 'fit-content' }}>
-              {TIME_PERIODS.map((tp: any) => (
-                <button key={tp.id} onClick={() => setTimePeriod(tp.id)}
-                  style={{ background: timePeriod === tp.id ? P.ink : 'none', color: timePeriod === tp.id ? P.white : P.inkSoft, border: 'none', borderRadius: 16, padding: '3px 9px', fontSize: 10, fontWeight: 600, cursor: 'pointer', fontFamily: F.mono, transition: 'all 0.15s' }}>
-                  {tp.label}
-                </button>
-              ))}
+            <div style={{ marginTop: 10 }}>
+              <PeriodPill
+                periods={TIME_PERIODS.map((tp: any) => ({ id: tp.id, label: tp.label }))}
+                value={timePeriod}
+                onChange={setTimePeriod}
+              />
             </div>
           </div>
           {/* Pie chart */}
           <div>
             <div style={{ fontSize: 9, color: P.inkFaint, fontFamily: F.mono, marginBottom: 6, textTransform: 'uppercase', letterSpacing: '0.1em' }}>By Platform</div>
-            <PieChart slices={pieSlices} size={72} />
+            <SpinPieChart slices={pieSlices} size={72} />
           </div>
         </div>
       </div>
 
       {/* Follower growth graph — only for live accounts */}
       {isLive && (
-        <div style={{ background: 'rgba(255,255,255,0.88)', backdropFilter: 'blur(16px)', WebkitBackdropFilter: 'blur(16px)', border: `1px solid rgba(255,255,255,0.65)`, borderRadius: 18, padding: '15px 16px', marginBottom: 10, boxShadow: P.shadowMd, position: 'relative', overflow: 'hidden' }}>
-          <div style={{ position: 'absolute', top: 0, left: 0, right: 0, height: 3, background: `linear-gradient(90deg, ${acc.color}, ${acc.colorDeep})`, borderRadius: '18px 18px 0 0' }} />
-          <FollowerGraph color={acc.colorDeep} colorSoft={acc.colorSoft} accountId={acc.dbId} />
+        <div style={{ background: 'rgba(255,255,255,0.88)', backdropFilter: 'blur(16px)', WebkitBackdropFilter: 'blur(16px)', border: `1px solid rgba(255,255,255,0.65)`, borderRadius: 18, marginBottom: 10, boxShadow: P.shadowMd, position: 'relative', overflow: 'hidden' }}>
+          <div style={{ position: 'absolute', top: 0, left: 0, right: 0, height: 3, background: `linear-gradient(90deg, ${acc.color}, ${acc.colorDeep})`, borderRadius: '18px 18px 0 0', zIndex: 2 }} />
+          <div style={{ padding: '18px 18px 0' }}>
+            <FollowerGraph color={acc.colorDeep} colorSoft={acc.colorSoft} accountId={acc.dbId} />
+          </div>
+          <div style={{ height: 14 }} />
         </div>
       )}
 
@@ -1665,14 +1764,12 @@ const UnifiedAccountView = ({ acc, igData, goal, setGoal }: { acc: any; igData: 
             </div>
           </div>
         </div>
-        <div style={{ display: 'flex', background: P.white, border: `1px solid ${P.border}`, borderRadius: 20, padding: 2, gap: 1 }}>
-          {TIME_PERIODS.map((tp: any) => (
-            <button key={tp.id} onClick={() => setTimePeriod(tp.id)}
-              style={{ background: timePeriod === tp.id ? acc.colorDeep : 'none', color: timePeriod === tp.id ? P.white : P.inkSoft, border: 'none', borderRadius: 16, padding: '4px 0', fontSize: 10, fontWeight: 600, cursor: 'pointer', fontFamily: F.mono, flex: 1, transition: 'all 0.15s' }}>
-              {tp.label}
-            </button>
-          ))}
-        </div>
+        <PeriodPill
+          periods={TIME_PERIODS.map((tp: any) => ({ id: tp.id, label: tp.label }))}
+          value={timePeriod}
+          onChange={setTimePeriod}
+          color={acc.colorDeep}
+        />
       </div>
 
       {/* Follower Goal */}
@@ -1839,10 +1936,14 @@ const DynamicClientView = ({ client, igData, igGoal, setIgGoal }: { client: any;
           <div style={{ fontSize: 11, color: P.inkSoft, marginBottom: 6 }}>{client.role}</div>
           <div style={{ display: 'flex', gap: 5, flexWrap: 'wrap' }}>
             <Tag color={client.colorDeep} bg={client.colorSoft}>{fmtNum(displayFollowers)} followers</Tag>
-            {isMason && metrics && <Tag color={P.roseDeep} bg={P.roseSoft}>📸 @masondoesnumbers</Tag>}
-            {isMason && <Tag color={P.skyDeep} bg={P.skySoft}>🎵 @masondoesnumbers</Tag>}
-            {!isMason && <Tag color={P.sageDeep} bg={P.sageSoft}>🎵 @macroswitmatt</Tag>}
-            {!isMason && <Tag color={P.peachDeep} bg={P.peachSoft}>📸 @macroswithmatt</Tag>}
+            {accounts.map((acc: any) => (
+              <Tag key={acc.id} color={acc.platform === 'instagram' ? P.roseDeep : acc.platform === 'tiktok' ? P.sageDeep : P.skyDeep}
+                bg={acc.platform === 'instagram' ? P.roseSoft : acc.platform === 'tiktok' ? P.sageSoft : P.skySoft}>
+                {acc.platform === 'instagram' ? '📸' : acc.platform === 'tiktok' ? '🎵' : '▶️'} @{acc.username}
+              </Tag>
+            ))}
+            {loading && <Tag color={P.inkFaint} bg={P.card}>Loading...</Tag>}
+            {!loading && accounts.length === 0 && <Tag color={P.inkFaint} bg={P.card}>No accounts connected</Tag>}
           </div>
         </div>
         <Ring val={contentScore} color={client.colorDeep} size={50} />
@@ -1858,8 +1959,9 @@ const DynamicClientView = ({ client, igData, igGoal, setIgGoal }: { client: any;
       <SH children={`${accounts.length + staticAccounts.length} Connected Account${accounts.length + staticAccounts.length !== 1 ? 's' : ''}`} sub="Tap header to collapse · both open by default" />
 
       {loading && (
-        <div style={{ background: P.card, borderRadius: 13, padding: '20px', textAlign: 'center' }}>
-          <div style={{ fontSize: 11, color: P.inkFaint, fontFamily: F.mono }}>Loading accounts...</div>
+        <div style={{ borderRadius: 16, overflow: 'hidden', marginBottom: 10 }}>
+          <div className="shimmer" style={{ height: 64, borderRadius: 16, marginBottom: 8 }} />
+          <div className="shimmer" style={{ height: 64, borderRadius: 16 }} />
         </div>
       )}
 
@@ -2009,7 +2111,7 @@ const DynamicClientView = ({ client, igData, igGoal, setIgGoal }: { client: any;
           })}
 
           {/* Add account CTA */}
-          <a href={'/connect/invite?invite=' + client.id}
+          <a href="/connect"
             className="card-lift"
             style={{ display: 'flex', alignItems: 'center', gap: 10, background: 'rgba(255,255,255,0.7)', backdropFilter: 'blur(12px)', WebkitBackdropFilter: 'blur(12px)', border: `1.5px dashed ${P.border}`, borderRadius: 18, padding: '14px 16px', textDecoration: 'none', marginBottom: 10 }}>
             <div style={{ width: 34, height: 34, borderRadius: 10, background: `linear-gradient(135deg, ${client.colorSoft}, ${client.color}30)`, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 17, color: client.colorDeep, flexShrink: 0, boxShadow: `0 3px 8px ${client.color}30` }}>+</div>
@@ -2605,8 +2707,8 @@ export default function AdariCommandCenter() {
     <div className="mesh-bg" style={{ minHeight: '100vh', color: P.ink, fontFamily: F.body, paddingBottom: 80 }}>
       <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,wght@0,300;0,400;0,600;0,700;0,800;1,400&family=DM+Sans:wght@300;400;500;600;700&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet" />
 
-      {/* HEADER — glass morphism */}
-      <div className="header-gradient" style={{ padding: '14px 18px 0', position: 'sticky', top: 0, zIndex: 20 }}>
+      {/* HEADER — liquid glass iOS 26 */}
+      <div className="liquid-glass" style={{ borderRadius: 0, padding: '14px 18px 0', position: 'sticky', top: 0, zIndex: 20, borderLeft: 'none', borderRight: 'none', borderTop: 'none' }}>
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 12 }}>
           <div>
             <div style={{ fontSize: 9, letterSpacing: '0.22em', textTransform: 'uppercase', color: P.inkFaint, fontFamily: F.mono }}>Maison Adari · The AFE</div>
