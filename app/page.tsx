@@ -789,9 +789,18 @@ function getClientAvatarSource(client: any, liveAccounts?: any[]) {
     handle:
       a?.handle ||
       (a?.username ? `@${String(a.username).replace(/^@/, '')}` : undefined) ||
-      (a?.platformUsername ? `@${String(a.platformUsername).replace(/^@/, '')}` : undefined) ||
-      deriveHandleCandidate(a?.name) ||
-      deriveHandleCandidate(a?.title),
+      (a?.platformUsername ? `@${String(a.platformUsername).replace(/^@/, '')}` : undefined),
+    src:
+      a?.profilePictureUrl ||
+      a?.profile_picture_url ||
+      a?.profile_picture ||
+      a?.avatarUrl ||
+      a?.avatar_url ||
+      a?.image ||
+      a?.picture ||
+      a?.photoUrl ||
+      a?.photo_url ||
+      null,
   }))
 
   const staticAccounts = (Array.isArray(client?.accounts) ? client.accounts : []).map((a: any) => ({
@@ -803,14 +812,25 @@ function getClientAvatarSource(client: any, liveAccounts?: any[]) {
       (a?.platformUsername ? `@${String(a.platformUsername).replace(/^@/, '')}` : undefined) ||
       deriveHandleCandidate(a?.name) ||
       deriveHandleCandidate(a?.title),
+    src:
+      a?.profilePictureUrl ||
+      a?.profile_picture_url ||
+      a?.profile_picture ||
+      a?.avatarUrl ||
+      a?.avatar_url ||
+      a?.image ||
+      a?.picture ||
+      a?.photoUrl ||
+      a?.photo_url ||
+      null,
   }))
 
   const combined = [...live, ...staticAccounts]
 
   const preferred =
-    combined.find((a: any) => a.platform === 'instagram' && a.handle) ||
-    combined.find((a: any) => a.platform === 'tiktok' && a.handle) ||
-    combined.find((a: any) => a.handle)
+    combined.find((a: any) => a.platform === 'instagram' && (a.src || a.handle)) ||
+    combined.find((a: any) => a.platform === 'tiktok' && (a.src || a.handle)) ||
+    combined.find((a: any) => a.src || a.handle)
 
   return {
     handle:
@@ -821,6 +841,18 @@ function getClientAvatarSource(client: any, liveAccounts?: any[]) {
       preferred?.platform ||
       String(client?.platform || '').toLowerCase() ||
       'instagram',
+    src:
+      preferred?.src ||
+      client?.profilePictureUrl ||
+      client?.profile_picture_url ||
+      client?.profile_picture ||
+      client?.avatarUrl ||
+      client?.avatar_url ||
+      client?.image ||
+      client?.picture ||
+      client?.photoUrl ||
+      client?.photo_url ||
+      null,
   }
 }
 
@@ -946,8 +978,8 @@ function getSimpleAvatarSrc(handle?: string, platform?: string) {
   return null
 }
 
-function SimpleAccountAvatar({ handle, platform, size = 28 }: { handle?: string; platform?: string; size?: number }) {
-  const src = getSimpleAvatarSrc(handle, platform)
+function SimpleAccountAvatar({ handle, platform, size = 28, src }: { handle?: string; platform?: string; size?: number; src?: string | null }) {
+  const resolvedSrc = src || getSimpleAvatarSrc(handle, platform)
   const fallback = ((platform || '?')[0] || '?').toUpperCase()
 
   return (
@@ -966,18 +998,29 @@ function SimpleAccountAvatar({ handle, platform, size = 28 }: { handle?: string;
         fontSize: 11,
         fontWeight: 700,
         color: P.lavDeep,
+        position: 'relative',
       }}
     >
-      {src ? (
+      {resolvedSrc ? (
         <img
-          src={src}
+          src={resolvedSrc}
           alt={handle || platform || 'account'}
           style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }}
           onError={(e) => {
             (e.currentTarget as HTMLImageElement).style.display = 'none'
           }}
         />
-      ) : fallback}
+      ) : null}
+      <div
+        style={{
+          position: 'absolute',
+          inset: 0,
+          display: resolvedSrc ? 'none' : 'grid',
+          placeItems: 'center',
+        }}
+      >
+        {fallback}
+      </div>
     </div>
   )
 }
