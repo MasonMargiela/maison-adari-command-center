@@ -737,26 +737,62 @@ const PeriodPill = ({ periods, value, onChange, color = '#1a1713' }: {
   color?: string;
 }) => {
   const trackRef = useRef<HTMLDivElement>(null);
-  const [thumbStyle, setThumbStyle] = useState({ left: 3, width: 0 });
+  const [thumbStyle, setThumbStyle] = useState({ left: 4, width: 0, opacity: 0 });
 
   useEffect(() => {
     if (!trackRef.current) return;
-    const idx = periods.findIndex(p => p.id === value);
-    const btns = trackRef.current.querySelectorAll('.period-btn');
-    const btn = btns[idx] as HTMLElement;
-    if (btn) {
-      setThumbStyle({ left: btn.offsetLeft, width: btn.offsetWidth });
-    }
+
+    const updateThumb = () => {
+      if (!trackRef.current) return;
+      const idx = periods.findIndex(p => p.id === value);
+      const btns = trackRef.current.querySelectorAll('.period-btn');
+      const btn = btns[idx] as HTMLElement | undefined;
+      if (btn) {
+        setThumbStyle({
+          left: btn.offsetLeft,
+          width: btn.offsetWidth,
+          opacity: 1
+        });
+      }
+    };
+
+    const raf = requestAnimationFrame(updateThumb);
+    const ro = new ResizeObserver(() => updateThumb());
+    ro.observe(trackRef.current);
+
+    return () => {
+      cancelAnimationFrame(raf);
+      ro.disconnect();
+    };
   }, [value, periods]);
 
   return (
-    <div ref={trackRef} className="period-track" style={{ position: 'relative' }}>
-      <div className="period-thumb" style={{ left: thumbStyle.left, width: thumbStyle.width }} />
-      {periods.map(p => (
-        <button key={p.id} className="period-btn btn-spring"
-          style={{ color: value === p.id ? '#fff' : '#8a8078' }}
-          onClick={() => onChange(p.id)}>
-          {p.label}
+    <div
+      ref={trackRef}
+      className="period-track"
+      style={{ position: 'relative', display: 'inline-flex', width: 'auto' }}
+    >
+      <div
+        className="period-thumb"
+        style={{
+          left: thumbStyle.left,
+          width: thumbStyle.width,
+          opacity: thumbStyle.opacity,
+          ['--pill-accent' as any]: color,
+        }}
+      />
+      {periods.map((p, i) => (
+        <button
+          key={p.id}
+          className="period-btn"
+          data-active={value === p.id ? 'true' : 'false'}
+          onClick={() => onChange(p.id)}
+          style={{
+            color: value === p.id ? '#ffffff' : '#6f685f',
+            transitionDelay: value === p.id ? '0.02s' : '0s'
+          }}
+        >
+          <span className="period-btn-label">{p.label}</span>
         </button>
       ))}
     </div>
