@@ -752,6 +752,35 @@ function getClientPrimaryAccount(client: any) {
   return preferred || client
 }
 
+
+function getClientSimpleAvatarSource(client: any): { handle?: string; platform?: string } {
+  if (!client?.accounts?.length) {
+    return {
+      handle: client?.handle || client?.username || undefined,
+      platform: client?.platform || undefined,
+    }
+  }
+
+  const normalized = client.accounts.map((a: any) => ({
+    ...a,
+    platform: String(a?.platform || '').toLowerCase(),
+    handle: a?.handle || (a?.username ? `@${String(a.username).replace(/^@/, '')}` : undefined),
+  }))
+
+  const preferred =
+    normalized.find((a: any) => a.platform === 'instagram' && !a?.notConnected && a?.handle) ||
+    normalized.find((a: any) => a.platform === 'tiktok' && !a?.notConnected && a?.handle) ||
+    normalized.find((a: any) => !a?.notConnected && a?.handle) ||
+    normalized.find((a: any) => a.platform === 'instagram' && a?.handle) ||
+    normalized.find((a: any) => a.platform === 'tiktok' && a?.handle) ||
+    normalized.find((a: any) => a?.handle)
+
+  return {
+    handle: preferred?.handle,
+    platform: preferred?.platform,
+  }
+}
+
 // ── SLIDING PERIOD PILL ────────────────────────────────────────────────────
 const PeriodPill = ({ periods, value, onChange, color = '#1a1713' }: {
   periods: { id: string; label: string }[];
@@ -1717,7 +1746,7 @@ const UnifiedAccountView = ({ acc, igData, goal, setGoal }: { acc: any; igData: 
     <div>
       {/* Account sub-header with score ring */}
       <div className="glass-surface" style={{ borderRadius: 16, padding: '13px 15px', marginBottom: 10, display: 'flex', alignItems: 'center', gap: 10 }}>
-        <AccountAvatar account={acc} size={34} />
+        <SimpleAccountAvatar handle={acc.handle || acc.username} platform={acc.platform} size={34} />
         <div style={{ flex: 1 }}>
           <div style={{ fontSize: 12, fontWeight: 700, color: P.ink }}>{acc.platform}</div>
           <div style={{ fontSize: 10, color: P.inkSoft, display: 'flex', alignItems: 'center', gap: 4 }}>
@@ -2041,7 +2070,7 @@ const DynamicClientView = ({ client, igData, igGoal, setIgGoal }: { client: any;
       }}>
         <div style={{ position: 'absolute', top: -20, right: -20, width: 140, height: 140, background: `radial-gradient(circle, ${client.colorSoft}90, transparent 70%)`, pointerEvents: 'none' }} />
         <div style={{ width: 54, height: 54, borderRadius: 15, background: `linear-gradient(135deg, ${client.colorSoft}, ${client.colorDeep}30)`, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 22, fontWeight: 700, color: client.colorDeep, fontFamily: F.display, flexShrink: 0, boxShadow: `0 6px 20px ${client.colorDeep}30` }}>
-          {<AccountAvatar account={getClientPrimaryAccount(client)} size={40} />}
+          {<SimpleAccountAvatar handle={getClientSimpleAvatarSource(client).handle} platform={getClientSimpleAvatarSource(client).platform} size={40} />}
         </div>
         <div style={{ flex: 1 }}>
           <div style={{ fontSize: 17, fontWeight: 700, fontFamily: F.display, color: P.ink }}>{client.name}</div>
@@ -2203,7 +2232,7 @@ const DynamicClientView = ({ client, igData, igGoal, setIgGoal }: { client: any;
               }}>
                 <button onClick={() => toggle(accId)}
                   style={{ width: '100%', background: 'none', border: 'none', cursor: 'pointer', padding: '13px 15px', display: 'flex', alignItems: 'center', gap: 9, borderBottom: isOpen ? `1px solid ${P.border}` : 'none' }}>
-                  <AccountAvatar account={acc} size={32} />
+                  <SimpleAccountAvatar handle={acc.handle || acc.username} platform={acc.platform} size={32} />
                   <div style={{ textAlign: 'left', flex: 1 }}>
                     <div style={{ fontSize: 13, fontWeight: 600, color: P.ink }}>{acc.platform}</div>
                     <div style={{ fontSize: 10, color: P.inkSoft }}>{acc.handle}</div>
@@ -2282,7 +2311,7 @@ const ClientView = ({ client, igData, igGoal, setIgGoal }: { client: any; igData
       {/* Creator header */}
       <div style={{ background: P.white, border: `1px solid ${P.border}`, borderRadius: 16, padding: '16px 18px', marginBottom: 14, display: 'flex', gap: 13, alignItems: 'center' }}>
         <div style={{ width: 50, height: 50, borderRadius: 13, background: client.colorSoft, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 20, fontWeight: 700, color: client.colorDeep, fontFamily: F.display, flexShrink: 0 }}>
-          {<AccountAvatar account={getClientPrimaryAccount(client)} size={40} />}
+          {<SimpleAccountAvatar handle={getClientSimpleAvatarSource(client).handle} platform={getClientSimpleAvatarSource(client).platform} size={40} />}
         </div>
         <div style={{ flex: 1 }}>
           <div style={{ fontSize: 17, fontWeight: 700, fontFamily: F.display, color: P.ink }}>{client.name}</div>
@@ -2329,7 +2358,7 @@ const ClientView = ({ client, igData, igGoal, setIgGoal }: { client: any; igData
             {/* Account header button */}
             <button onClick={() => toggleAcc(originalIdx)}
               style={{ width: '100%', background: 'none', border: 'none', cursor: 'pointer', padding: '13px 15px', display: 'flex', alignItems: 'center', gap: 9, borderBottom: isOpen ? `1px solid ${P.border}` : 'none' }}>
-              <AccountAvatar account={acc} size={32} />
+              <SimpleAccountAvatar handle={acc.handle || acc.username} platform={acc.platform} size={32} />
               <div style={{ textAlign: 'left', flex: 1 }}>
                 <div style={{ fontSize: 13, fontWeight: 600, color: P.ink, display: 'flex', alignItems: 'center', gap: 5 }}>
                   {acc.platform}
@@ -3196,7 +3225,7 @@ export default function AdariCommandCenter() {
             <SH>Active Clients</SH>
             {CLIENTS.map((client, i) => (
               <div key={i} style={{ background: P.white, border: `1px solid ${P.border}`, borderRadius: 14, padding: '14px 16px', marginBottom: 10, display: 'flex', alignItems: 'center', gap: 12 }}>
-                <AccountAvatar account={getClientPrimaryAccount(client)} size={40} />
+                <SimpleAccountAvatar handle={getClientSimpleAvatarSource(client).handle} platform={getClientSimpleAvatarSource(client).platform} size={40} />
                 <div style={{ flex: 1 }}>
                   <div style={{ fontSize: 14, fontWeight: 700, fontFamily: F.display, color: P.ink }}>{client.name}</div>
                   <div style={{ fontSize: 11, color: P.inkSoft }}>{client.role}</div>
