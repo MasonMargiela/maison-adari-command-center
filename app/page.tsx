@@ -786,13 +786,23 @@ function getClientAvatarSource(client: any, liveAccounts?: any[]) {
   const live = (Array.isArray(liveAccounts) ? liveAccounts : []).map((a: any) => ({
     ...a,
     platform: String(a?.platform || '').toLowerCase(),
-    handle: a?.handle || (a?.username ? `@${String(a.username).replace(/^@/, '')}` : undefined),
+    handle:
+      a?.handle ||
+      (a?.username ? `@${String(a.username).replace(/^@/, '')}` : undefined) ||
+      (a?.platformUsername ? `@${String(a.platformUsername).replace(/^@/, '')}` : undefined) ||
+      deriveHandleCandidate(a?.name) ||
+      deriveHandleCandidate(a?.title),
   }))
 
   const staticAccounts = (Array.isArray(client?.accounts) ? client.accounts : []).map((a: any) => ({
     ...a,
     platform: String(a?.platform || '').toLowerCase(),
-    handle: a?.handle || (a?.username ? `@${String(a.username).replace(/^@/, '')}` : undefined),
+    handle:
+      a?.handle ||
+      (a?.username ? `@${String(a.username).replace(/^@/, '')}` : undefined) ||
+      (a?.platformUsername ? `@${String(a.platformUsername).replace(/^@/, '')}` : undefined) ||
+      deriveHandleCandidate(a?.name) ||
+      deriveHandleCandidate(a?.title),
   }))
 
   const combined = [...live, ...staticAccounts]
@@ -803,8 +813,14 @@ function getClientAvatarSource(client: any, liveAccounts?: any[]) {
     combined.find((a: any) => a.handle)
 
   return {
-    handle: preferred?.handle,
-    platform: preferred?.platform,
+    handle:
+      preferred?.handle ||
+      deriveHandleCandidate(client?.name) ||
+      deriveHandleCandidate(client?.title),
+    platform:
+      preferred?.platform ||
+      String(client?.platform || '').toLowerCase() ||
+      'instagram',
   }
 }
 
@@ -908,12 +924,25 @@ const PeriodPill = ({ periods, value, onChange, color = '#1a1713' }: {
 };
 
 
+function deriveHandleCandidate(value?: string | null) {
+  if (!value || typeof value !== 'string') return undefined
+  const cleaned = value
+    .toLowerCase()
+    .replace(/https?:\/\/[^\s]+/g, '')
+    .replace(/[@#]/g, '')
+    .replace(/[^a-z0-9]+/g, '')
+    .trim()
+  return cleaned ? `@${cleaned}` : undefined
+}
+
 function getSimpleAvatarSrc(handle?: string, platform?: string) {
-  if (!handle) return null
-  const clean = handle.replace(/^@/, '')
+  const candidate = (handle || '').trim()
+  if (!candidate) return null
+  const clean = candidate.replace(/^@/, '')
   if (!clean) return null
-  if ((platform || '').toLowerCase() === 'instagram') return `https://unavatar.io/instagram/${clean}`
-  if ((platform || '').toLowerCase() === 'tiktok') return `https://unavatar.io/tiktok/${clean}`
+  const normalizedPlatform = (platform || '').toLowerCase().trim()
+  if (normalizedPlatform === 'instagram') return `https://unavatar.io/instagram/${clean}`
+  if (normalizedPlatform === 'tiktok') return `https://unavatar.io/tiktok/${clean}`
   return null
 }
 
@@ -2854,6 +2883,10 @@ function getAccountAvatarSrc(account: any): string | null {
     source.displayName ||
     source.user_name ||
     source.screen_name ||
+    deriveHandleCandidate(source.name) ||
+    deriveHandleCandidate(source.title) ||
+    deriveHandleCandidate(account.name) ||
+    deriveHandleCandidate(account.title) ||
     null
 
   if (!rawUsername || typeof rawUsername !== 'string') return null
