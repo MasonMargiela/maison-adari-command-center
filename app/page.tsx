@@ -1620,7 +1620,7 @@ const UnifiedAccountView = ({ acc, igData, goal, setGoal }: { acc: any; igData: 
       {isLive && (
         <div style={{ background: 'rgba(255,255,255,0.88)', backdropFilter: 'blur(16px)', WebkitBackdropFilter: 'blur(16px)', border: `1px solid rgba(255,255,255,0.65)`, borderRadius: 18, marginBottom: 10, boxShadow: P.shadowMd, position: 'relative', overflow: 'hidden' }}>
           <div style={{ position: 'absolute', top: 0, left: 0, right: 0, height: 3, background: `linear-gradient(90deg, ${acc.color}, ${acc.colorDeep})`, borderRadius: '18px 18px 0 0', zIndex: 2 }} />
-          <div style={{ padding: '18px 18px 0' }}>
+          <div style={{ padding: '18px 18px 0', maxWidth: 680, margin: '0 auto' }}>
             <FollowerGraph color={acc.colorDeep} colorSoft={acc.colorSoft} accountId={acc.dbId} />
           </div>
           <div style={{ height: 14 }} />
