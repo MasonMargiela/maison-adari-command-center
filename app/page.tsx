@@ -736,143 +736,52 @@ const PeriodPill = ({ periods, value, onChange, color = '#1a1713' }: {
   onChange: (id: string) => void;
   color?: string;
 }) => {
-  const trackRef = useRef<HTMLDivElement>(null);
-  const [thumbStyle, setThumbStyle] = useState({ left: 4, width: 0, opacity: 0 });
-  const [dragging, setDragging] = useState(false);
-
-  const count = Math.max(periods.length, 1);
-
-  const updateThumb = (activeId: string) => {
-    if (!trackRef.current) return;
-    const idx = Math.max(0, periods.findIndex(p => p.id === activeId));
-    const trackWidth = trackRef.current.clientWidth;
-    const inner = trackWidth - 8; // 4px left + 4px right
-    const slot = inner / count;
-    setThumbStyle({
-      left: 4 + idx * slot,
-      width: slot,
-      opacity: 1,
-    });
-  };
+  const activeIndex = Math.max(0, periods.findIndex((p) => p.id === value));
+  const [bump, setBump] = useState(false);
 
   useEffect(() => {
-    if (!trackRef.current) return;
-    const raf = requestAnimationFrame(() => updateThumb(value));
-    const ro = new ResizeObserver(() => updateThumb(value));
-    ro.observe(trackRef.current);
-    return () => {
-      cancelAnimationFrame(raf);
-      ro.disconnect();
-    };
-  }, [value, count]);
-
-  const resolveIndexFromClientX = (clientX: number) => {
-    if (!trackRef.current) return 0;
-    const rect = trackRef.current.getBoundingClientRect();
-    const x = Math.min(Math.max(clientX - rect.left, 0), rect.width);
-    const idx = Math.floor((x / rect.width) * count);
-    return Math.min(count - 1, Math.max(0, idx));
-  };
-
-  const handlePointerMove = (e: React.PointerEvent<HTMLDivElement>) => {
-    if (!dragging) return;
-    const idx = resolveIndexFromClientX(e.clientX);
-    const next = periods[idx];
-    if (next && next.id !== value) onChange(next.id);
-  };
+    setBump(true);
+    const t = window.setTimeout(() => setBump(false), 210);
+    return () => window.clearTimeout(t);
+  }, [value]);
 
   return (
     <div
-      ref={trackRef}
-      className="period-track"
-      style={{
-        position: 'relative',
-        display: 'grid',
-        gridTemplateColumns: `repeat(${count}, minmax(0, 1fr))`,
-        width: 'min(400px, 100%)',
-      }}
-      onPointerDown={(e) => {
-        setDragging(true);
-        const idx = resolveIndexFromClientX(e.clientX);
-        const next = periods[idx];
-        if (next) onChange(next.id);
-      }}
-      onPointerMove={handlePointerMove}
-      onPointerUp={() => setDragging(false)}
-      onPointerCancel={() => setDragging(false)}
-      onPointerLeave={() => setDragging(false)}
+      className="adari-seg-track"
+      style={
+        {
+          ['--seg-count' as any]: periods.length,
+          ['--seg-index' as any]: activeIndex,
+          ['--seg-accent' as any]: color,
+        } as React.CSSProperties
+      }
+      role="tablist"
+      aria-label="Time period"
     >
       <div
-        className="period-thumb"
-        data-dragging={dragging ? 'true' : 'false'}
-        style={{
-          left: thumbStyle.left,
-          width: thumbStyle.width,
-          opacity: thumbStyle.opacity,
-          ['--pill-accent' as any]: color,
-        }}
+        className={`adari-seg-thumb ${bump ? 'is-bumping' : ''}`}
+        aria-hidden="true"
       />
-      {periods.map((p) => (
-        <button
-          key={p.id}
-          type="button"
-          className="period-btn"
-          data-active={value === p.id ? 'true' : 'false'}
-          onClick={() => onChange(p.id)}
-          style={{ color: value === p.id ? '#ffffff' : '#6f685f' }}
-        >
-          <span className="period-btn-label">{p.label}</span>
-        </button>
-      ))}
+      {periods.map((p) => {
+        const isActive = value === p.id;
+        return (
+          <button
+            key={p.id}
+            type="button"
+            className="adari-seg-btn"
+            data-active={isActive ? 'true' : 'false'}
+            aria-pressed={isActive}
+            onClick={() => onChange(p.id)}
+          >
+            <span className={`adari-seg-label ${isActive ? 'is-active' : ''}`}>
+              {p.label}
+            </span>
+          </button>
+        );
+      })}
     </div>
   );
 };
-
-
-function getSimpleAvatarSrc(handle?: string, platform?: string) {
-  if (!handle) return null
-  const clean = handle.replace(/^@/, '')
-  if (!clean) return null
-  if ((platform || '').toLowerCase() === 'instagram') return `https://unavatar.io/instagram/${clean}`
-  if ((platform || '').toLowerCase() === 'tiktok') return `https://unavatar.io/tiktok/${clean}`
-  return null
-}
-
-function SimpleAccountAvatar({ handle, platform, size = 28 }: { handle?: string; platform?: string; size?: number }) {
-  const src = getSimpleAvatarSrc(handle, platform)
-  const fallback = ((platform || '?')[0] || '?').toUpperCase()
-
-  return (
-    <div
-      style={{
-        width: size,
-        height: size,
-        borderRadius: 999,
-        overflow: 'hidden',
-        flexShrink: 0,
-        display: 'grid',
-        placeItems: 'center',
-        background: 'linear-gradient(180deg, rgba(247,231,238,0.98) 0%, rgba(243,226,235,0.94) 100%)',
-        boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.72), 0 4px 10px rgba(60,40,32,0.08)',
-        fontFamily: F.mono,
-        fontSize: 11,
-        fontWeight: 700,
-        color: P.lavDeep,
-      }}
-    >
-      {src ? (
-        <img
-          src={src}
-          alt={handle || platform || 'account'}
-          style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }}
-          onError={(e) => {
-            (e.currentTarget as HTMLImageElement).style.display = 'none'
-          }}
-        />
-      ) : fallback}
-    </div>
-  )
-}
 
 
 // ── SPINNING PIE CHART ─────────────────────────────────────────────────────
@@ -1252,7 +1161,7 @@ const OverviewTab = ({ igMetrics, igLoading, igGoal, handleSetIgGoal, today }: a
           { label: "Mason's TikTok", handle: '@masondoesnumbers', platform: 'TikTok', color: P.sky },
         ].map((acc, i) => (
           <div key={i} style={{ display: 'flex', alignItems: 'center', gap: 9, padding: '9px 0', borderBottom: i < 2 ? `1px solid ${P.border}` : 'none' }}>
-            <SimpleAccountAvatar handle={acc.handle} platform={acc.platform} />
+            <AccountAvatar account={acc} size={34} />
             <div style={{ flex: 1 }}>
               <div style={{ fontSize: 12, color: P.ink }}>{acc.label}</div>
               <div style={{ fontSize: 10, color: P.inkFaint }}>{acc.handle}</div>
