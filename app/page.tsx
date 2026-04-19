@@ -260,7 +260,7 @@ function isTrending(post: any): { trending: boolean; label: string; urgency: 'fi
 }
 
 const PostCard = ({ post, accent, accentSoft, accentDeep }: { post: any; accent: string; accentSoft: string; accentDeep: string }) => {
-  const ICONS: Record<string, string> = { VIDEO: '🎬', REEL: '🎬', CAROUSEL_ALBUM: '🖼️', IMAGE: '📸' };
+  const ICONS: Record<string, string> = { VIDEO: '🎬', REEL: '🎬', CAROUSEL_ALBUM: '🖼️', IMAGE: '' };
   const maxVal = Math.max(post.like_count ?? 0, (post.saves ?? 0) * 3, (post.comments_count ?? 0) * 15);
   return (
     <div className="" style={{ background: 'rgba(255,255,255,0.88)', backdropFilter: 'blur(12px)', WebkitBackdropFilter: 'blur(12px)', border: `1px solid rgba(255,255,255,0.65)`, borderRadius: 16, overflow: 'hidden', marginBottom: 8, boxShadow: P.shadowSm }}>
@@ -676,7 +676,7 @@ const CLIENTS = [
     igGoalDefault: 10000,
     accounts: [
       {
-        platform: 'Instagram', icon: '📸', handle: '@masondoesnumbers', tiktokHandle: '@masondoesnumbers',
+        platform: 'Instagram', icon: '', handle: '@masondoesnumbers', tiktokHandle: '@masondoesnumbers',
         followers: 369, followerDelta: '—', reach: 56, engagement: '0%',
         color: P.rose, colorSoft: P.roseSoft, colorDeep: P.roseDeep,
         insight: 'Your account is connected and live. Post consistently to generate engagement data. Process reveals and contrarian takes on restaurant marketing tend to outperform lifestyle content 3–4× for agency operator accounts.',
@@ -686,7 +686,7 @@ const CLIENTS = [
         flopping: 'No posting history yet. Every day without content is a missed data point.',
       },
       {
-        platform: 'TikTok', icon: '🎵', handle: '@masondoesnumbers',
+        platform: 'TikTok', icon: '', handle: '@masondoesnumbers',
         followers: 0, followerDelta: '—', reach: 0, engagement: '—',
         color: P.sky, colorSoft: P.skySoft, colorDeep: P.skyDeep,
         insight: 'TikTok not yet connected. Once connected, POV cold call content and agency process content will be tracked here.',
@@ -706,7 +706,7 @@ const CLIENTS = [
     igGoalDefault: 100000,
     accounts: [
       {
-        platform: 'TikTok', icon: '🎵', handle: '@macroswitmatt',
+        platform: 'TikTok', icon: '', handle: '@macroswitmatt',
         followers: 0, followerDelta: '—', reach: 0, engagement: '—',
         color: P.sage, colorSoft: P.sageSoft, colorDeep: P.sageDeep,
         notConnected: true,
@@ -716,7 +716,7 @@ const CLIENTS = [
         flopping: 'Connect TikTok to identify patterns.',
       },
       {
-        platform: 'Instagram', icon: '📸', handle: '@macroswithmatt',
+        platform: 'Instagram', icon: '', handle: '@macroswithmatt',
         followers: 0, followerDelta: '—', reach: 0, engagement: '—',
         color: P.peach, colorSoft: P.peachSoft, colorDeep: P.peachDeep,
         notConnected: true,
@@ -1171,9 +1171,9 @@ const OverviewTab = ({ igMetrics, igLoading, igGoal, handleSetIgGoal, today }: a
         <div style={{ position: 'absolute', top: -30, right: -20, width: 120, height: 120, background: `radial-gradient(circle, ${P.sky}15, transparent 70%)`, pointerEvents: 'none' }} />
         <div style={{ fontSize: 9, color: P.inkFaint, fontFamily: F.mono, letterSpacing: '0.16em', textTransform: 'uppercase', marginBottom: 12 }}>Connect More Accounts</div>
         {[
-          { label: "Matt's Instagram", handle: '@macroswitmatt', icon: '📸', color: P.peach },
-          { label: "Matt's TikTok", handle: '@macroswitmatt', icon: '🎵', color: P.sage },
-          { label: "Mason's TikTok", handle: '@masondoesnumbers', icon: '🎵', color: P.sky },
+          { label: "Matt's Instagram", handle: '@macroswitmatt', icon: '', color: P.peach },
+          { label: "Matt's TikTok", handle: '@macroswitmatt', icon: '', color: P.sage },
+          { label: "Mason's TikTok", handle: '@masondoesnumbers', icon: '', color: P.sky },
         ].map((acc, i) => (
           <div key={i} style={{ display: 'flex', alignItems: 'center', gap: 9, padding: '9px 0', borderBottom: i < 2 ? `1px solid ${P.border}` : 'none' }}>
             <span style={{ fontSize: 16 }}>{acc.icon}</span>
@@ -1551,7 +1551,7 @@ const UnifiedAccountView = ({ acc, igData, goal, setGoal }: { acc: any; igData: 
   if (acc.notConnected) {
     return (
       <div style={{ textAlign: 'center', padding: '32px 20px' }}>
-        <div style={{ fontSize: 32, marginBottom: 12 }}>{acc.platform === 'TikTok' ? '🎵' : '📸'}</div>
+        <div style={{ fontSize: 32, marginBottom: 12 }}>{acc.platform === 'TikTok' ? '' : ''}</div>
         <div style={{ fontSize: 15, fontWeight: 700, fontFamily: F.display, color: P.ink, marginBottom: 8 }}>
           {acc.platform} Not Connected
         </div>
@@ -1917,8 +1917,8 @@ const DynamicClientView = ({ client, igData, igGoal, setIgGoal }: { client: any;
 
   const platformOrder = ['tiktok', 'instagram', 'youtube', 'twitter', 'threads'];
   const platformColors: Record<string, any> = {
-    tiktok: { color: P.sage, colorSoft: P.sageSoft, colorDeep: P.sageDeep, icon: '🎵' },
-    instagram: { color: P.rose, colorSoft: P.roseSoft, colorDeep: P.roseDeep, icon: '📸' },
+    tiktok: { color: P.sage, colorSoft: P.sageSoft, colorDeep: P.sageDeep, icon: '' },
+    instagram: { color: P.rose, colorSoft: P.roseSoft, colorDeep: P.roseDeep, icon: '' },
     youtube: { color: P.butter, colorSoft: P.butterSoft, colorDeep: P.butterDeep, icon: '▶️' },
     twitter: { color: P.sky, colorSoft: P.skySoft, colorDeep: P.skyDeep, icon: '𝕏' },
     threads: { color: P.lavender, colorSoft: P.lavSoft, colorDeep: P.lavDeep, icon: '🧵' },
@@ -1952,7 +1952,7 @@ const DynamicClientView = ({ client, igData, igGoal, setIgGoal }: { client: any;
             {accounts.map((acc: any) => (
               <Tag key={acc.id} color={acc.platform === 'instagram' ? P.roseDeep : acc.platform === 'tiktok' ? P.sageDeep : P.skyDeep}
                 bg={acc.platform === 'instagram' ? P.roseSoft : acc.platform === 'tiktok' ? P.sageSoft : P.skySoft}>
-                {acc.platform === 'instagram' ? '📸' : acc.platform === 'tiktok' ? '🎵' : '▶️'} @{acc.username}
+                {acc.platform === 'instagram' ? '' : acc.platform === 'tiktok' ? '' : '▶️'} @{acc.username}
               </Tag>
             ))}
             {loading && <Tag color={P.inkFaint} bg={P.card}>Loading...</Tag>}
@@ -2192,13 +2192,13 @@ const ClientView = ({ client, igData, igGoal, setIgGoal }: { client: any; igData
             <Tag color={client.colorDeep} bg={client.colorSoft}>{fmtNum(displayFollowers)} followers</Tag>
             {isMason ? (
               <>
-                <Tag color={P.roseDeep} bg={P.roseSoft}>📸 @masondoesnumbers</Tag>
-                <Tag color={P.skyDeep} bg={P.skySoft}>🎵 @masondoesnumbers</Tag>
+                <Tag color={P.roseDeep} bg={P.roseSoft}> @masondoesnumbers</Tag>
+                <Tag color={P.skyDeep} bg={P.skySoft}> @masondoesnumbers</Tag>
               </>
             ) : (
               <>
-                <Tag color={P.sageDeep} bg={P.sageSoft}>🎵 @macroswitmatt</Tag>
-                <Tag color={P.peachDeep} bg={P.peachSoft}>📸 @macroswithmatt</Tag>
+                <Tag color={P.sageDeep} bg={P.sageSoft}> @macroswitmatt</Tag>
+                <Tag color={P.peachDeep} bg={P.peachSoft}> @macroswithmatt</Tag>
               </>
             )}
           </div>
@@ -2506,7 +2506,7 @@ const RevenueTab = () => {
 
   const creatorStreams = [
     { name: 'TikTok Gifts & Diamonds', icon: '💎', platform: 'tiktok', description: 'Live stream gifts converted to diamonds.', color: P.sage, colorSoft: P.sageSoft },
-    { name: 'TikTok Creator Fund', icon: '🎵', platform: 'tiktok', description: 'Per-view earnings from TikTok Creator Rewards.', color: P.sage, colorSoft: P.sageSoft },
+    { name: 'TikTok Creator Fund', icon: '', platform: 'tiktok', description: 'Per-view earnings from TikTok Creator Rewards.', color: P.sage, colorSoft: P.sageSoft },
     { name: 'Instagram Badges', icon: '❤️', platform: 'instagram', description: 'Live badges from Instagram followers during live streams.', color: P.rose, colorSoft: P.roseSoft },
     { name: 'AdSense / YouTube', icon: '▶️', platform: 'youtube', description: 'Ad revenue from YouTube monetization.', color: P.butter, colorSoft: P.butterSoft },
     { name: 'Brand Deals', icon: '🤝', platform: 'manual', description: 'Log brand deal payments manually.', color: P.lavender, colorSoft: P.lavSoft },
@@ -2657,6 +2657,100 @@ const RevenueTab = () => {
     </div>
   );
 };
+
+
+
+function getAccountAvatarSrc(account: any): string | null {
+  if (!account) return null
+
+  const direct =
+    account.profilePictureUrl ||
+    account.profile_picture_url ||
+    account.profile_picture ||
+    account.avatarUrl ||
+    account.avatar_url ||
+    account.avatar ||
+    account.picture ||
+    account.image ||
+    account.photoUrl ||
+    account.photo_url ||
+    null
+
+  if (typeof direct === 'string' && direct.trim()) return direct
+
+  const username =
+    account.username ||
+    account.handle ||
+    account.platformUsername ||
+    account.platform_username ||
+    null
+
+  if (!username || typeof username !== 'string') return null
+
+  if (account.platform === 'instagram') {
+    return `https://unavatar.io/instagram/${username.replace(/^@/, '')}`
+  }
+
+  if (account.platform === 'tiktok') {
+    return `https://unavatar.io/tiktok/${username.replace(/^@/, '')}`
+  }
+
+  return null
+}
+
+function AccountAvatar({
+  account,
+  size = 52,
+  className = '',
+}: {
+  account: any
+  size?: number
+  className?: string
+}) {
+  const src = getAccountAvatarSrc(account)
+  const fallback = (account?.platform || '?').slice(0, 1).toUpperCase()
+
+  return (
+    <div
+      className={className}
+      style={{
+        width: size,
+        height: size,
+        borderRadius: 16,
+        overflow: 'hidden',
+        flexShrink: 0,
+        display: 'grid',
+        placeItems: 'center',
+        background: 'linear-gradient(180deg, rgba(248,241,247,0.96) 0%, rgba(239,233,241,0.92) 100%)',
+        boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.7), 0 8px 18px rgba(60,40,32,0.08)',
+      }}
+    >
+      {src ? (
+        <img
+          src={src}
+          alt={account?.username || account?.platform || 'account'}
+          style={{
+            width: '100%',
+            height: '100%',
+            objectFit: 'cover',
+            display: 'block',
+          }}
+        />
+      ) : (
+        <span
+          style={{
+            fontFamily: 'DM Mono, monospace',
+            fontSize: Math.max(12, Math.floor(size * 0.34)),
+            fontWeight: 700,
+            color: 'rgba(120,84,120,0.92)',
+          }}
+        >
+          {fallback}
+        </span>
+      )}
+    </div>
+  )
+}
 
 
 export default function AdariCommandCenter() {
