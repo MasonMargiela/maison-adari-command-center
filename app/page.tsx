@@ -143,7 +143,7 @@ const MiniBar = ({ val, max, color }: { val: number; max: number; color: string 
 
 // ── PILL TAG ───────────────────────────────────────────────────────────────
 const Tag = ({ children, color = P.lavDeep, bg = P.lavSoft }: { children: React.ReactNode; color?: string; bg?: string }) => (
-  <span className="btn-spring" style={{ background: bg, color, borderRadius: 100, padding: '3px 10px', fontSize: 10, fontWeight: 700, letterSpacing: '0.03em', display: 'inline-block', fontFamily: F.mono, boxShadow: `0 1px 3px ${color}20` }}>{children}</span>
+  <span className="btn-spring glass-btn" style={{ background: bg, color, borderRadius: 100, padding: '3px 10px', fontSize: 10, fontWeight: 700, letterSpacing: '0.03em', display: 'inline-block', fontFamily: F.mono, boxShadow: `0 1px 3px ${color}20` }}>{children}</span>
 );
 
 // ── LIVE DOT ───────────────────────────────────────────────────────────────
@@ -260,7 +260,7 @@ function isTrending(post: any): { trending: boolean; label: string; urgency: 'fi
 }
 
 const PostCard = ({ post, accent, accentSoft, accentDeep }: { post: any; accent: string; accentSoft: string; accentDeep: string }) => {
-  const ICONS: Record<string, string> = { VIDEO: '🎬', REEL: '🎬', CAROUSEL_ALBUM: '🖼️', IMAGE: '📸' };
+  const ICONS: Record<string, string> = { VIDEO: '🎬', REEL: '🎬', CAROUSEL_ALBUM: '🖼️', IMAGE: '' };
   const maxVal = Math.max(post.like_count ?? 0, (post.saves ?? 0) * 3, (post.comments_count ?? 0) * 15);
   return (
     <div className="" style={{ background: 'rgba(255,255,255,0.88)', backdropFilter: 'blur(12px)', WebkitBackdropFilter: 'blur(12px)', border: `1px solid rgba(255,255,255,0.65)`, borderRadius: 16, overflow: 'hidden', marginBottom: 8, boxShadow: P.shadowSm }}>
@@ -304,13 +304,13 @@ const CmtCard = ({ c, accent, accentSoft }: { c: any; accent: string; accentSoft
   </div>
 );
 
-// ── AI INSIGHT BLOCK ───────────────────────────────────────────────────────
+// ── ADARI INSIGHT BLOCK ───────────────────────────────────────────────────────
 const AIInsight = ({ text, platform }: { text: string; platform: string }) => (
-  <div className="liquid-glass-dark" style={{ borderRadius: 16, padding: '16px 18px', marginTop: 8, position: 'relative', overflow: 'hidden' }}>
+  <div className="glass-surface-dark dark-pane-text" style={{ borderRadius: 16, padding: '16px 18px', marginTop: 8, position: 'relative', overflow: 'hidden' }}>
     <div style={{ position: 'absolute', top: 0, right: 0, width: 80, height: 80, background: `radial-gradient(circle, ${P.lavender}20, transparent 70%)`, pointerEvents: 'none' }} />
     <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 10 }}>
       <div style={{ width: 22, height: 22, borderRadius: 6, background: `linear-gradient(135deg, ${P.lavSoft}, ${P.lavender})`, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 11, boxShadow: `0 2px 8px ${P.lavDeep}40` }}>✦</div>
-      <div style={{ fontSize: 9, letterSpacing: '0.16em', textTransform: 'uppercase', color: P.inkFaint, fontFamily: F.mono }}>AI Insight · {platform}</div>
+      <div style={{ fontSize: 9, letterSpacing: '0.16em', textTransform: 'uppercase', color: P.inkFaint, fontFamily: F.mono }}>Adari Insight · {platform}</div>
     </div>
     <div style={{ fontSize: 13, color: P.ink, lineHeight: 1.85, fontFamily: F.display, fontStyle: 'italic', position: 'relative' }}>{text}</div>
   </div>
@@ -676,7 +676,7 @@ const CLIENTS = [
     igGoalDefault: 10000,
     accounts: [
       {
-        platform: 'Instagram', icon: '📸', handle: '@masondoesnumbers', tiktokHandle: '@masondoesnumbers',
+        platform: 'Instagram', icon: '', handle: '@masondoesnumbers', tiktokHandle: '@masondoesnumbers',
         followers: 369, followerDelta: '—', reach: 56, engagement: '0%',
         color: P.rose, colorSoft: P.roseSoft, colorDeep: P.roseDeep,
         insight: 'Your account is connected and live. Post consistently to generate engagement data. Process reveals and contrarian takes on restaurant marketing tend to outperform lifestyle content 3–4× for agency operator accounts.',
@@ -686,7 +686,7 @@ const CLIENTS = [
         flopping: 'No posting history yet. Every day without content is a missed data point.',
       },
       {
-        platform: 'TikTok', icon: '🎵', handle: '@masondoesnumbers',
+        platform: 'TikTok', icon: '', handle: '@masondoesnumbers',
         followers: 0, followerDelta: '—', reach: 0, engagement: '—',
         color: P.sky, colorSoft: P.skySoft, colorDeep: P.skyDeep,
         insight: 'TikTok not yet connected. Once connected, POV cold call content and agency process content will be tracked here.',
@@ -706,7 +706,7 @@ const CLIENTS = [
     igGoalDefault: 100000,
     accounts: [
       {
-        platform: 'TikTok', icon: '🎵', handle: '@macroswitmatt',
+        platform: 'TikTok', icon: '', handle: '@macroswitmatt',
         followers: 0, followerDelta: '—', reach: 0, engagement: '—',
         color: P.sage, colorSoft: P.sageSoft, colorDeep: P.sageDeep,
         notConnected: true,
@@ -716,7 +716,7 @@ const CLIENTS = [
         flopping: 'Connect TikTok to identify patterns.',
       },
       {
-        platform: 'Instagram', icon: '📸', handle: '@macroswithmatt',
+        platform: 'Instagram', icon: '', handle: '@macroswithmatt',
         followers: 0, followerDelta: '—', reach: 0, engagement: '—',
         color: P.peach, colorSoft: P.peachSoft, colorDeep: P.peachDeep,
         notConnected: true,
@@ -737,68 +737,143 @@ const PeriodPill = ({ periods, value, onChange, color = '#1a1713' }: {
   color?: string;
 }) => {
   const trackRef = useRef<HTMLDivElement>(null);
-  const [thumb, setThumb] = useState({ left: 3, width: 0, opacity: 0 });
-  const [bump, setBump] = useState(false);
+  const [thumbStyle, setThumbStyle] = useState({ left: 4, width: 0, opacity: 0 });
+  const [dragging, setDragging] = useState(false);
+
+  const count = Math.max(periods.length, 1);
 
   const updateThumb = (activeId: string) => {
     if (!trackRef.current) return;
-    const count = Math.max(periods.length, 1);
-    const idx = Math.max(0, periods.findIndex((p) => p.id === activeId));
+    const idx = Math.max(0, periods.findIndex(p => p.id === activeId));
     const trackWidth = trackRef.current.clientWidth;
-    const innerWidth = trackWidth - 6;
-    const slotWidth = innerWidth / count;
-
-    setThumb({
-      left: 3 + idx * slotWidth,
-      width: slotWidth,
+    const inner = trackWidth - 8; // 4px left + 4px right
+    const slot = inner / count;
+    setThumbStyle({
+      left: 4 + idx * slot,
+      width: slot,
       opacity: 1,
     });
   };
 
   useEffect(() => {
+    if (!trackRef.current) return;
     const raf = requestAnimationFrame(() => updateThumb(value));
     const ro = new ResizeObserver(() => updateThumb(value));
-    if (trackRef.current) ro.observe(trackRef.current);
-
+    ro.observe(trackRef.current);
     return () => {
       cancelAnimationFrame(raf);
       ro.disconnect();
     };
-  }, [value, periods.length]);
+  }, [value, count]);
 
-  useEffect(() => {
-    setBump(true);
-    const t = setTimeout(() => setBump(false), 210);
-    return () => clearTimeout(t);
-  }, [value]);
+  const resolveIndexFromClientX = (clientX: number) => {
+    if (!trackRef.current) return 0;
+    const rect = trackRef.current.getBoundingClientRect();
+    const x = Math.min(Math.max(clientX - rect.left, 0), rect.width);
+    const idx = Math.floor((x / rect.width) * count);
+    return Math.min(count - 1, Math.max(0, idx));
+  };
+
+  const handlePointerMove = (e: React.PointerEvent<HTMLDivElement>) => {
+    if (!dragging) return;
+    const idx = resolveIndexFromClientX(e.clientX);
+    const next = periods[idx];
+    if (next && next.id !== value) onChange(next.id);
+  };
 
   return (
-    <div ref={trackRef} className="adari-seg-track">
+    <div
+      ref={trackRef}
+      className="period-track"
+      style={{
+        position: 'relative',
+        display: 'grid',
+        gridTemplateColumns: `repeat(${count}, minmax(0, 1fr))`,
+        width: 'min(400px, 100%)',
+      }}
+      onPointerDown={(e) => {
+        setDragging(true);
+        const idx = resolveIndexFromClientX(e.clientX);
+        const next = periods[idx];
+        if (next) onChange(next.id);
+      }}
+      onPointerMove={handlePointerMove}
+      onPointerUp={() => setDragging(false)}
+      onPointerCancel={() => setDragging(false)}
+      onPointerLeave={() => setDragging(false)}
+    >
       <div
-        className={`adari-seg-thumb ${bump ? 'is-bumping' : ''}`}
+        className="period-thumb"
+        data-dragging={dragging ? 'true' : 'false'}
         style={{
-          left: thumb.left,
-          width: thumb.width,
-          opacity: thumb.opacity,
-          ['--seg-accent' as any]: color,
+          left: thumbStyle.left,
+          width: thumbStyle.width,
+          opacity: thumbStyle.opacity,
+          ['--pill-accent' as any]: color,
         }}
       />
       {periods.map((p) => (
         <button
           key={p.id}
           type="button"
-          className="adari-seg-btn"
+          className="period-btn"
           data-active={value === p.id ? 'true' : 'false'}
           onClick={() => onChange(p.id)}
+          style={{ color: value === p.id ? '#ffffff' : '#6f685f' }}
         >
-          <span className={`adari-seg-label ${value === p.id ? 'is-active' : ''}`}>
-            {p.label}
-          </span>
+          <span className="period-btn-label">{p.label}</span>
         </button>
       ))}
     </div>
   );
 };
+
+
+function getSimpleAvatarSrc(handle?: string, platform?: string) {
+  if (!handle) return null
+  const clean = handle.replace(/^@/, '')
+  if (!clean) return null
+  if ((platform || '').toLowerCase() === 'instagram') return `https://unavatar.io/instagram/${clean}`
+  if ((platform || '').toLowerCase() === 'tiktok') return `https://unavatar.io/tiktok/${clean}`
+  return null
+}
+
+function SimpleAccountAvatar({ handle, platform, size = 28 }: { handle?: string; platform?: string; size?: number }) {
+  const src = getSimpleAvatarSrc(handle, platform)
+  const fallback = ((platform || '?')[0] || '?').toUpperCase()
+
+  return (
+    <div
+      style={{
+        width: size,
+        height: size,
+        borderRadius: 999,
+        overflow: 'hidden',
+        flexShrink: 0,
+        display: 'grid',
+        placeItems: 'center',
+        background: 'linear-gradient(180deg, rgba(247,231,238,0.98) 0%, rgba(243,226,235,0.94) 100%)',
+        boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.72), 0 4px 10px rgba(60,40,32,0.08)',
+        fontFamily: F.mono,
+        fontSize: 11,
+        fontWeight: 700,
+        color: P.lavDeep,
+      }}
+    >
+      {src ? (
+        <img
+          src={src}
+          alt={handle || platform || 'account'}
+          style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }}
+          onError={(e) => {
+            (e.currentTarget as HTMLImageElement).style.display = 'none'
+          }}
+        />
+      ) : fallback}
+    </div>
+  )
+}
+
 
 // ── SPINNING PIE CHART ─────────────────────────────────────────────────────
 const SpinPieChart = ({ slices, size = 80 }: { slices: { value: number; color: string; label: string }[]; size?: number }) => {
@@ -1056,7 +1131,7 @@ const OverviewTab = ({ igMetrics, igLoading, igGoal, handleSetIgGoal, today }: a
   return (
     <div>
       {/* Morning briefing */}
-      <div className="liquid-glass" style={{ borderRadius: 18, padding: '15px 17px', marginBottom: 14, position: 'relative', overflow: 'hidden' }}>
+      <div className="glass-surface" style={{ borderRadius: 18, padding: '15px 17px', marginBottom: 14, position: 'relative', overflow: 'hidden' }}>
         <div style={{ position: 'absolute', top: -20, right: -20, width: 100, height: 100, background: `radial-gradient(circle, ${P.lavender}25, transparent 70%)`, pointerEvents: 'none' }} />
         <div style={{ fontSize: 9, letterSpacing: '0.18em', textTransform: 'uppercase', color: P.lavDeep, fontFamily: F.mono, marginBottom: 6, display: 'flex', alignItems: 'center', gap: 6 }}>
           <span>📰</span> Morning Briefing · {today}
@@ -1078,7 +1153,7 @@ const OverviewTab = ({ igMetrics, igLoading, igGoal, handleSetIgGoal, today }: a
         const masonDelta = masonHistoryDelta;
         const mattDelta = 0;
         return (
-          <div className="liquid-glass" style={{ borderRadius: 18, padding: '16px 18px', marginBottom: 14, display: 'grid', gridTemplateColumns: 'repeat(3, minmax(0, 1fr))', gap: 12, position: 'relative', overflow: 'hidden' }}>
+          <div className="glass-surface" style={{ borderRadius: 18, padding: '16px 18px', marginBottom: 14, display: 'grid', gridTemplateColumns: 'repeat(3, minmax(0, 1fr))', gap: 12, position: 'relative', overflow: 'hidden' }}>
             <div style={{ position: 'absolute', bottom: -30, left: '50%', transform: 'translateX(-50%)', width: 200, height: 80, background: `radial-gradient(ellipse, ${P.lavender}18, transparent 70%)`, pointerEvents: 'none' }} />
             <div>
               <div style={{ fontSize: 9, color: P.inkFaint, fontFamily: F.mono, textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: 4 }}>Combined Followers</div>
@@ -1168,16 +1243,16 @@ const OverviewTab = ({ igMetrics, igLoading, igGoal, handleSetIgGoal, today }: a
       </div>
 
       {/* Connect accounts */}
-      <div className="liquid-glass" style={{ borderRadius: 18, padding: '15px 17px', marginBottom: 14, position: 'relative', overflow: 'hidden' }}>
+      <div className="glass-surface" style={{ borderRadius: 18, padding: '15px 17px', marginBottom: 14, position: 'relative', overflow: 'hidden' }}>
         <div style={{ position: 'absolute', top: -30, right: -20, width: 120, height: 120, background: `radial-gradient(circle, ${P.sky}15, transparent 70%)`, pointerEvents: 'none' }} />
         <div style={{ fontSize: 9, color: P.inkFaint, fontFamily: F.mono, letterSpacing: '0.16em', textTransform: 'uppercase', marginBottom: 12 }}>Connect More Accounts</div>
         {[
-          { label: "Matt's Instagram", handle: '@macroswitmatt', icon: '📸', color: P.peach },
-          { label: "Matt's TikTok", handle: '@macroswitmatt', icon: '🎵', color: P.sage },
-          { label: "Mason's TikTok", handle: '@masondoesnumbers', icon: '🎵', color: P.sky },
+          { label: "Matt's Instagram", handle: '@macroswithmatt', platform: 'Instagram', color: P.peach },
+          { label: "Matt's TikTok", handle: '@macroswitmatt', platform: 'TikTok', color: P.sage },
+          { label: "Mason's TikTok", handle: '@masondoesnumbers', platform: 'TikTok', color: P.sky },
         ].map((acc, i) => (
           <div key={i} style={{ display: 'flex', alignItems: 'center', gap: 9, padding: '9px 0', borderBottom: i < 2 ? `1px solid ${P.border}` : 'none' }}>
-            <span style={{ fontSize: 16 }}>{acc.icon}</span>
+            <SimpleAccountAvatar handle={acc.handle} platform={acc.platform} />
             <div style={{ flex: 1 }}>
               <div style={{ fontSize: 12, color: P.ink }}>{acc.label}</div>
               <div style={{ fontSize: 10, color: P.inkFaint }}>{acc.handle}</div>
@@ -1470,7 +1545,7 @@ const FollowerGraph = ({ accountId, color, colorSoft }: { accountId?: string; co
 
       {/* Hover tooltip — clean liquid glass, no jargon */}
       {hovered && (
-        <div className="liquid-glass" style={{ borderRadius: 14, padding: '10px 14px', marginTop: 8, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+        <div className="glass-surface" style={{ borderRadius: 14, padding: '10px 14px', marginTop: 8, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
           <div>
             <div style={{ fontSize: 9, color: '#8a8078', fontFamily: "'DM Mono', monospace", textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: 2 }}>{formatDate(hovered.date)}</div>
             <div style={{ fontSize: 21, fontWeight: 700, fontFamily: "'Fraunces', serif", color: '#1e1a16', letterSpacing: '-0.02em' }}>{hovered.followers.toLocaleString()}</div>
@@ -1552,7 +1627,7 @@ const UnifiedAccountView = ({ acc, igData, goal, setGoal }: { acc: any; igData: 
   if (acc.notConnected) {
     return (
       <div style={{ textAlign: 'center', padding: '32px 20px' }}>
-        <div style={{ fontSize: 32, marginBottom: 12 }}>{acc.platform === 'TikTok' ? '🎵' : '📸'}</div>
+        <div style={{ fontSize: 32, marginBottom: 12 }}>{acc.platform === 'TikTok' ? '' : ''}</div>
         <div style={{ fontSize: 15, fontWeight: 700, fontFamily: F.display, color: P.ink, marginBottom: 8 }}>
           {acc.platform} Not Connected
         </div>
@@ -1618,7 +1693,7 @@ const UnifiedAccountView = ({ acc, igData, goal, setGoal }: { acc: any; igData: 
   return (
     <div>
       {/* Account sub-header with score ring */}
-      <div className="liquid-glass" style={{ borderRadius: 16, padding: '13px 15px', marginBottom: 10, display: 'flex', alignItems: 'center', gap: 10 }}>
+      <div className="glass-surface" style={{ borderRadius: 16, padding: '13px 15px', marginBottom: 10, display: 'flex', alignItems: 'center', gap: 10 }}>
         <div style={{ width: 34, height: 34, borderRadius: 9, background: `linear-gradient(135deg, ${acc.colorSoft}, ${acc.color}40)`, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 15, flexShrink: 0, boxShadow: `0 3px 8px ${acc.color}30` }}>{acc.icon}</div>
         <div style={{ flex: 1 }}>
           <div style={{ fontSize: 12, fontWeight: 700, color: P.ink }}>{acc.platform}</div>
@@ -1852,8 +1927,8 @@ const UnifiedAccountView = ({ acc, igData, goal, setGoal }: { acc: any; igData: 
         </>
       )}
 
-      <SH>AI Strategic Insight</SH>
-      <AIInsight text={acc.insight ?? 'Connect this account to generate AI insights based on your real content performance.'} platform={acc.platform} />
+      <SH>Adari Insights</SH>
+      <AIInsight text={acc.insight ?? 'Connect this account to generate Adari insights based on your real content performance.'} platform={acc.platform} />
     </div>
   );
 };
@@ -1918,8 +1993,8 @@ const DynamicClientView = ({ client, igData, igGoal, setIgGoal }: { client: any;
 
   const platformOrder = ['tiktok', 'instagram', 'youtube', 'twitter', 'threads'];
   const platformColors: Record<string, any> = {
-    tiktok: { color: P.sage, colorSoft: P.sageSoft, colorDeep: P.sageDeep, icon: '🎵' },
-    instagram: { color: P.rose, colorSoft: P.roseSoft, colorDeep: P.roseDeep, icon: '📸' },
+    tiktok: { color: P.sage, colorSoft: P.sageSoft, colorDeep: P.sageDeep, icon: '' },
+    instagram: { color: P.rose, colorSoft: P.roseSoft, colorDeep: P.roseDeep, icon: '' },
     youtube: { color: P.butter, colorSoft: P.butterSoft, colorDeep: P.butterDeep, icon: '▶️' },
     twitter: { color: P.sky, colorSoft: P.skySoft, colorDeep: P.skyDeep, icon: '𝕏' },
     threads: { color: P.lavender, colorSoft: P.lavSoft, colorDeep: P.lavDeep, icon: '🧵' },
@@ -1953,7 +2028,7 @@ const DynamicClientView = ({ client, igData, igGoal, setIgGoal }: { client: any;
             {accounts.map((acc: any) => (
               <Tag key={acc.id} color={acc.platform === 'instagram' ? P.roseDeep : acc.platform === 'tiktok' ? P.sageDeep : P.skyDeep}
                 bg={acc.platform === 'instagram' ? P.roseSoft : acc.platform === 'tiktok' ? P.sageSoft : P.skySoft}>
-                {acc.platform === 'instagram' ? '📸' : acc.platform === 'tiktok' ? '🎵' : '▶️'} @{acc.username}
+                {acc.platform === 'instagram' ? '' : acc.platform === 'tiktok' ? '' : '▶️'} @{acc.username}
               </Tag>
             ))}
             {loading && <Tag color={P.inkFaint} bg={P.card}>Loading...</Tag>}
@@ -2012,7 +2087,7 @@ const DynamicClientView = ({ client, igData, igGoal, setIgGoal }: { client: any;
                 topComments: [],
                 working: 'Post content to see what is working.',
                 flopping: 'Post content to identify patterns.',
-                insight: 'Account connected. Post content to generate AI insights.',
+                insight: 'Account connected. Post content to generate Adari insights.',
               };
 
               return (
@@ -2030,7 +2105,7 @@ const DynamicClientView = ({ client, igData, igGoal, setIgGoal }: { client: any;
                   {/* Account header */}
                   <button
                     onClick={() => toggle(accId)}
-                    className="btn-spring"
+                    className="btn-spring glass-btn"
                     style={{
                       width: '100%',
                       background: 'none',
@@ -2193,13 +2268,13 @@ const ClientView = ({ client, igData, igGoal, setIgGoal }: { client: any; igData
             <Tag color={client.colorDeep} bg={client.colorSoft}>{fmtNum(displayFollowers)} followers</Tag>
             {isMason ? (
               <>
-                <Tag color={P.roseDeep} bg={P.roseSoft}>📸 @masondoesnumbers</Tag>
-                <Tag color={P.skyDeep} bg={P.skySoft}>🎵 @masondoesnumbers</Tag>
+                <Tag color={P.roseDeep} bg={P.roseSoft}> @masondoesnumbers</Tag>
+                <Tag color={P.skyDeep} bg={P.skySoft}> @masondoesnumbers</Tag>
               </>
             ) : (
               <>
-                <Tag color={P.sageDeep} bg={P.sageSoft}>🎵 @macroswitmatt</Tag>
-                <Tag color={P.peachDeep} bg={P.peachSoft}>📸 @macroswithmatt</Tag>
+                <Tag color={P.sageDeep} bg={P.sageSoft}> @macroswitmatt</Tag>
+                <Tag color={P.peachDeep} bg={P.peachSoft}> @macroswithmatt</Tag>
               </>
             )}
           </div>
@@ -2507,7 +2582,7 @@ const RevenueTab = () => {
 
   const creatorStreams = [
     { name: 'TikTok Gifts & Diamonds', icon: '💎', platform: 'tiktok', description: 'Live stream gifts converted to diamonds.', color: P.sage, colorSoft: P.sageSoft },
-    { name: 'TikTok Creator Fund', icon: '🎵', platform: 'tiktok', description: 'Per-view earnings from TikTok Creator Rewards.', color: P.sage, colorSoft: P.sageSoft },
+    { name: 'TikTok Creator Fund', icon: '', platform: 'tiktok', description: 'Per-view earnings from TikTok Creator Rewards.', color: P.sage, colorSoft: P.sageSoft },
     { name: 'Instagram Badges', icon: '❤️', platform: 'instagram', description: 'Live badges from Instagram followers during live streams.', color: P.rose, colorSoft: P.roseSoft },
     { name: 'AdSense / YouTube', icon: '▶️', platform: 'youtube', description: 'Ad revenue from YouTube monetization.', color: P.butter, colorSoft: P.butterSoft },
     { name: 'Brand Deals', icon: '🤝', platform: 'manual', description: 'Log brand deal payments manually.', color: P.lavender, colorSoft: P.lavSoft },
@@ -2660,6 +2735,112 @@ const RevenueTab = () => {
 };
 
 
+
+function getAccountAvatarSrc(account: any): string | null {
+  if (!account) return null
+
+  const direct =
+    account.profilePictureUrl ||
+    account.profile_picture_url ||
+    account.profile_picture ||
+    account.avatarUrl ||
+    account.avatar_url ||
+    account.avatar ||
+    account.picture ||
+    account.image ||
+    account.photoUrl ||
+    account.photo_url ||
+    null
+
+  if (typeof direct === 'string' && direct.trim()) return direct
+
+  const username =
+    account.username ||
+    account.handle ||
+    account.platformUsername ||
+    account.platform_username ||
+    null
+
+  if (!username || typeof username !== 'string') return null
+
+  if (account.platform === 'instagram') {
+    return `https://unavatar.io/instagram/${username.replace(/^@/, '')}`
+  }
+
+  if (account.platform === 'tiktok') {
+    return `https://unavatar.io/tiktok/${username.replace(/^@/, '')}`
+  }
+
+  return null
+}
+
+function AccountAvatar({
+  account,
+  size = 52,
+}: {
+  account: any
+  size?: number
+}) {
+  const src = getAccountAvatarSrc(account)
+  const fallbackLetter =
+    account?.platform === "instagram" ? "I" :
+    account?.platform === "tiktok" ? "T" :
+    account?.platform?.slice?.(0, 1)?.toUpperCase?.() || "•"
+
+  return (
+    <div
+      style={{
+        width: size,
+        height: size,
+        borderRadius: 16,
+        overflow: "hidden",
+        flexShrink: 0,
+        position: "relative",
+        display: "grid",
+        placeItems: "center",
+        background: "linear-gradient(180deg, rgba(247,231,238,0.98) 0%, rgba(243,226,235,0.94) 100%)",
+        boxShadow: "inset 0 1px 0 rgba(255,255,255,0.72), 0 8px 18px rgba(60,40,32,0.08)",
+      }}
+    >
+      <div
+        style={{
+          position: "absolute",
+          inset: 0,
+          display: "grid",
+          placeItems: "center",
+          fontFamily: "DM Mono, monospace",
+          fontSize: Math.max(12, Math.floor(size * 0.34)),
+          fontWeight: 700,
+          color: "rgba(130,92,130,0.92)",
+          zIndex: 1,
+        }}
+      >
+        {fallbackLetter}
+      </div>
+
+      {src ? (
+        <img
+          src={src}
+          alt={account?.username || account?.platform || "account"}
+          style={{
+            position: "absolute",
+            inset: 0,
+            width: "100%",
+            height: "100%",
+            objectFit: "cover",
+            display: "block",
+            zIndex: 2,
+          }}
+          onError={(e) => {
+            ;(e.currentTarget as HTMLImageElement).style.display = "none"
+          }}
+        />
+      ) : null}
+    </div>
+  )
+}
+
+
 export default function AdariCommandCenter() {
   const [view, setView] = useState('overview');
   const [time, setTime] = useState(new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }));
@@ -2722,7 +2903,7 @@ export default function AdariCommandCenter() {
       <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,wght@0,300;0,400;0,600;0,700;0,800;1,400&family=DM+Sans:wght@300;400;500;600;700&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet" />
 
       {/* HEADER — liquid glass iOS 26 */}
-      <div className="liquid-glass" style={{ borderRadius: 0, padding: '14px 18px 0', position: 'sticky', top: 0, zIndex: 20, borderLeft: 'none', borderRight: 'none', borderTop: 'none' }}>
+      <div className="glass-surface" style={{ borderRadius: 0, padding: '14px 18px 0', position: 'sticky', top: 0, zIndex: 20, borderLeft: 'none', borderRight: 'none', borderTop: 'none', background: 'linear-gradient(180deg, rgba(255,255,255,0.22) 0%, rgba(244,241,236,0.18) 100%), rgba(255,255,255,0.10)', backdropFilter: 'blur(30px) saturate(145%)', WebkitBackdropFilter: 'blur(30px) saturate(145%)', boxShadow: '0 1px 0 rgba(255,255,255,0.30) inset, 0 8px 24px rgba(0,0,0,0.08)' }}>
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 12 }}>
           <div>
             <div style={{ fontSize: 9, letterSpacing: '0.22em', textTransform: 'uppercase', color: P.inkFaint, fontFamily: F.mono }}>Maison Adari · The AFE</div>
