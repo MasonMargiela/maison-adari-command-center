@@ -143,7 +143,7 @@ const MiniBar = ({ val, max, color }: { val: number; max: number; color: string 
 
 // ── PILL TAG ───────────────────────────────────────────────────────────────
 const Tag = ({ children, color = P.lavDeep, bg = P.lavSoft }: { children: React.ReactNode; color?: string; bg?: string }) => (
-  <span className="btn-spring" style={{ background: bg, color, borderRadius: 100, padding: '3px 10px', fontSize: 10, fontWeight: 700, letterSpacing: '0.03em', display: 'inline-block', fontFamily: F.mono, boxShadow: `0 1px 3px ${color}20` }}>{children}</span>
+  <span className="btn-spring glass-btn" style={{ background: bg, color, borderRadius: 100, padding: '3px 10px', fontSize: 10, fontWeight: 700, letterSpacing: '0.03em', display: 'inline-block', fontFamily: F.mono, boxShadow: `0 1px 3px ${color}20` }}>{children}</span>
 );
 
 // ── LIVE DOT ───────────────────────────────────────────────────────────────
@@ -2029,7 +2029,7 @@ const DynamicClientView = ({ client, igData, igGoal, setIgGoal }: { client: any;
                   {/* Account header */}
                   <button
                     onClick={() => toggle(accId)}
-                    className="btn-spring"
+                    className="btn-spring glass-btn"
                     style={{
                       width: '100%',
                       background: 'none',
