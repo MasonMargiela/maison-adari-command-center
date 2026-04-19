@@ -737,62 +737,63 @@ const PeriodPill = ({ periods, value, onChange, color = '#1a1713' }: {
   color?: string;
 }) => {
   const trackRef = useRef<HTMLDivElement>(null);
-  const [thumbStyle, setThumbStyle] = useState({ left: 4, width: 0, opacity: 0 });
+  const [thumb, setThumb] = useState({ left: 3, width: 0, opacity: 0 });
+  const [bump, setBump] = useState(false);
+
+  const updateThumb = (activeId: string) => {
+    if (!trackRef.current) return;
+    const count = Math.max(periods.length, 1);
+    const idx = Math.max(0, periods.findIndex((p) => p.id === activeId));
+    const trackWidth = trackRef.current.clientWidth;
+    const innerWidth = trackWidth - 6;
+    const slotWidth = innerWidth / count;
+
+    setThumb({
+      left: 3 + idx * slotWidth,
+      width: slotWidth,
+      opacity: 1,
+    });
+  };
 
   useEffect(() => {
-    if (!trackRef.current) return;
-
-    const updateThumb = () => {
-      if (!trackRef.current) return;
-      const idx = periods.findIndex(p => p.id === value);
-      const btns = trackRef.current.querySelectorAll('.period-btn');
-      const btn = btns[idx] as HTMLElement | undefined;
-      if (btn) {
-        setThumbStyle({
-          left: btn.offsetLeft,
-          width: btn.offsetWidth,
-          opacity: 1
-        });
-      }
-    };
-
-    const raf = requestAnimationFrame(updateThumb);
-    const ro = new ResizeObserver(() => updateThumb());
-    ro.observe(trackRef.current);
+    const raf = requestAnimationFrame(() => updateThumb(value));
+    const ro = new ResizeObserver(() => updateThumb(value));
+    if (trackRef.current) ro.observe(trackRef.current);
 
     return () => {
       cancelAnimationFrame(raf);
       ro.disconnect();
     };
-  }, [value, periods]);
+  }, [value, periods.length]);
+
+  useEffect(() => {
+    setBump(true);
+    const t = setTimeout(() => setBump(false), 210);
+    return () => clearTimeout(t);
+  }, [value]);
 
   return (
-    <div
-      ref={trackRef}
-      className="period-track"
-      style={{ position: 'relative', display: 'inline-flex', width: 'auto' }}
-    >
+    <div ref={trackRef} className="adari-seg-track">
       <div
-        className="period-thumb"
+        className={`adari-seg-thumb ${bump ? 'is-bumping' : ''}`}
         style={{
-          left: thumbStyle.left,
-          width: thumbStyle.width,
-          opacity: thumbStyle.opacity,
-          ['--pill-accent' as any]: color,
+          left: thumb.left,
+          width: thumb.width,
+          opacity: thumb.opacity,
+          ['--seg-accent' as any]: color,
         }}
       />
-      {periods.map((p, i) => (
+      {periods.map((p) => (
         <button
           key={p.id}
-          className="period-btn"
+          type="button"
+          className="adari-seg-btn"
           data-active={value === p.id ? 'true' : 'false'}
           onClick={() => onChange(p.id)}
-          style={{
-            color: value === p.id ? '#ffffff' : '#6f685f',
-            transitionDelay: value === p.id ? '0.02s' : '0s'
-          }}
         >
-          <span className="period-btn-label">{p.label}</span>
+          <span className={`adari-seg-label ${value === p.id ? 'is-active' : ''}`}>
+            {p.label}
+          </span>
         </button>
       ))}
     </div>
