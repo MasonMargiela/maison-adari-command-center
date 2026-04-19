@@ -270,33 +270,33 @@ body {
 /* ── PERIOD PILL SLIDER ── */
 .period-track {
   position: relative;
-  border-radius: 100px;
-  padding: 3px;
-  display: flex;
-  gap: 1px;
-  /* Glass pill container */
-  background: linear-gradient(135deg, rgba(255,255,255,0.40) 0%, rgba(255,255,255,0.12) 100%);
-  backdrop-filter: blur(16px) saturate(160%);
-  -webkit-backdrop-filter: blur(16px) saturate(160%);
+  border-radius: 999px;
+  padding: 4px;
+  display: inline-flex;
+  gap: 2px;
+  width: auto;
+  max-width: 100%;
+  background: linear-gradient(180deg, rgba(255,255,255,0.88) 0%, rgba(247,244,239,0.92) 100%);
+  backdrop-filter: blur(20px) saturate(170%);
+  -webkit-backdrop-filter: blur(20px) saturate(170%);
   box-shadow:
-    0 1.5px 0 rgba(255,255,255,1.0) inset,
-    0 -1px 0 rgba(0,0,0,0.07) inset,
-    0 0 0 0.75px rgba(255,255,255,0.60),
-    0 2px 8px rgba(0,0,0,0.08);
+    0 1px 0 rgba(255,255,255,0.98) inset,
+    0 -1px 0 rgba(0,0,0,0.05) inset,
+    0 0 0 1px rgba(228,220,210,0.92),
+    0 8px 22px rgba(0,0,0,0.08);
 }
 
 .period-thumb {
   position: absolute;
-  top: 3px;
-  bottom: 3px;
-  /* Thumb is also a glass pill */
-  background: linear-gradient(145deg, rgba(40,36,30,0.95) 0%, rgba(26,23,18,1) 100%);
-  border-radius: 100px;
+  top: 4px;
+  bottom: 4px;
+  background: linear-gradient(180deg, rgba(32,28,24,0.98) 0%, rgba(20,18,15,1) 100%);
+  border-radius: 999px;
   transition: left 0.26s var(--spring), width 0.2s var(--spring);
   box-shadow:
-    0 1px 0 rgba(255,255,255,0.12) inset,
-    0 2px 8px rgba(0,0,0,0.30),
-    0 1px 3px rgba(0,0,0,0.20);
+    0 1px 0 rgba(255,255,255,0.10) inset,
+    0 8px 18px rgba(0,0,0,0.24),
+    0 1px 3px rgba(0,0,0,0.16);
   pointer-events: none;
   z-index: 0;
 }
@@ -306,15 +306,15 @@ body {
   z-index: 1;
   border: none;
   background: transparent;
-  border-radius: 100px;
-  padding: 4px 12px;
-  font-size: 10px;
+  border-radius: 999px;
+  padding: 7px 16px;
+  font-size: 11px;
   font-weight: 700;
   cursor: pointer;
-  transition: color 0.2s ease;
+  transition: color 0.2s ease, transform 0.14s var(--spring);
   font-family: 'DM Mono', monospace;
   white-space: nowrap;
-  min-width: 32px;
+  min-width: 48px;
   text-align: center;
 }
 
