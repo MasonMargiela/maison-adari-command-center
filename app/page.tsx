@@ -2698,56 +2698,105 @@ function getAccountAvatarSrc(account: any): string | null {
   return null
 }
 
+
+
+function getAccountAvatarSrc(account: any): string | null {
+  if (!account) return null
+
+  const direct =
+    account.profilePictureUrl ||
+    account.profile_picture_url ||
+    account.profile_picture ||
+    account.avatarUrl ||
+    account.avatar_url ||
+    account.avatar ||
+    account.picture ||
+    account.image ||
+    account.photoUrl ||
+    account.photo_url ||
+    null
+
+        return direct
+
+  const_username = (
+    account.username ||
+    account.handle ||
+    account.platformUsername ||
+    account.platform_username ||
+    ""
+  )
+
+  const clean = typeof const_username === "string" ? const_username.replace(/^@/, "") : ""
+  if (!clean) return null
+
+  if (account.platform === "instagram") return `https://unavatar.io/instagram/${clean}`
+  if (account.platform === "tiktok") return `https://unavatar.io/tiktok/${clean}`
+
+  return null
+}
+
 function AccountAvatar({
   account,
   size = 52,
-  className = '',
 }: {
   account: any
   size?: number
-  className?: string
 }) {
   const src = getAccountAvatarSrc(account)
-  const fallback = (account?.platform || '?').slice(0, 1).toUpperCase()
+  const fallbackLetter =
+    account?.platform === "instagram" ? "I" :
+    account?.platform === "tiktok" ? "T" :
+    account?.platform?.slice?.(0, 1)?.toUpperCase?.() || "•"
 
   return (
     <div
-      className={className}
       style={{
         width: size,
         height: size,
         borderRadius: 16,
-        overflow: 'hidden',
+        overflow: "hidden",
         flexShrink: 0,
-        display: 'grid',
-        placeItems: 'center',
-        background: 'linear-gradient(180deg, rgba(248,241,247,0.96) 0%, rgba(239,233,241,0.92) 100%)',
-        boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.7), 0 8px 18px rgba(60,40,32,0.08)',
+        position: "relative",
+        display: "grid",
+        placeItems: "center",
+        background: "linear-gradient(180deg, rgba(247,231,238,0.98) 0%, rgba(243,226,235,0.94) 100%)",
+        boxShadow: "inset 0 1px 0 rgba(255,255,255,0.72), 0 8px 18px rgba(60,40,32,0.08)",
       }}
     >
+      <div
+        style={{
+          position: "absolute",
+          inset: 0,
+          display: "grid",
+          placeItems: "center",
+          fontFamily: "DM Mono, monospace",
+          fontSize: Math.max(12, Math.floor(size * 0.34)),
+          fontWeight: 700,
+          color: "rgba(130,92,130,0.92)",
+          zIndex: 1,
+        }}
+      >
+        {fallbackLetter}
+      </div>
+
       {src ? (
         <img
           src={src}
-          alt={account?.username || account?.platform || 'account'}
+          alt={account?.username || account?.platform || "account"}
           style={{
-            width: '100%',
-            height: '100%',
-            objectFit: 'cover',
-            display: 'block',
+            position: "absolute",
+            inset: 0,
+            width: "100%",
+            height: "100%",
+            objectFit: "cover",
+            display: "block",
+            zIndex: 2,
+          }}
+          onError={(e) => {
+            ;(e.currentTarget as HTMLImageElement).style.display = "none"
           }}
         />
-      ) : (
-        <span
-          style={{
-            fontFamily: 'DM Mono, monospace',
-            fontSize: Math.max(12, Math.floor(size * 0.34)),
-            fontWeight: 700,
-            color: 'rgba(120,84,120,0.92)',
-          }}
-        >
-          {fallback}
-        </span>
-      )}
+      ) : null}
     </div>
   )
 }
