@@ -879,102 +879,99 @@ input:focus, textarea:focus {
 .selector-track,
 .date-selector-track,
 .period-switcher {
-  position: relative !important;
-  display: grid !important;
-  grid-template-columns: repeat(4, minmax(0, 1fr)) !important;
-  align-items: center !important;
-  width: min(320px, 100%) !important;
-  max-width: 320px !important;
-  min-width: 320px !important;
-  height: 52px !important;
-  padding: 4px !important;
-  border-radius: 999px !important;
-  overflow: hidden !important;
-  isolation: isolate !important;
+  position: relative;
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  align-items: center;
+  width: 100%;
+  max-width: 286px;
+  min-width: 0;
+  height: 50px;
+  padding: 4px;
+  border-radius: 999px;
+  overflow: hidden;
+  isolation: isolate;
   background:
-    linear-gradient(180deg, rgba(255,255,255,0.88) 0%, rgba(247,244,238,0.74) 100%),
-    rgba(255,255,255,0.22) !important;
-  backdrop-filter: blur(24px) saturate(150%) !important;
-  -webkit-backdrop-filter: blur(24px) saturate(150%) !important;
-  border: 1px solid rgba(223,213,196,0.56) !important;
+    linear-gradient(180deg, rgba(255,255,255,0.92) 0%, rgba(247,244,238,0.82) 100%),
+    rgba(255,255,255,0.28);
+  backdrop-filter: blur(24px) saturate(150%);
+  -webkit-backdrop-filter: blur(24px) saturate(150%);
+  border: 1px solid rgba(223,213,196,0.56);
   box-shadow:
     inset 0 1px 0 rgba(255,255,255,0.82),
     0 8px 22px rgba(64,52,38,0.07),
-    0 2px 8px rgba(64,52,38,0.04) !important;
+    0 2px 8px rgba(64,52,38,0.04);
 }
 
 .period-thumb,
 .period-pill-thumb,
 .selector-thumb {
-  position: absolute !important;
-  top: 4px !important;
-  bottom: 4px !important;
-  left: 4px !important;
-  width: calc(25% - 3px) !important;
-  height: auto !important;
-  border-radius: 999px !important;
+  position: absolute;
+  top: 4px;
+  bottom: 4px;
+  height: auto;
+  border-radius: 999px;
   background:
-    radial-gradient(circle at 30% 24%, rgba(255,255,255,0.26) 0%, transparent 34%),
-    radial-gradient(circle at 76% 78%, rgba(162,220,192,0.12) 0%, transparent 26%),
-    linear-gradient(180deg, rgba(186,192,208,0.84) 0%, rgba(166,172,188,0.74) 100%) !important;
-  backdrop-filter: blur(22px) saturate(165%) !important;
-  -webkit-backdrop-filter: blur(22px) saturate(165%) !important;
-  border: 1px solid rgba(255,255,255,0.28) !important;
+    radial-gradient(circle at 30% 24%, rgba(255,255,255,0.24) 0%, transparent 34%),
+    radial-gradient(circle at 76% 78%, rgba(162,220,192,0.10) 0%, transparent 26%),
+    linear-gradient(180deg, rgba(186,192,208,0.76) 0%, rgba(166,172,188,0.64) 100%);
+  backdrop-filter: blur(22px) saturate(165%);
+  -webkit-backdrop-filter: blur(22px) saturate(165%);
+  border: 1px solid rgba(255,255,255,0.26);
   box-shadow:
     inset 0 1px 0 rgba(255,255,255,0.34),
     0 10px 24px rgba(35,29,22,0.10),
     0 2px 8px rgba(35,29,22,0.05),
-    0 0 18px rgba(120,180,255,0.08) !important;
+    0 0 18px rgba(120,180,255,0.08);
   transition:
     left 0.16s cubic-bezier(0.22, 1, 0.36, 1),
     width 0.16s cubic-bezier(0.22, 1, 0.36, 1),
     transform 0.14s cubic-bezier(0.34, 1.56, 0.64, 1),
-    box-shadow 0.18s ease !important;
-  pointer-events: none !important;
-  z-index: 1 !important;
+    box-shadow 0.18s ease;
+  pointer-events: none;
+  z-index: 1;
 }
 
 .period-btn,
 .selector-btn,
 .period-option {
-  position: relative !important;
-  z-index: 2 !important;
-  width: 100% !important;
-  min-width: 0 !important;
-  height: 44px !important;
-  padding: 0 8px !important;
-  border: none !important;
-  background: transparent !important;
-  display: inline-flex !important;
-  align-items: center !important;
-  justify-content: center !important;
-  border-radius: 999px !important;
-  font-family: 'DM Mono', monospace !important;
-  font-size: 11px !important;
-  font-weight: 700 !important;
-  line-height: 1 !important;
-  letter-spacing: -0.01em !important;
-  color: rgba(92,82,72,0.96) !important;
-  white-space: nowrap !important;
-  text-align: center !important;
-  flex: 0 0 auto !important;
-  -webkit-tap-highlight-color: transparent !important;
+  position: relative;
+  z-index: 2;
+  width: 100%;
+  min-width: 0;
+  height: 42px;
+  padding: 0 6px;
+  border: none;
+  background: transparent;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 999px;
+  font-family: 'DM Mono', monospace;
+  font-size: 11px;
+  font-weight: 700;
+  line-height: 1;
+  letter-spacing: -0.01em;
+  color: rgba(92,82,72,0.96);
+  white-space: nowrap;
+  text-align: center;
+  -webkit-tap-highlight-color: transparent;
 }
 
 .period-btn .period-btn-label {
-  color: inherit !important;
-  font: inherit !important;
-  line-height: 1 !important;
-  letter-spacing: inherit !important;
-  white-space: nowrap !important;
+  color: inherit;
+  font: inherit;
+  line-height: 1;
+  letter-spacing: inherit;
+  white-space: nowrap;
 }
 
 .period-btn[data-active='true'],
 .period-btn[data-active='true'] .period-btn-label,
 .selector-btn[data-active='true'],
 .period-option[data-active='true'] {
-  color: rgba(255,255,255,0.98) !important;
-  text-shadow: 0 1px 1px rgba(0,0,0,0.14) !important;
+  color: rgba(255,255,255,0.98);
+  text-shadow: 0 1px 1px rgba(0,0,0,0.14);
 }
 
 @media (max-width: 768px) {
@@ -983,27 +980,19 @@ input:focus, textarea:focus {
   .selector-track,
   .date-selector-track,
   .period-switcher {
-    width: min(320px, 100%) !important;
-    max-width: 320px !important;
-    min-width: 320px !important;
-    height: 52px !important;
-    padding: 4px !important;
-  }
-
-  .period-thumb,
-  .period-pill-thumb,
-  .selector-thumb {
-    width: calc(25% - 3px) !important;
-    top: 4px !important;
-    bottom: 4px !important;
+    width: 100%;
+    max-width: 286px;
+    min-width: 0;
+    height: 50px;
+    padding: 4px;
   }
 
   .period-btn,
   .selector-btn,
   .period-option {
-    height: 44px !important;
-    font-size: 11px !important;
-    padding: 0 8px !important;
+    height: 42px;
+    font-size: 11px;
+    padding: 0 6px;
   }
 }
 
