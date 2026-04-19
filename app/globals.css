@@ -377,3 +377,23 @@ input:focus, textarea:focus {
   pointer-events: none;
 }
 
+
+
+/* === OPENXLAW GLASS CHROMATIC EDGE === */
+
+.glass-surface::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+
+  background:
+    radial-gradient(circle at 18% 22%, rgba(104, 190, 255, 0.20), transparent 22%),
+    radial-gradient(circle at 78% 70%, rgba(111, 255, 182, 0.16), transparent 20%),
+    radial-gradient(circle at 54% 10%, rgba(155, 110, 255, 0.18), transparent 26%);
+
+  filter: blur(18px);
+  opacity: 0.7;
+  pointer-events: none;
+}
+
