@@ -306,7 +306,7 @@ const CmtCard = ({ c, accent, accentSoft }: { c: any; accent: string; accentSoft
 
 // ── AI INSIGHT BLOCK ───────────────────────────────────────────────────────
 const AIInsight = ({ text, platform }: { text: string; platform: string }) => (
-  <div className="liquid-glass-dark" style={{ borderRadius: 16, padding: '16px 18px', marginTop: 8, position: 'relative', overflow: 'hidden' }}>
+  <div className="glass-surface-dark" style={{ borderRadius: 16, padding: '16px 18px', marginTop: 8, position: 'relative', overflow: 'hidden' }}>
     <div style={{ position: 'absolute', top: 0, right: 0, width: 80, height: 80, background: `radial-gradient(circle, ${P.lavender}20, transparent 70%)`, pointerEvents: 'none' }} />
     <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 10 }}>
       <div style={{ width: 22, height: 22, borderRadius: 6, background: `linear-gradient(135deg, ${P.lavSoft}, ${P.lavender})`, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 11, boxShadow: `0 2px 8px ${P.lavDeep}40` }}>✦</div>
@@ -1055,7 +1055,7 @@ const OverviewTab = ({ igMetrics, igLoading, igGoal, handleSetIgGoal, today }: a
   return (
     <div>
       {/* Morning briefing */}
-      <div className="liquid-glass" style={{ borderRadius: 18, padding: '15px 17px', marginBottom: 14, position: 'relative', overflow: 'hidden' }}>
+      <div className="glass-surface" style={{ borderRadius: 18, padding: '15px 17px', marginBottom: 14, position: 'relative', overflow: 'hidden' }}>
         <div style={{ position: 'absolute', top: -20, right: -20, width: 100, height: 100, background: `radial-gradient(circle, ${P.lavender}25, transparent 70%)`, pointerEvents: 'none' }} />
         <div style={{ fontSize: 9, letterSpacing: '0.18em', textTransform: 'uppercase', color: P.lavDeep, fontFamily: F.mono, marginBottom: 6, display: 'flex', alignItems: 'center', gap: 6 }}>
           <span>📰</span> Morning Briefing · {today}
@@ -1077,7 +1077,7 @@ const OverviewTab = ({ igMetrics, igLoading, igGoal, handleSetIgGoal, today }: a
         const masonDelta = masonHistoryDelta;
         const mattDelta = 0;
         return (
-          <div className="liquid-glass" style={{ borderRadius: 18, padding: '16px 18px', marginBottom: 14, display: 'grid', gridTemplateColumns: 'repeat(3, minmax(0, 1fr))', gap: 12, position: 'relative', overflow: 'hidden' }}>
+          <div className="glass-surface" style={{ borderRadius: 18, padding: '16px 18px', marginBottom: 14, display: 'grid', gridTemplateColumns: 'repeat(3, minmax(0, 1fr))', gap: 12, position: 'relative', overflow: 'hidden' }}>
             <div style={{ position: 'absolute', bottom: -30, left: '50%', transform: 'translateX(-50%)', width: 200, height: 80, background: `radial-gradient(ellipse, ${P.lavender}18, transparent 70%)`, pointerEvents: 'none' }} />
             <div>
               <div style={{ fontSize: 9, color: P.inkFaint, fontFamily: F.mono, textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: 4 }}>Combined Followers</div>
@@ -1167,7 +1167,7 @@ const OverviewTab = ({ igMetrics, igLoading, igGoal, handleSetIgGoal, today }: a
       </div>
 
       {/* Connect accounts */}
-      <div className="liquid-glass" style={{ borderRadius: 18, padding: '15px 17px', marginBottom: 14, position: 'relative', overflow: 'hidden' }}>
+      <div className="glass-surface" style={{ borderRadius: 18, padding: '15px 17px', marginBottom: 14, position: 'relative', overflow: 'hidden' }}>
         <div style={{ position: 'absolute', top: -30, right: -20, width: 120, height: 120, background: `radial-gradient(circle, ${P.sky}15, transparent 70%)`, pointerEvents: 'none' }} />
         <div style={{ fontSize: 9, color: P.inkFaint, fontFamily: F.mono, letterSpacing: '0.16em', textTransform: 'uppercase', marginBottom: 12 }}>Connect More Accounts</div>
         {[
@@ -1469,7 +1469,7 @@ const FollowerGraph = ({ accountId, color, colorSoft }: { accountId?: string; co
 
       {/* Hover tooltip — clean liquid glass, no jargon */}
       {hovered && (
-        <div className="liquid-glass" style={{ borderRadius: 14, padding: '10px 14px', marginTop: 8, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+        <div className="glass-surface" style={{ borderRadius: 14, padding: '10px 14px', marginTop: 8, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
           <div>
             <div style={{ fontSize: 9, color: '#8a8078', fontFamily: "'DM Mono', monospace", textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: 2 }}>{formatDate(hovered.date)}</div>
             <div style={{ fontSize: 21, fontWeight: 700, fontFamily: "'Fraunces', serif", color: '#1e1a16', letterSpacing: '-0.02em' }}>{hovered.followers.toLocaleString()}</div>
@@ -1617,7 +1617,7 @@ const UnifiedAccountView = ({ acc, igData, goal, setGoal }: { acc: any; igData: 
   return (
     <div>
       {/* Account sub-header with score ring */}
-      <div className="liquid-glass" style={{ borderRadius: 16, padding: '13px 15px', marginBottom: 10, display: 'flex', alignItems: 'center', gap: 10 }}>
+      <div className="glass-surface" style={{ borderRadius: 16, padding: '13px 15px', marginBottom: 10, display: 'flex', alignItems: 'center', gap: 10 }}>
         <div style={{ width: 34, height: 34, borderRadius: 9, background: `linear-gradient(135deg, ${acc.colorSoft}, ${acc.color}40)`, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 15, flexShrink: 0, boxShadow: `0 3px 8px ${acc.color}30` }}>{acc.icon}</div>
         <div style={{ flex: 1 }}>
           <div style={{ fontSize: 12, fontWeight: 700, color: P.ink }}>{acc.platform}</div>
@@ -2721,7 +2721,7 @@ export default function AdariCommandCenter() {
       <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,wght@0,300;0,400;0,600;0,700;0,800;1,400&family=DM+Sans:wght@300;400;500;600;700&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet" />
 
       {/* HEADER — liquid glass iOS 26 */}
-      <div className="liquid-glass" style={{ borderRadius: 0, padding: '14px 18px 0', position: 'sticky', top: 0, zIndex: 20, borderLeft: 'none', borderRight: 'none', borderTop: 'none' }}>
+      <div className="glass-surface" style={{ borderRadius: 0, padding: '14px 18px 0', position: 'sticky', top: 0, zIndex: 20, borderLeft: 'none', borderRight: 'none', borderTop: 'none', boxShadow: '0 1px 0 rgba(255,255,255,0.16) inset, 0 8px 24px rgba(0,0,0,0.10)' }}>
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 12 }}>
           <div>
             <div style={{ fontSize: 9, letterSpacing: '0.22em', textTransform: 'uppercase', color: P.inkFaint, fontFamily: F.mono }}>Maison Adari · The AFE</div>
