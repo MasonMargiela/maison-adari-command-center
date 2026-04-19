@@ -2773,15 +2773,31 @@ function getAccountAvatarSrc(account: any): string | null {
     account.image ||
     account.photoUrl ||
     account.photo_url ||
+    account.profileImageUrl ||
+    account.profile_image_url ||
     null
 
   if (typeof direct === 'string' && direct.trim()) return direct.trim()
 
+  const nestedAccounts = Array.isArray(account.accounts) ? account.accounts : []
+  const preferredNested =
+    nestedAccounts.find((a: any) => String(a?.platform || '').toLowerCase() === 'instagram' && !a?.notConnected) ||
+    nestedAccounts.find((a: any) => String(a?.platform || '').toLowerCase() === 'tiktok' && !a?.notConnected) ||
+    nestedAccounts.find((a: any) => !a?.notConnected) ||
+    nestedAccounts[0] ||
+    null
+
+  const source = preferredNested || account
+
   const rawUsername =
-    account.username ||
-    account.handle ||
-    account.platformUsername ||
-    account.platform_username ||
+    source.username ||
+    source.handle ||
+    source.platformUsername ||
+    source.platform_username ||
+    source.display_name ||
+    source.displayName ||
+    source.user_name ||
+    source.screen_name ||
     null
 
   if (!rawUsername || typeof rawUsername !== 'string') return null
@@ -2789,7 +2805,7 @@ function getAccountAvatarSrc(account: any): string | null {
   const username = rawUsername.replace(/^@/, '').trim()
   if (!username) return null
 
-  const platform = String(account.platform || '').toLowerCase().trim()
+  const platform = String(source.platform || account.platform || '').toLowerCase().trim()
 
   if (platform === 'instagram') {
     return `https://unavatar.io/instagram/${username}`
