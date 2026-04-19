@@ -781,6 +781,33 @@ function getClientSimpleAvatarSource(client: any): { handle?: string; platform?:
   }
 }
 
+
+function getClientAvatarSource(client: any, liveAccounts?: any[]) {
+  const live = (Array.isArray(liveAccounts) ? liveAccounts : []).map((a: any) => ({
+    ...a,
+    platform: String(a?.platform || '').toLowerCase(),
+    handle: a?.handle || (a?.username ? `@${String(a.username).replace(/^@/, '')}` : undefined),
+  }))
+
+  const staticAccounts = (Array.isArray(client?.accounts) ? client.accounts : []).map((a: any) => ({
+    ...a,
+    platform: String(a?.platform || '').toLowerCase(),
+    handle: a?.handle || (a?.username ? `@${String(a.username).replace(/^@/, '')}` : undefined),
+  }))
+
+  const combined = [...live, ...staticAccounts]
+
+  const preferred =
+    combined.find((a: any) => a.platform === 'instagram' && a.handle) ||
+    combined.find((a: any) => a.platform === 'tiktok' && a.handle) ||
+    combined.find((a: any) => a.handle)
+
+  return {
+    handle: preferred?.handle,
+    platform: preferred?.platform,
+  }
+}
+
 // ── SLIDING PERIOD PILL ────────────────────────────────────────────────────
 const PeriodPill = ({ periods, value, onChange, color = '#1a1713' }: {
   periods: { id: string; label: string }[];
