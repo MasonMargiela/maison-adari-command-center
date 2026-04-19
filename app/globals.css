@@ -270,39 +270,53 @@ body {
 /* ── PERIOD PILL SLIDER ── */
 .period-track {
   position: relative;
-  border-radius: 999px;
-  padding: 4px;
   display: inline-flex;
-  gap: 2px;
+  align-items: center;
   width: auto;
   max-width: 100%;
-  background: linear-gradient(180deg, rgba(255,255,255,0.88) 0%, rgba(247,244,239,0.92) 100%);
-  backdrop-filter: blur(20px) saturate(170%);
-  -webkit-backdrop-filter: blur(20px) saturate(170%);
+  min-height: 50px;
+  padding: 4px;
+  gap: 2px;
+  border-radius: 999px;
+  background:
+    linear-gradient(180deg, rgba(255,255,255,0.70) 0%, rgba(245,242,236,0.56) 100%),
+    rgba(255,255,255,0.30);
+  backdrop-filter: blur(26px) saturate(150%);
+  -webkit-backdrop-filter: blur(26px) saturate(150%);
   box-shadow:
-    0 1px 0 rgba(255,255,255,0.98) inset,
-    0 -1px 0 rgba(0,0,0,0.05) inset,
-    0 0 0 1px rgba(228,220,210,0.92),
-    0 8px 22px rgba(0,0,0,0.08);
+    inset 0 1px 0 rgba(255,255,255,0.76),
+    inset 0 -1px 0 rgba(188,176,160,0.18),
+    0 10px 22px rgba(68,54,38,0.08),
+    0 2px 8px rgba(68,54,38,0.05);
+  isolation: isolate;
+  overflow: visible;
+  touch-action: pan-x;
+  user-select: none;
+  -webkit-user-select: none;
 }
 
 
 
 .period-btn {
   position: relative;
-  z-index: 1;
+  z-index: 2;
   border: none;
   background: transparent;
   border-radius: 999px;
-  padding: 7px 16px;
+  padding: 9px 20px;
+  min-width: 68px;
+  height: 40px;
   font-size: 11px;
   font-weight: 700;
+  line-height: 1;
   cursor: pointer;
-  transition: color 0.2s ease, transform 0.14s var(--spring);
   font-family: 'DM Mono', monospace;
   white-space: nowrap;
-  min-width: 48px;
   text-align: center;
+  transition:
+    color 0.12s linear,
+    transform 0.08s linear;
+  -webkit-tap-highlight-color: transparent;
 }
 
 /* ── SCROLL FADE ── */
@@ -342,20 +356,19 @@ input:focus, textarea:focus {
   border-radius: 20px;
 
   background:
-    linear-gradient(180deg, rgba(18,18,22,0.58) 0%, rgba(14,14,18,0.46) 100%),
-    rgba(18,18,22,0.34);
+    linear-gradient(180deg, rgba(255,255,255,0.44) 0%, rgba(248,246,242,0.34) 100%),
+    rgba(255,255,255,0.22);
 
-  backdrop-filter: blur(24px) saturate(165%);
-  -webkit-backdrop-filter: blur(24px) saturate(165%);
+  backdrop-filter: blur(30px) saturate(150%);
+  -webkit-backdrop-filter: blur(30px) saturate(150%);
 
-  border: 1px solid rgba(255,255,255,0.12);
+  border: 1px solid rgba(255,255,255,0.42);
 
   box-shadow:
-    inset 0 1px 0 rgba(255,255,255,0.24),
-    inset 0 -1px 0 rgba(0,0,0,0.38),
-    0 0 0 1px rgba(255,255,255,0.05),
-    0 10px 28px rgba(0,0,0,0.28),
-    0 2px 8px rgba(0,0,0,0.14);
+    inset 0 1px 0 rgba(255,255,255,0.62),
+    inset 0 -1px 0 rgba(180,170,156,0.18),
+    0 10px 26px rgba(68,54,38,0.10),
+    0 2px 8px rgba(68,54,38,0.06);
 }
 
 .glass-surface::before {
@@ -363,15 +376,8 @@ input:focus, textarea:focus {
   position: absolute;
   inset: 0;
   border-radius: inherit;
-
   background:
-    linear-gradient(
-      to bottom,
-      rgba(255,255,255,0.18),
-      rgba(255,255,255,0.05) 20%,
-      transparent 40%
-    );
-
+    linear-gradient(to bottom, rgba(255,255,255,0.30), rgba(255,255,255,0.10) 22%, transparent 44%);
   pointer-events: none;
   z-index: 1;
 }
@@ -381,14 +387,12 @@ input:focus, textarea:focus {
   position: absolute;
   inset: 0;
   border-radius: inherit;
-
   background:
-    radial-gradient(circle at 18% 22%, rgba(104, 190, 255, 0.20), transparent 22%),
-    radial-gradient(circle at 78% 70%, rgba(111, 255, 182, 0.16), transparent 20%),
-    radial-gradient(circle at 54% 10%, rgba(155, 110, 255, 0.18), transparent 26%);
-
+    radial-gradient(circle at 18% 22%, rgba(110,190,255,0.14), transparent 22%),
+    radial-gradient(circle at 78% 70%, rgba(111,255,182,0.10), transparent 20%),
+    radial-gradient(circle at 54% 10%, rgba(155,110,255,0.12), transparent 26%);
   filter: blur(18px);
-  opacity: 0.7;
+  opacity: 0.75;
   pointer-events: none;
   z-index: 0;
 }
@@ -405,20 +409,19 @@ input:focus, textarea:focus {
   border-radius: 20px;
 
   background:
-    linear-gradient(180deg, rgba(10,10,14,0.74) 0%, rgba(8,8,12,0.60) 100%),
-    rgba(10,10,14,0.42);
+    linear-gradient(180deg, rgba(72,72,80,0.54) 0%, rgba(54,54,62,0.44) 100%),
+    rgba(48,48,56,0.28);
 
-  backdrop-filter: blur(28px) saturate(170%);
-  -webkit-backdrop-filter: blur(28px) saturate(170%);
+  backdrop-filter: blur(34px) saturate(155%);
+  -webkit-backdrop-filter: blur(34px) saturate(155%);
 
-  border: 1px solid rgba(255,255,255,0.10);
+  border: 1px solid rgba(255,255,255,0.20);
 
   box-shadow:
-    inset 0 1px 0 rgba(255,255,255,0.16),
-    inset 0 -1px 0 rgba(0,0,0,0.42),
-    0 0 0 1px rgba(255,255,255,0.04),
-    0 14px 34px rgba(0,0,0,0.34),
-    0 2px 8px rgba(0,0,0,0.18);
+    inset 0 1px 0 rgba(255,255,255,0.34),
+    inset 0 -1px 0 rgba(0,0,0,0.18),
+    0 12px 28px rgba(40,32,24,0.18),
+    0 2px 10px rgba(40,32,24,0.10);
 }
 
 .glass-surface-dark::before {
@@ -427,12 +430,7 @@ input:focus, textarea:focus {
   inset: 0;
   border-radius: inherit;
   background:
-    linear-gradient(
-      to bottom,
-      rgba(255,255,255,0.12),
-      rgba(255,255,255,0.03) 22%,
-      transparent 42%
-    );
+    linear-gradient(to bottom, rgba(255,255,255,0.24), rgba(255,255,255,0.08) 24%, transparent 48%);
   pointer-events: none;
   z-index: 1;
 }
@@ -443,11 +441,11 @@ input:focus, textarea:focus {
   inset: 0;
   border-radius: inherit;
   background:
-    radial-gradient(circle at 18% 22%, rgba(104, 190, 255, 0.16), transparent 24%),
-    radial-gradient(circle at 78% 70%, rgba(111, 255, 182, 0.12), transparent 22%),
-    radial-gradient(circle at 54% 10%, rgba(155, 110, 255, 0.14), transparent 28%);
-  filter: blur(18px);
-  opacity: 0.52;
+    radial-gradient(circle at 18% 24%, rgba(110,190,255,0.14), transparent 22%),
+    radial-gradient(circle at 78% 72%, rgba(111,255,182,0.10), transparent 20%),
+    radial-gradient(circle at 54% 12%, rgba(155,110,255,0.14), transparent 26%);
+  filter: blur(20px);
+  opacity: 0.86;
   pointer-events: none;
   z-index: 0;
 }
@@ -551,12 +549,15 @@ input:focus, textarea:focus {
 
 .period-thumb {
   position: absolute;
-  top: -2px;
-  bottom: -2px;
+  top: -1px;
+  bottom: -1px;
   border-radius: 999px;
   background:
-    radial-gradient(circle at 50% 22%, rgba(255,255,255,0.22) 0%, transparent 36%),
-    linear-gradient(180deg, rgba(42,38,34,0.96) 0%, rgba(18,16,15,0.96) 100%);
+    radial-gradient(circle at 50% 20%, rgba(255,255,255,0.24) 0%, transparent 34%),
+    linear-gradient(180deg, rgba(84,84,92,0.42) 0%, rgba(52,52,60,0.34) 100%),
+    rgba(70,70,78,0.18);
+  backdrop-filter: blur(34px) saturate(170%);
+  -webkit-backdrop-filter: blur(34px) saturate(170%);
   transition:
     left 0.16s cubic-bezier(0.22, 1, 0.36, 1),
     width 0.16s cubic-bezier(0.22, 1, 0.36, 1),
@@ -564,15 +565,15 @@ input:focus, textarea:focus {
     transform 0.16s cubic-bezier(0.34, 1.56, 0.64, 1),
     box-shadow 0.18s ease;
   box-shadow:
-    inset 0 2px 6px rgba(255,255,255,0.20),
-    inset 0 -1px 0 rgba(0,0,0,0.32),
-    0 12px 24px rgba(0,0,0,0.24),
-    0 2px 8px rgba(0,0,0,0.16),
-    0 0 18px rgba(120,180,255,0.14);
+    inset 0 1px 0 rgba(255,255,255,0.34),
+    inset 0 -1px 0 rgba(255,255,255,0.06),
+    0 14px 26px rgba(28,24,20,0.16),
+    0 2px 8px rgba(28,24,20,0.08),
+    0 0 18px rgba(120,180,255,0.10);
   pointer-events: none;
   z-index: 1;
   will-change: left, width, transform;
-  transform: translateZ(0) scale(1.028);
+  transform: translateZ(0) scale(1.015);
   overflow: hidden;
 }
 
@@ -583,13 +584,13 @@ input:focus, textarea:focus {
     opacity 0.08s linear,
     transform 0.08s ease,
     box-shadow 0.10s ease;
-  transform: translateZ(0) scale(1.065);
+  transform: translateZ(0) scale(1.045);
   box-shadow:
-    inset 0 2px 6px rgba(255,255,255,0.24),
-    inset 0 -1px 0 rgba(0,0,0,0.30),
-    0 14px 26px rgba(0,0,0,0.26),
-    0 2px 8px rgba(0,0,0,0.16),
-    0 0 22px rgba(120,180,255,0.18);
+    inset 0 1px 0 rgba(255,255,255,0.42),
+    inset 0 -1px 0 rgba(255,255,255,0.08),
+    0 16px 28px rgba(28,24,20,0.16),
+    0 3px 10px rgba(28,24,20,0.08),
+    0 0 24px rgba(120,180,255,0.14);
 }
 
 .period-thumb::before {
@@ -598,10 +599,10 @@ input:focus, textarea:focus {
   inset: 1px;
   border-radius: inherit;
   background:
-    linear-gradient(180deg, rgba(255,255,255,0.10) 0%, rgba(255,255,255,0.03) 36%, transparent 72%),
-    radial-gradient(circle at 18% 30%, rgba(94,179,255,0.14) 0%, transparent 26%),
-    radial-gradient(circle at 72% 68%, rgba(101,255,177,0.10) 0%, transparent 24%),
-    radial-gradient(circle at 50% 20%, rgba(166,108,255,0.12) 0%, transparent 28%);
+    linear-gradient(180deg, rgba(255,255,255,0.22) 0%, rgba(255,255,255,0.06) 34%, transparent 72%),
+    radial-gradient(circle at 18% 30%, rgba(94,179,255,0.10) 0%, transparent 24%),
+    radial-gradient(circle at 72% 68%, rgba(101,255,177,0.08) 0%, transparent 22%),
+    radial-gradient(circle at 50% 20%, rgba(166,108,255,0.10) 0%, transparent 26%);
   opacity: 0.96;
   filter: blur(0.15px);
 }
@@ -612,11 +613,11 @@ input:focus, textarea:focus {
   inset: -12% -4%;
   border-radius: inherit;
   background:
-    radial-gradient(circle at 18% 40%, rgba(82,182,255,0.18) 0%, transparent 24%),
-    radial-gradient(circle at 78% 62%, rgba(117,255,176,0.14) 0%, transparent 22%),
-    radial-gradient(circle at 52% 18%, rgba(158,110,255,0.16) 0%, transparent 30%);
-  filter: blur(9px);
-  opacity: 0.82;
+    radial-gradient(circle at 18% 40%, rgba(82,182,255,0.14) 0%, transparent 24%),
+    radial-gradient(circle at 78% 62%, rgba(117,255,176,0.10) 0%, transparent 22%),
+    radial-gradient(circle at 52% 18%, rgba(158,110,255,0.12) 0%, transparent 30%);
+  filter: blur(10px);
+  opacity: 0.68;
 }
 
 .period-btn:hover {
@@ -754,5 +755,62 @@ input:focus, textarea:focus {
     linear-gradient(180deg, rgba(40,40,46,0.34) 0%, rgba(20,20,26,0.28) 100%),
     rgba(20,20,26,0.18);
   color: rgba(255,255,255,0.90);
+}
+
+
+
+.period-track::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  background:
+    linear-gradient(180deg, rgba(255,255,255,0.32) 0%, transparent 28%),
+    radial-gradient(circle at 16% 18%, rgba(108,184,255,0.12) 0%, transparent 20%),
+    radial-gradient(circle at 82% 70%, rgba(110,255,182,0.08) 0%, transparent 18%),
+    radial-gradient(circle at 58% 12%, rgba(154,104,255,0.10) 0%, transparent 24%);
+  opacity: 0.95;
+  pointer-events: none;
+  z-index: 0;
+}
+
+
+.period-btn-label {
+  position: relative;
+  top: 0;
+  letter-spacing: -0.01em;
+}
+
+
+
+/* === OPENXLAW READABILITY / CLEAR PANE TUNING === */
+
+.dark-pane-text,
+.dark-pane-text * {
+  color: rgba(255,255,255,0.94);
+}
+
+.dark-pane-text .muted,
+.dark-pane-text [data-muted="true"] {
+  color: rgba(255,255,255,0.74) !important;
+}
+
+.dark-pane-text .green,
+.dark-pane-text .delta-positive {
+  color: rgba(135,224,158,0.96) !important;
+}
+
+.glass-surface-dark .section-eyebrow,
+.glass-surface-dark .mono-label {
+  color: rgba(233,229,245,0.84) !important;
+}
+
+.glass-surface-dark em,
+.glass-surface-dark strong {
+  color: rgba(255,255,255,0.98);
+}
+
+.glass-surface-dark a {
+  color: rgba(255,255,255,0.94);
 }
 

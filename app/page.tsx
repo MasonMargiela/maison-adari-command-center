@@ -304,9 +304,9 @@ const CmtCard = ({ c, accent, accentSoft }: { c: any; accent: string; accentSoft
   </div>
 );
 
-// ── AI INSIGHT BLOCK ───────────────────────────────────────────────────────
+// ── ADARI INSIGHT BLOCK ───────────────────────────────────────────────────────
 const AIInsight = ({ text, platform }: { text: string; platform: string }) => (
-  <div className="glass-surface-dark" style={{ borderRadius: 16, padding: '16px 18px', marginTop: 8, position: 'relative', overflow: 'hidden' }}>
+  <div className="glass-surface-dark dark-pane-text" style={{ borderRadius: 16, padding: '16px 18px', marginTop: 8, position: 'relative', overflow: 'hidden' }}>
     <div style={{ position: 'absolute', top: 0, right: 0, width: 80, height: 80, background: `radial-gradient(circle, ${P.lavender}20, transparent 70%)`, pointerEvents: 'none' }} />
     <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 10 }}>
       <div style={{ width: 22, height: 22, borderRadius: 6, background: `linear-gradient(135deg, ${P.lavSoft}, ${P.lavender})`, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 11, boxShadow: `0 2px 8px ${P.lavDeep}40` }}>✦</div>
@@ -1851,8 +1851,8 @@ const UnifiedAccountView = ({ acc, igData, goal, setGoal }: { acc: any; igData: 
         </>
       )}
 
-      <SH>AI Strategic Insight</SH>
-      <AIInsight text={acc.insight ?? 'Connect this account to generate AI insights based on your real content performance.'} platform={acc.platform} />
+      <SH>Adari Insights</SH>
+      <AIInsight text={acc.insight ?? 'Connect this account to generate Adari insights based on your real content performance.'} platform={acc.platform} />
     </div>
   );
 };
@@ -2011,7 +2011,7 @@ const DynamicClientView = ({ client, igData, igGoal, setIgGoal }: { client: any;
                 topComments: [],
                 working: 'Post content to see what is working.',
                 flopping: 'Post content to identify patterns.',
-                insight: 'Account connected. Post content to generate AI insights.',
+                insight: 'Account connected. Post content to generate Adari insights.',
               };
 
               return (
@@ -2721,7 +2721,7 @@ export default function AdariCommandCenter() {
       <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,wght@0,300;0,400;0,600;0,700;0,800;1,400&family=DM+Sans:wght@300;400;500;600;700&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet" />
 
       {/* HEADER — liquid glass iOS 26 */}
-      <div className="glass-surface" style={{ borderRadius: 0, padding: '14px 18px 0', position: 'sticky', top: 0, zIndex: 20, borderLeft: 'none', borderRight: 'none', borderTop: 'none', boxShadow: '0 1px 0 rgba(255,255,255,0.16) inset, 0 8px 24px rgba(0,0,0,0.10)' }}>
+      <div className="glass-surface" style={{ borderRadius: 0, padding: '14px 18px 0', position: 'sticky', top: 0, zIndex: 20, borderLeft: 'none', borderRight: 'none', borderTop: 'none', background: 'linear-gradient(180deg, rgba(255,255,255,0.22) 0%, rgba(244,241,236,0.18) 100%), rgba(255,255,255,0.10)', backdropFilter: 'blur(30px) saturate(145%)', WebkitBackdropFilter: 'blur(30px) saturate(145%)', boxShadow: '0 1px 0 rgba(255,255,255,0.30) inset, 0 8px 24px rgba(0,0,0,0.08)' }}>
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 12 }}>
           <div>
             <div style={{ fontSize: 9, letterSpacing: '0.22em', textTransform: 'uppercase', color: P.inkFaint, fontFamily: F.mono }}>Maison Adari · The AFE</div>
