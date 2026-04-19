@@ -2775,23 +2775,28 @@ function getAccountAvatarSrc(account: any): string | null {
     account.photo_url ||
     null
 
-  if (typeof direct === 'string' && direct.trim()) return direct
+  if (typeof direct === 'string' && direct.trim()) return direct.trim()
 
-  const username =
+  const rawUsername =
     account.username ||
     account.handle ||
     account.platformUsername ||
     account.platform_username ||
     null
 
-  if (!username || typeof username !== 'string') return null
+  if (!rawUsername || typeof rawUsername !== 'string') return null
 
-  if (account.platform === 'instagram') {
-    return `https://unavatar.io/instagram/${username.replace(/^@/, '')}`
+  const username = rawUsername.replace(/^@/, '').trim()
+  if (!username) return null
+
+  const platform = String(account.platform || '').toLowerCase().trim()
+
+  if (platform === 'instagram') {
+    return `https://unavatar.io/instagram/${username}`
   }
 
-  if (account.platform === 'tiktok') {
-    return `https://unavatar.io/tiktok/${username.replace(/^@/, '')}`
+  if (platform === 'tiktok') {
+    return `https://unavatar.io/tiktok/${username}`
   }
 
   return null
