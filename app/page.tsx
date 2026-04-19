@@ -738,42 +738,73 @@ const PeriodPill = ({ periods, value, onChange, color = '#1a1713' }: {
 }) => {
   const trackRef = useRef<HTMLDivElement>(null);
   const [thumbStyle, setThumbStyle] = useState({ left: 4, width: 0, opacity: 0 });
+  const [dragging, setDragging] = useState(false);
+
+  const count = Math.max(periods.length, 1);
+
+  const updateThumb = (activeId: string) => {
+    if (!trackRef.current) return;
+    const idx = Math.max(0, periods.findIndex(p => p.id === activeId));
+    const trackWidth = trackRef.current.clientWidth;
+    const inner = trackWidth - 8; // 4px left + 4px right
+    const slot = inner / count;
+    setThumbStyle({
+      left: 4 + idx * slot,
+      width: slot,
+      opacity: 1,
+    });
+  };
 
   useEffect(() => {
     if (!trackRef.current) return;
-
-    const updateThumb = () => {
-      if (!trackRef.current) return;
-      const idx = periods.findIndex(p => p.id === value);
-      const btns = trackRef.current.querySelectorAll('.period-btn');
-      const btn = btns[idx] as HTMLElement | undefined;
-      if (btn) {
-        setThumbStyle({
-          left: btn.offsetLeft,
-          width: btn.offsetWidth,
-          opacity: 1
-        });
-      }
-    };
-
-    const raf = requestAnimationFrame(updateThumb);
-    const ro = new ResizeObserver(() => updateThumb());
+    const raf = requestAnimationFrame(() => updateThumb(value));
+    const ro = new ResizeObserver(() => updateThumb(value));
     ro.observe(trackRef.current);
-
     return () => {
       cancelAnimationFrame(raf);
       ro.disconnect();
     };
-  }, [value, periods]);
+  }, [value, count]);
+
+  const resolveIndexFromClientX = (clientX: number) => {
+    if (!trackRef.current) return 0;
+    const rect = trackRef.current.getBoundingClientRect();
+    const x = Math.min(Math.max(clientX - rect.left, 0), rect.width);
+    const idx = Math.floor((x / rect.width) * count);
+    return Math.min(count - 1, Math.max(0, idx));
+  };
+
+  const handlePointerMove = (e: React.PointerEvent<HTMLDivElement>) => {
+    if (!dragging) return;
+    const idx = resolveIndexFromClientX(e.clientX);
+    const next = periods[idx];
+    if (next && next.id !== value) onChange(next.id);
+  };
 
   return (
     <div
       ref={trackRef}
       className="period-track"
-      style={{ position: 'relative', display: 'inline-flex', width: 'auto' }}
+      style={{
+        position: 'relative',
+        display: 'grid',
+        gridTemplateColumns: `repeat(${count}, minmax(0, 1fr))`,
+        width: 'min(400px, 100%)',
+      }}
+      onPointerDown={(e) => {
+        setDragging(true);
+        const idx = resolveIndexFromClientX(e.clientX);
+        const next = periods[idx];
+        if (next) onChange(next.id);
+      }}
+      onPointerMove={handlePointerMove}
+      onPointerUp={() => setDragging(false)}
+      onPointerCancel={() => setDragging(false)}
+      onPointerLeave={() => setDragging(false)}
     >
       <div
         className="period-thumb"
+        data-dragging={dragging ? 'true' : 'false'}
         style={{
           left: thumbStyle.left,
           width: thumbStyle.width,
@@ -781,16 +812,14 @@ const PeriodPill = ({ periods, value, onChange, color = '#1a1713' }: {
           ['--pill-accent' as any]: color,
         }}
       />
-      {periods.map((p, i) => (
+      {periods.map((p) => (
         <button
           key={p.id}
+          type="button"
           className="period-btn"
           data-active={value === p.id ? 'true' : 'false'}
           onClick={() => onChange(p.id)}
-          style={{
-            color: value === p.id ? '#ffffff' : '#6f685f',
-            transitionDelay: value === p.id ? '0.02s' : '0s'
-          }}
+          style={{ color: value === p.id ? '#ffffff' : '#6f685f' }}
         >
           <span className="period-btn-label">{p.label}</span>
         </button>
@@ -798,6 +827,53 @@ const PeriodPill = ({ periods, value, onChange, color = '#1a1713' }: {
     </div>
   );
 };
+
+
+function getSimpleAvatarSrc(handle?: string, platform?: string) {
+  if (!handle) return null
+  const clean = handle.replace(/^@/, '')
+  if (!clean) return null
+  if ((platform || '').toLowerCase() === 'instagram') return `https://unavatar.io/instagram/${clean}`
+  if ((platform || '').toLowerCase() === 'tiktok') return `https://unavatar.io/tiktok/${clean}`
+  return null
+}
+
+function SimpleAccountAvatar({ handle, platform, size = 28 }: { handle?: string; platform?: string; size?: number }) {
+  const src = getSimpleAvatarSrc(handle, platform)
+  const fallback = ((platform || '?')[0] || '?').toUpperCase()
+
+  return (
+    <div
+      style={{
+        width: size,
+        height: size,
+        borderRadius: 999,
+        overflow: 'hidden',
+        flexShrink: 0,
+        display: 'grid',
+        placeItems: 'center',
+        background: 'linear-gradient(180deg, rgba(247,231,238,0.98) 0%, rgba(243,226,235,0.94) 100%)',
+        boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.72), 0 4px 10px rgba(60,40,32,0.08)',
+        fontFamily: F.mono,
+        fontSize: 11,
+        fontWeight: 700,
+        color: P.lavDeep,
+      }}
+    >
+      {src ? (
+        <img
+          src={src}
+          alt={handle || platform || 'account'}
+          style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }}
+          onError={(e) => {
+            (e.currentTarget as HTMLImageElement).style.display = 'none'
+          }}
+        />
+      ) : fallback}
+    </div>
+  )
+}
+
 
 // ── SPINNING PIE CHART ─────────────────────────────────────────────────────
 const SpinPieChart = ({ slices, size = 80 }: { slices: { value: number; color: string; label: string }[]; size?: number }) => {
@@ -1176,7 +1252,7 @@ const OverviewTab = ({ igMetrics, igLoading, igGoal, handleSetIgGoal, today }: a
           { label: "Mason's TikTok", handle: '@masondoesnumbers', platform: 'TikTok', color: P.sky },
         ].map((acc, i) => (
           <div key={i} style={{ display: 'flex', alignItems: 'center', gap: 9, padding: '9px 0', borderBottom: i < 2 ? `1px solid ${P.border}` : 'none' }}>
-            <AccountAvatar account={acc} size={34} />
+            <SimpleAccountAvatar handle={acc.handle} platform={acc.platform} />
             <div style={{ flex: 1 }}>
               <div style={{ fontSize: 12, color: P.ink }}>{acc.label}</div>
               <div style={{ fontSize: 10, color: P.inkFaint }}>{acc.handle}</div>

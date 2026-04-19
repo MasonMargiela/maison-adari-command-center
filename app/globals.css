@@ -1113,3 +1113,163 @@ input:focus, textarea:focus {
   }
 }
 
+
+
+/* ── FINAL PERIOD SELECTOR OVERRIDE — AVATAR-SAFE + REAL SLIDE ─────────── */
+
+.period-track,
+[data-role="period-track"] {
+  position: relative !important;
+  display: inline-grid !important;
+  grid-auto-flow: column !important;
+  grid-auto-columns: 1fr !important;
+  align-items: center !important;
+  width: min(100%, 248px) !important;
+  min-width: 248px !important;
+  height: 42px !important;
+  padding: 4px !important;
+  border-radius: 999px !important;
+  overflow: hidden !important;
+  isolation: isolate !important;
+  touch-action: manipulation !important;
+  user-select: none !important;
+  -webkit-user-select: none !important;
+  -webkit-tap-highlight-color: transparent !important;
+
+  background:
+    radial-gradient(circle at 18% 18%, rgba(255,255,255,0.34) 0%, rgba(255,255,255,0.12) 24%, transparent 44%),
+    linear-gradient(180deg, rgba(255,255,255,0.28) 0%, rgba(236,232,227,0.18) 100%),
+    rgba(255,255,255,0.14) !important;
+  backdrop-filter: blur(24px) saturate(160%) brightness(1.03) !important;
+  -webkit-backdrop-filter: blur(24px) saturate(160%) brightness(1.03) !important;
+  border: 1px solid rgba(255,255,255,0.42) !important;
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,0.56),
+    inset 0 -1px 0 rgba(167,156,144,0.10),
+    0 8px 18px rgba(56,44,34,0.08),
+    0 2px 8px rgba(56,44,34,0.05) !important;
+}
+
+.period-track::before,
+[data-role="period-track"]::before {
+  content: "" !important;
+  position: absolute !important;
+  inset: 0 !important;
+  border-radius: inherit !important;
+  pointer-events: none !important;
+  z-index: 0 !important;
+  background:
+    linear-gradient(135deg, rgba(255,255,255,0.24) 0%, rgba(255,255,255,0.07) 32%, transparent 72%),
+    radial-gradient(ellipse at 78% 82%, rgba(255,255,255,0.10) 0%, transparent 42%) !important;
+  mix-blend-mode: screen !important;
+}
+
+.period-thumb,
+[data-role="period-track"] .period-thumb,
+[data-role="period-track"] .selector-thumb {
+  position: absolute !important;
+  top: 4px !important;
+  height: 34px !important;
+  border-radius: 999px !important;
+  z-index: 1 !important;
+  pointer-events: none !important;
+  will-change: left, width, transform, box-shadow !important;
+
+  background:
+    radial-gradient(circle at 26% 22%, rgba(255,255,255,0.58) 0%, rgba(255,255,255,0.18) 28%, transparent 44%),
+    linear-gradient(180deg, rgba(255,255,255,0.46) 0%, rgba(239,235,230,0.24) 100%),
+    rgba(255,255,255,0.22) !important;
+  backdrop-filter: blur(18px) saturate(155%) brightness(1.04) !important;
+  -webkit-backdrop-filter: blur(18px) saturate(155%) brightness(1.04) !important;
+  border: 1px solid rgba(255,255,255,0.56) !important;
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,0.72),
+    inset 0 -1px 0 rgba(176,163,148,0.10),
+    0 1px 2px rgba(46,36,27,0.05),
+    0 6px 14px rgba(46,36,27,0.08),
+    0 0 16px rgba(170,190,215,0.14) !important;
+
+  transition:
+    left 145ms cubic-bezier(0.22, 1, 0.36, 1),
+    width 145ms cubic-bezier(0.22, 1, 0.36, 1),
+    transform 165ms cubic-bezier(0.22, 1, 0.36, 1),
+    box-shadow 145ms cubic-bezier(0.22, 1, 0.36, 1) !important;
+}
+
+.period-thumb::before,
+[data-role="period-track"] .period-thumb::before,
+[data-role="period-track"] .selector-thumb::before {
+  content: "" !important;
+  position: absolute !important;
+  inset: 0 !important;
+  border-radius: inherit !important;
+  background:
+    linear-gradient(180deg, rgba(255,255,255,0.34) 0%, rgba(255,255,255,0.08) 34%, transparent 72%) !important;
+  pointer-events: none !important;
+}
+
+.period-track:active .period-thumb,
+[data-role="period-track"]:active .period-thumb,
+[data-role="period-track"]:active .selector-thumb {
+  transform: scale(0.985) !important;
+}
+
+.period-btn,
+[data-role="period-track"] button {
+  position: relative !important;
+  z-index: 2 !important;
+  border: none !important;
+  background: transparent !important;
+  border-radius: 999px !important;
+  min-width: 0 !important;
+  width: 100% !important;
+  height: 34px !important;
+  padding: 0 8px !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  cursor: pointer !important;
+  white-space: nowrap !important;
+  text-align: center !important;
+  -webkit-tap-highlight-color: transparent !important;
+  transition: transform 90ms linear !important;
+}
+
+.period-btn:active,
+[data-role="period-track"] button:active {
+  transform: scale(0.98) !important;
+}
+
+.period-btn-label {
+  display: block !important;
+  font-family: 'DM Mono', monospace !important;
+  font-size: 11px !important;
+  font-weight: 700 !important;
+  line-height: 1 !important;
+  letter-spacing: 0.02em !important;
+  color: rgba(78, 72, 64, 0.62) !important;
+  transition:
+    color 120ms linear,
+    opacity 120ms linear,
+    transform 120ms linear !important;
+}
+
+.period-btn[data-active='true'],
+.period-btn[data-active='true'] .period-btn-label,
+[data-role="period-track"] button[data-active='true'],
+[data-role="period-track"] button[data-active='true'] .period-btn-label {
+  color: #2a241d !important;
+}
+
+.period-btn[data-active='true'] .period-btn-label,
+[data-role="period-track"] button[data-active='true'] .period-btn-label {
+  transform: translateY(-0.5px) !important;
+}
+
+@media (max-width: 640px) {
+  .period-track,
+  [data-role="period-track"] {
+    width: min(100%, 248px) !important;
+    min-width: 0 !important;
+  }
+}
