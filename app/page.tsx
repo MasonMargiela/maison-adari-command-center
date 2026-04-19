@@ -310,9 +310,9 @@ const AIInsight = ({ text, platform }: { text: string; platform: string }) => (
     <div style={{ position: 'absolute', top: 0, right: 0, width: 80, height: 80, background: `radial-gradient(circle, ${P.lavender}20, transparent 70%)`, pointerEvents: 'none' }} />
     <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 10 }}>
       <div style={{ width: 22, height: 22, borderRadius: 6, background: `linear-gradient(135deg, ${P.lavSoft}, ${P.lavender})`, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 11, boxShadow: `0 2px 8px ${P.lavDeep}40` }}>✦</div>
-      <div style={{ fontSize: 9, letterSpacing: '0.16em', textTransform: 'uppercase', color: P.darkMuted, fontFamily: F.mono }}>AI Insight · {platform}</div>
+      <div style={{ fontSize: 9, letterSpacing: '0.16em', textTransform: 'uppercase', color: P.inkFaint, fontFamily: F.mono }}>AI Insight · {platform}</div>
     </div>
-    <div style={{ fontSize: 13, color: P.darkText, lineHeight: 1.85, fontFamily: F.display, fontStyle: 'italic', position: 'relative' }}>{text}</div>
+    <div style={{ fontSize: 13, color: P.ink, lineHeight: 1.85, fontFamily: F.display, fontStyle: 'italic', position: 'relative' }}>{text}</div>
   </div>
 );
 
@@ -1019,12 +1019,12 @@ const OverviewTab = ({ igMetrics, igLoading, igGoal, handleSetIgGoal, today }: a
   return (
     <div>
       {/* Morning briefing */}
-      <div className="liquid-glass-dark" style={{ borderRadius: 18, padding: '15px 17px', marginBottom: 14, position: 'relative', overflow: 'hidden' }}>
+      <div className="liquid-glass" style={{ borderRadius: 18, padding: '15px 17px', marginBottom: 14, position: 'relative', overflow: 'hidden' }}>
         <div style={{ position: 'absolute', top: -20, right: -20, width: 100, height: 100, background: `radial-gradient(circle, ${P.lavender}25, transparent 70%)`, pointerEvents: 'none' }} />
-        <div style={{ fontSize: 9, letterSpacing: '0.18em', textTransform: 'uppercase', color: P.lavender, fontFamily: F.mono, marginBottom: 6, display: 'flex', alignItems: 'center', gap: 6 }}>
+        <div style={{ fontSize: 9, letterSpacing: '0.18em', textTransform: 'uppercase', color: P.lavDeep, fontFamily: F.mono, marginBottom: 6, display: 'flex', alignItems: 'center', gap: 6 }}>
           <span>📰</span> Morning Briefing · {today}
         </div>
-        <div style={{ fontSize: 13, color: P.darkText, lineHeight: 1.85, fontFamily: F.display, fontStyle: 'italic', position: 'relative' }}>
+        <div style={{ fontSize: 13, color: P.ink, lineHeight: 1.85, fontFamily: F.display, fontStyle: 'italic', position: 'relative' }}>
           {igMetrics
             ? `Mason's Instagram — ${fmtNum(igMetrics.followers)} followers, reach ${igMetrics.reach}. ${igMetrics.paceSource === 'historical_data' ? `Tracking ${igMetrics.pace} growth.` : 'Growth data building — pace sharpens over time.'} Korean BBQ tacos trending on TikTok Search in SoCal — nobody has filmed it yet.`
             : "Korean BBQ tacos trending on TikTok Search in SoCal — nobody has filmed it yet. Connect accounts to start tracking performance."
@@ -1041,21 +1041,21 @@ const OverviewTab = ({ igMetrics, igLoading, igGoal, handleSetIgGoal, today }: a
         const masonDelta = masonHistoryDelta;
         const mattDelta = 0;
         return (
-          <div className="liquid-glass-dark" style={{ borderRadius: 18, padding: '16px 18px', marginBottom: 14, display: 'grid', gridTemplateColumns: 'repeat(3, minmax(0, 1fr))', gap: 12, position: 'relative', overflow: 'hidden' }}>
+          <div className="liquid-glass" style={{ borderRadius: 18, padding: '16px 18px', marginBottom: 14, display: 'grid', gridTemplateColumns: 'repeat(3, minmax(0, 1fr))', gap: 12, position: 'relative', overflow: 'hidden' }}>
             <div style={{ position: 'absolute', bottom: -30, left: '50%', transform: 'translateX(-50%)', width: 200, height: 80, background: `radial-gradient(ellipse, ${P.lavender}18, transparent 70%)`, pointerEvents: 'none' }} />
             <div>
-              <div style={{ fontSize: 9, color: P.darkMuted, fontFamily: F.mono, textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: 4 }}>Combined Followers</div>
-              <div style={{ fontSize: 20, fontWeight: 700, fontFamily: F.display, color: P.darkText }}>{fmtNum(combinedTotal)}</div>
+              <div style={{ fontSize: 9, color: P.inkFaint, fontFamily: F.mono, textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: 4 }}>Combined Followers</div>
+              <div style={{ fontSize: 20, fontWeight: 700, fontFamily: F.display, color: P.ink }}>{fmtNum(combinedTotal)}</div>
               <div style={{ fontSize: 10, color: P.sageDeep, marginTop: 2 }}>↑ +{fmtNum(combinedDelta)} {combinedLabel}</div>
             </div>
             <div>
-              <div style={{ fontSize: 9, color: P.darkMuted, fontFamily: F.mono, textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: 4 }}>Combined Reach</div>
-              <div style={{ fontSize: 20, fontWeight: 700, fontFamily: F.display, color: P.darkText }}>{igMetrics ? igMetrics.reach : '—'}</div>
+              <div style={{ fontSize: 9, color: P.inkFaint, fontFamily: F.mono, textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: 4 }}>Combined Reach</div>
+              <div style={{ fontSize: 20, fontWeight: 700, fontFamily: F.display, color: P.ink }}>{igMetrics ? igMetrics.reach : '—'}</div>
               <div style={{ fontSize: 10, color: igMetrics ? P.sageDeep : P.inkFaint, marginTop: 2 }}>{igMetrics ? 'synced' : 'loading...'}</div>
             </div>
             <div>
-              <div style={{ fontSize: 9, color: P.darkMuted, fontFamily: F.mono, textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: 4 }}>Platforms</div>
-              <div style={{ fontSize: 20, fontWeight: 700, fontFamily: F.display, color: P.darkText }}>3</div>
+              <div style={{ fontSize: 9, color: P.inkFaint, fontFamily: F.mono, textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: 4 }}>Platforms</div>
+              <div style={{ fontSize: 20, fontWeight: 700, fontFamily: F.display, color: P.ink }}>3</div>
               <div style={{ fontSize: 10, color: P.inkFaint, marginTop: 2 }}>IG · TikTok × 2</div>
             </div>
           </div>
@@ -1131,19 +1131,19 @@ const OverviewTab = ({ igMetrics, igLoading, igGoal, handleSetIgGoal, today }: a
       </div>
 
       {/* Connect accounts */}
-      <div className="liquid-glass-dark" style={{ borderRadius: 18, padding: '15px 17px', marginBottom: 14, position: 'relative', overflow: 'hidden' }}>
+      <div className="liquid-glass" style={{ borderRadius: 18, padding: '15px 17px', marginBottom: 14, position: 'relative', overflow: 'hidden' }}>
         <div style={{ position: 'absolute', top: -30, right: -20, width: 120, height: 120, background: `radial-gradient(circle, ${P.sky}15, transparent 70%)`, pointerEvents: 'none' }} />
-        <div style={{ fontSize: 9, color: P.darkMuted, fontFamily: F.mono, letterSpacing: '0.16em', textTransform: 'uppercase', marginBottom: 12 }}>Connect More Accounts</div>
+        <div style={{ fontSize: 9, color: P.inkFaint, fontFamily: F.mono, letterSpacing: '0.16em', textTransform: 'uppercase', marginBottom: 12 }}>Connect More Accounts</div>
         {[
           { label: "Matt's Instagram", handle: '@macroswitmatt', icon: '📸', color: P.peach },
           { label: "Matt's TikTok", handle: '@macroswitmatt', icon: '🎵', color: P.sage },
           { label: "Mason's TikTok", handle: '@masondoesnumbers', icon: '🎵', color: P.sky },
         ].map((acc, i) => (
-          <div key={i} style={{ display: 'flex', alignItems: 'center', gap: 9, padding: '9px 0', borderBottom: i < 2 ? `1px solid ${P.darkBorder}` : 'none' }}>
+          <div key={i} style={{ display: 'flex', alignItems: 'center', gap: 9, padding: '9px 0', borderBottom: i < 2 ? `1px solid ${P.border}` : 'none' }}>
             <span style={{ fontSize: 16 }}>{acc.icon}</span>
             <div style={{ flex: 1 }}>
-              <div style={{ fontSize: 12, color: P.darkText }}>{acc.label}</div>
-              <div style={{ fontSize: 10, color: P.darkMuted }}>{acc.handle}</div>
+              <div style={{ fontSize: 12, color: P.ink }}>{acc.label}</div>
+              <div style={{ fontSize: 10, color: P.inkFaint }}>{acc.handle}</div>
             </div>
             <a href="/connect" style={{ background: `${acc.color}20`, border: `1px solid ${acc.color}50`, borderRadius: 20, padding: '5px 12px', color: acc.color, fontSize: 10, fontWeight: 600, cursor: 'pointer', textDecoration: 'none', fontFamily: F.mono }}>Connect →</a>
           </div>
@@ -1197,6 +1197,20 @@ const FollowerGraph = ({ accountId, color, colorSoft }: { accountId?: string; co
   const svgRef = useRef<SVGSVGElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
   const [w, setW] = useState(300);
+
+  const GRAPH_PERIODS = [
+    { id: '1', label: 'day' },
+    { id: '7', label: 'wk' },
+    { id: '30', label: 'mo' },
+    { id: '365', label: 'yr' },
+  ];
+
+  const RANGE_LABELS: Record<string, string> = {
+    '1': '1d',
+    '7': '7d',
+    '30': '30d',
+    '365': '1y',
+  };
 
   useEffect(() => {
     const update = () => {
@@ -1273,14 +1287,20 @@ const FollowerGraph = ({ accountId, color, colorSoft }: { accountId?: string; co
   const innerW = w - padL - padR;
   const innerH = h - padT - padB;
 
-  const values = data.map((d: any) => d.followers);
-  const deltas = data.map((d: any) => d.delta ?? 0);
+  const normalizedData = data.map((d: any, i: number) => {
+    const prev = i > 0 ? data[i - 1]?.followers ?? d.followers : d.followers;
+    const inferredDelta = i === 0 ? 0 : (d.followers - prev);
+    return { ...d, delta: typeof d.delta === 'number' ? d.delta : inferredDelta };
+  });
+
+  const values = normalizedData.map((d: any) => d.followers);
+  const deltas = normalizedData.map((d: any) => d.delta ?? 0);
   const maxVal = Math.max(...values);
   const minVal = Math.min(...values);
   const range2 = maxVal - minVal || 1;
 
-  const points = data.map((d: any, i: number) => {
-    const x = padL + (i / (data.length - 1)) * innerW;
+  const points = normalizedData.map((d: any, i: number) => {
+    const x = padL + (i / (normalizedData.length - 1)) * innerW;
     const y = padT + (1 - (d.followers - minVal) / range2) * innerH;
     return { x, y, ...d };
   });
@@ -1314,14 +1334,13 @@ const FollowerGraph = ({ accountId, color, colorSoft }: { accountId?: string; co
         <div style={{ fontSize: 9, color: '#b8b0a4', fontFamily: "'DM Mono', monospace", textTransform: 'uppercase', letterSpacing: '0.1em' }}>
           Follower Growth
         </div>
-        <div style={{ display: 'flex', background: 'rgba(246,243,238,0.8)', border: '1px solid rgba(232,224,212,0.8)', borderRadius: 100, padding: 3, gap: 2, backdropFilter: 'blur(8px)' }}>
-          {[['7', '7d'], ['14', '14d'], ['30', '30d'], ['90', '90d']].map(([val, label]) => (
-            <button key={val} onClick={() => { setRange(val); setHovered(null); setHoverX(null); }}
-              className="range-pill btn-spring"
-              style={{ background: range === val ? '#1e1a16' : 'none', color: range === val ? '#ffffff' : '#8a8078', border: 'none', borderRadius: 100, padding: '4px 10px', fontSize: 10, fontWeight: 700, cursor: 'pointer', fontFamily: "'DM Mono', monospace", boxShadow: range === val ? '0 2px 8px rgba(0,0,0,0.25)' : 'none' }}>
-              {label}
-            </button>
-          ))}
+        <div style={{ maxWidth: 240, width: '100%' }}>
+          <PeriodPill
+            periods={GRAPH_PERIODS}
+            value={range}
+            onChange={(val: string) => { setRange(val); setHovered(null); setHoverX(null); }}
+            color={color}
+          />
         </div>
       </div>
 
@@ -1372,7 +1391,7 @@ const FollowerGraph = ({ accountId, color, colorSoft }: { accountId?: string; co
           if (!p) return null;
           return (
             <text key={i} x={p.x} y={h - 4} textAnchor="middle" fontSize="9" fill="#b8b0a4" fontFamily="'DM Mono', monospace">
-              {formatDate(data[i].date)}
+              {formatDate(normalizedData[i].date)}
             </text>
           );
         })}
@@ -1385,7 +1404,7 @@ const FollowerGraph = ({ accountId, color, colorSoft }: { accountId?: string; co
 
         {/* Hover glow dot */}
         {hoverX !== null && hovered && (() => {
-          const idx = data.findIndex((d: any) => d.date === hovered.date);
+          const idx = normalizedData.findIndex((d: any) => d.date === hovered.date);
           const p = points[idx];
           if (!p) return null;
           return (
@@ -1398,7 +1417,7 @@ const FollowerGraph = ({ accountId, color, colorSoft }: { accountId?: string; co
 
         {/* Delta bars — green gains, red losses, taller for visibility */}
         {points.map((p, i) => {
-          const delta = data[i].delta ?? 0;
+          const delta = normalizedData[i].delta ?? 0;
           if (delta === 0) return null;
           const barH = Math.max(Math.abs(delta) * 3, 3);
           const barColor = delta > 0 ? '#5a9e66' : '#c4849a';
@@ -1435,19 +1454,22 @@ const FollowerGraph = ({ accountId, color, colorSoft }: { accountId?: string; co
       {/* Summary stats — liquid glass cards, neutral colors */}
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, minmax(0, 1fr))', gap: 8, marginTop: 10 }}>
         {(() => {
-          const netChange = (data[data.length-1]?.followers ?? 0) - (data[0]?.followers ?? 0);
-          const unfollows = Math.abs(data.filter((d: any) => (d.delta ?? 0) < 0).reduce((s: number, d: any) => s + (d.delta ?? 0), 0));
+          const netChange = (normalizedData[normalizedData.length-1]?.followers ?? 0) - (normalizedData[0]?.followers ?? 0);
+          const unfollows = Math.abs(normalizedData.filter((d: any) => (d.delta ?? 0) < 0).reduce((sum: number, d: any) => sum + (d.delta ?? 0), 0));
           return [
-            { label: 'Net Change', value: netChange, sign: true },
-            { label: 'Unfollows', value: unfollows, sign: false },
-          ].map((s, i) => (
-            <div key={i} className="liquid-glass" style={{ borderRadius: 12, padding: '11px 13px', textAlign: 'center' }}>
-              <div style={{ fontSize: 9, color: '#8a8078', fontFamily: "'DM Mono', monospace", marginBottom: 4, textTransform: 'uppercase', letterSpacing: '0.1em' }}>{s.label}</div>
-              <div style={{ fontSize: 19, fontWeight: 700, fontFamily: "'Fraunces', serif",
-                color: i === 0 ? (s.value > 0 ? '#5a9e66' : s.value < 0 ? '#c4849a' : '#4a4238') : '#4a4238' }}>
-                {i === 0 && s.value > 0 ? '+' : ''}{s.value.toLocaleString()}
+            { label: 'Net Change', value: netChange, tone: netChange > 0 ? '#5a9e66' : '#4a4238' },
+            { label: 'Unfollows', value: unfollows, tone: '#7a7268' },
+          ].map((item, i) => (
+            <div key={i} style={{ background: P.white, border: `1px solid ${P.border}`, borderRadius: 16, padding: '13px 14px', textAlign: 'center', boxShadow: P.shadowSm }}>
+              <div style={{ fontSize: 9, color: P.inkFaint, fontFamily: F.mono, marginBottom: 6, textTransform: 'uppercase', letterSpacing: '0.12em' }}>
+                {item.label}
               </div>
-              <div style={{ fontSize: 9, color: '#b8b0a4', fontFamily: "'DM Mono', monospace", marginTop: 3 }}>over {range}d</div>
+              <div style={{ fontSize: 23, fontWeight: 700, fontFamily: F.display, color: item.tone }}>
+                {i === 0 && item.value > 0 ? '+' : ''}{item.value.toLocaleString()}
+              </div>
+              <div style={{ fontSize: 10, color: P.inkFaint, fontFamily: F.mono, marginTop: 4 }}>
+                over {RANGE_LABELS[range] ?? range + 'd'}
+              </div>
             </div>
           ));
         })()}
@@ -1717,12 +1739,14 @@ const UnifiedAccountView = ({ acc, igData, goal, setGoal }: { acc: any; igData: 
             </div>
           </div>
         </div>
-        <PeriodPill
-          periods={TIME_PERIODS.map((tp: any) => ({ id: tp.id, label: tp.label }))}
-          value={timePeriod}
-          onChange={setTimePeriod}
-          color={acc.colorDeep}
-        />
+        <div style={{ maxWidth: 260 }}>
+          <PeriodPill
+            periods={TIME_PERIODS.map((tp: any) => ({ id: tp.id, label: tp.short ?? tp.label }))}
+            value={timePeriod}
+            onChange={setTimePeriod}
+            color={acc.colorDeep}
+          />
+        </div>
       </div>
 
       {/* Follower Goal */}
@@ -2494,7 +2518,7 @@ const RevenueTab = () => {
       {/* Agency Revenue */}
       {(clientView === 'all' || clientView === 'mason') && (
         <div style={{ background: P.dark, borderRadius: 16, padding: '18px 20px', marginBottom: 14 }}>
-          <div style={{ fontSize: 9, letterSpacing: '0.15em', textTransform: 'uppercase', color: P.darkMuted, fontFamily: F.mono, marginBottom: 14 }}>
+          <div style={{ fontSize: 9, letterSpacing: '0.15em', textTransform: 'uppercase', color: P.inkFaint, fontFamily: F.mono, marginBottom: 14 }}>
             ✦ Agency Revenue · Maison Adari · {periodLabels[period]}
           </div>
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, minmax(0, 1fr))', gap: 9, marginBottom: 14 }}>
@@ -2505,34 +2529,34 @@ const RevenueTab = () => {
               { label: 'Monthly Target', val: '$5,000', sub: '6 clients @ $800', color: P.rose },
             ].map((s, i) => (
               <div key={i} style={{ background: P.darkCard, border: `1px solid ${P.darkBorder}`, borderRadius: 12, padding: '13px', borderTop: `2px solid ${s.color}` }}>
-                <div style={{ fontSize: 9, color: P.darkMuted, textTransform: 'uppercase', letterSpacing: '0.1em', fontFamily: F.mono, marginBottom: 4 }}>{s.label}</div>
-                <div style={{ fontSize: 18, fontWeight: 700, fontFamily: F.display, color: P.darkText }}>{s.val}</div>
-                <div style={{ fontSize: 10, color: P.darkMuted, marginTop: 3 }}>{s.sub}</div>
+                <div style={{ fontSize: 9, color: P.inkFaint, textTransform: 'uppercase', letterSpacing: '0.1em', fontFamily: F.mono, marginBottom: 4 }}>{s.label}</div>
+                <div style={{ fontSize: 18, fontWeight: 700, fontFamily: F.display, color: P.ink }}>{s.val}</div>
+                <div style={{ fontSize: 10, color: P.inkFaint, marginTop: 3 }}>{s.sub}</div>
               </div>
             ))}
           </div>
           <div style={{ marginBottom: 12 }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 5 }}>
-              <div style={{ fontSize: 10, color: P.darkMuted, fontFamily: F.mono }}>Progress to $5,000/mo</div>
-              <div style={{ fontSize: 10, color: P.darkMuted, fontFamily: F.mono }}>{progressPct.toFixed(0)}%</div>
+              <div style={{ fontSize: 10, color: P.inkFaint, fontFamily: F.mono }}>Progress to $5,000/mo</div>
+              <div style={{ fontSize: 10, color: P.inkFaint, fontFamily: F.mono }}>{progressPct.toFixed(0)}%</div>
             </div>
             <div style={{ background: P.darkBorder, borderRadius: 99, height: 8 }}>
               <div style={{ background: P.sage, height: 8, width: progressPct + '%', borderRadius: 99, transition: 'width 0.8s ease' }} />
             </div>
           </div>
           <div style={{ display: 'flex', gap: 8, alignItems: 'center', flexWrap: 'wrap' }}>
-            <div style={{ fontSize: 10, color: P.darkMuted, fontFamily: F.mono }}>Billed $</div>
+            <div style={{ fontSize: 10, color: P.inkFaint, fontFamily: F.mono }}>Billed $</div>
             <input type="text" inputMode="numeric" defaultValue={String(billedAmount)}
               onBlur={e => { const v = parseInt((e.target as HTMLInputElement).value.replace(/,/g, '')); if (!isNaN(v) && v >= 0) { setBilledAmount(v); localStorage.setItem('billed_amount', String(v)); } }}
               onKeyDown={(e: any) => { if (e.key === 'Enter') e.target.blur(); }}
-              style={{ width: 80, background: P.darkCard, border: `1px solid ${P.darkBorder}`, borderRadius: 7, padding: '4px 8px', fontSize: 11, fontFamily: F.mono, color: P.darkText, textAlign: 'right', outline: 'none' }} />
-            <div style={{ fontSize: 10, color: P.darkMuted, fontFamily: F.mono }}>Active clients</div>
+              style={{ width: 80, background: P.darkCard, border: `1px solid ${P.darkBorder}`, borderRadius: 7, padding: '4px 8px', fontSize: 11, fontFamily: F.mono, color: P.ink, textAlign: 'right', outline: 'none' }} />
+            <div style={{ fontSize: 10, color: P.inkFaint, fontFamily: F.mono }}>Active clients</div>
             <input type="text" inputMode="numeric" defaultValue={String(activeClients)}
               onBlur={e => { const v = parseInt((e.target as HTMLInputElement).value); if (!isNaN(v) && v >= 0) { setActiveClients(v); localStorage.setItem('active_clients', String(v)); } }}
               onKeyDown={(e: any) => { if (e.key === 'Enter') e.target.blur(); }}
-              style={{ width: 40, background: P.darkCard, border: `1px solid ${P.darkBorder}`, borderRadius: 7, padding: '4px 8px', fontSize: 11, fontFamily: F.mono, color: P.darkText, textAlign: 'right', outline: 'none' }} />
+              style={{ width: 40, background: P.darkCard, border: `1px solid ${P.darkBorder}`, borderRadius: 7, padding: '4px 8px', fontSize: 11, fontFamily: F.mono, color: P.ink, textAlign: 'right', outline: 'none' }} />
           </div>
-          <div style={{ fontSize: 11, color: P.darkMuted, marginTop: 10, fontStyle: 'italic' }}>First client unlocks the flywheel. Everything after is momentum.</div>
+          <div style={{ fontSize: 11, color: P.inkFaint, marginTop: 10, fontStyle: 'italic' }}>First client unlocks the flywheel. Everything after is momentum.</div>
         </div>
       )}
 
