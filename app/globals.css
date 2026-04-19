@@ -344,3 +344,16 @@ input:focus, textarea:focus {
   transition: background 0.18s var(--smooth), color 0.18s var(--smooth), transform 0.14s var(--spring);
 }
 .range-pill:active { transform: scale(0.91); }
+
+
+/* === OPENXLAW GLASS SYSTEM === */
+
+.glass-surface {
+  background: rgba(18, 18, 22, 0.55);
+  backdrop-filter: blur(24px) saturate(160%);
+  -webkit-backdrop-filter: blur(24px) saturate(160%);
+  border-radius: 20px;
+  position: relative;
+  overflow: hidden;
+}
+
