@@ -2698,43 +2698,6 @@ function getAccountAvatarSrc(account: any): string | null {
   return null
 }
 
-
-
-function getAccountAvatarSrc(account: any): string | null {
-  if (!account) return null
-
-  const direct =
-    account.profilePictureUrl ||
-    account.profile_picture_url ||
-    account.profile_picture ||
-    account.avatarUrl ||
-    account.avatar_url ||
-    account.avatar ||
-    account.picture ||
-    account.image ||
-    account.photoUrl ||
-    account.photo_url ||
-    null
-
-        return direct
-
-  const_username = (
-    account.username ||
-    account.handle ||
-    account.platformUsername ||
-    account.platform_username ||
-    ""
-  )
-
-  const clean = typeof const_username === "string" ? const_username.replace(/^@/, "") : ""
-  if (!clean) return null
-
-  if (account.platform === "instagram") return `https://unavatar.io/instagram/${clean}`
-  if (account.platform === "tiktok") return `https://unavatar.io/tiktok/${clean}`
-
-  return null
-}
-
 function AccountAvatar({
   account,
   size = 52,
