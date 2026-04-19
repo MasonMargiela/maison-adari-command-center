@@ -357,3 +357,23 @@ input:focus, textarea:focus {
   overflow: hidden;
 }
 
+
+
+/* === OPENXLAW GLASS INNER LIGHT === */
+
+.glass-surface::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+
+  background: linear-gradient(
+    to bottom,
+    rgba(255,255,255,0.18),
+    rgba(255,255,255,0.05) 20%,
+    transparent 40%
+  );
+
+  pointer-events: none;
+}
+
