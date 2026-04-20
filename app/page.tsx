@@ -933,8 +933,8 @@ const PeriodPill = ({ periods, value, onChange, color = '#1a1713' }: {
         className="period-thumb"
         data-dragging={dragging ? 'true' : 'false'}
         style={{
-          left: thumbStyle.left,
-          width: thumbStyle.width,
+          ['--period-thumb-left' as any]: `${thumbStyle.left}px`,
+          ['--period-thumb-width' as any]: `${thumbStyle.width}px`,
           opacity: thumbStyle.opacity,
           ['--pill-accent' as any]: color,
         }}
