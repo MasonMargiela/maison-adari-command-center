@@ -3110,7 +3110,7 @@ export default function AdariCommandCenter() {
                   display: 'flex', alignItems: 'center', gap: 5,
                 }}>
                 {tab.avatar && (
-                  <span style={{ width: 16, height: 16, borderRadius: '50%', background: accentColor, display: 'inline-flex', alignItems: 'center', justifyContent: 'center', fontSize: 7, fontWeight: 700, color: P.white, boxShadow: active ? `0 2px 8px ${accentColor}50` : 'none', transition: `box-shadow 0.2s ${smooth}` }}>{<SimpleAccountAvatar handle={getClientAvatarSource(tab.client, typeof accounts !== 'undefined' ? accounts : undefined).handle} platform={getClientAvatarSource(tab.client, typeof accounts !== 'undefined' ? accounts : undefined).platform} src={getClientAvatarSource(tab.client, typeof accounts !== 'undefined' ? accounts : undefined).src} size={32} />}</span>
+                  <span style={{ width: 16, height: 16, borderRadius: '50%', background: accentColor, display: 'inline-flex', alignItems: 'center', justifyContent: 'center', fontSize: 7, fontWeight: 700, color: P.white, boxShadow: active ? `0 2px 8px ${accentColor}50` : 'none', transition: `box-shadow 0.2s ${smooth}` }}>{<SimpleAccountAvatar handle={getClientAvatarSource(tab.client).handle} platform={getClientAvatarSource(tab.client).platform} src={getClientAvatarSource(tab.client).src} size={32} />}</span>
                 )}
                 {tab.label}
               </button>
