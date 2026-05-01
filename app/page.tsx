@@ -866,6 +866,7 @@ const PeriodPill = ({ periods, value, onChange, color = '#1a1713' }: {
   const trackRef = useRef<HTMLDivElement>(null);
   const [thumbStyle, setThumbStyle] = useState({ left: 4, width: 0, opacity: 0 });
   const [dragging, setDragging] = useState(false);
+  const [jiggling, setJiggling] = useState(false);
 
   const count = Math.max(periods.length, 1);
 
@@ -911,7 +912,7 @@ const PeriodPill = ({ periods, value, onChange, color = '#1a1713' }: {
   return (
     <div
       ref={trackRef}
-      className="period-track"
+      className={`period-track${jiggling ? ' period-jiggle' : ''}`}
       style={{
         position: 'relative',
         display: 'grid',
@@ -945,7 +946,7 @@ const PeriodPill = ({ periods, value, onChange, color = '#1a1713' }: {
           type="button"
           className="period-btn"
           data-active={value === p.id ? 'true' : 'false'}
-          onClick={() => onChange(p.id)}
+          onClick={() => { onChange(p.id); setJiggling(true); setTimeout(() => setJiggling(false), 450); }}
           style={{ color: value === p.id ? '#ffffff' : '#6f685f' }}
         >
           <span className="period-btn-label">{p.label}</span>
@@ -1165,7 +1166,12 @@ const PersonCard = ({ name, avatar, color, colorSoft, colorDeep, accounts, conte
       <div style={{ position: 'absolute', top: 0, right: 0, width: 120, height: 120, background: `radial-gradient(circle, ${colorSoft} 0%, transparent 70%)`, pointerEvents: 'none', opacity: 0.8 }} />
       {/* Header */}
       <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 13, position: 'relative' }}>
-        <div style={{ width: 42, height: 42, borderRadius: 12, background: `linear-gradient(135deg, ${colorSoft}, ${colorDeep}22)`, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 18, fontWeight: 700, color: colorDeep, fontFamily: F.display, flexShrink: 0, boxShadow: `0 4px 12px ${colorDeep}25` }}>{avatar}</div>
+        <div style={{ width: 42, height: 42, borderRadius: 12, flexShrink: 0, overflow: 'hidden', boxShadow: `0 4px 12px ${colorDeep}25` }}>
+          {(() => {
+            const primaryAcc = [...accounts].sort((a: any, b: any) => (b.followers || 0) - (a.followers || 0))[0];
+            return <SimpleAccountAvatar handle={primaryAcc?.handle} platform={primaryAcc?.platform?.toLowerCase()} size={42} />;
+          })()}
+        </div>
         <div style={{ flex: 1 }}>
           <div style={{ fontSize: 14, fontWeight: 700, fontFamily: F.display, color: P.ink }}>{name}</div>
           <div style={{ display: 'flex', alignItems: 'baseline', gap: 6, marginTop: 2, flexWrap: 'wrap' }}>
@@ -1451,7 +1457,7 @@ const OverviewTab = ({ igMetrics, igLoading, igGoal, handleSetIgGoal, today }: a
 // ── INSTAGRAM ACCOUNT VIEW ─────────────────────────────────────────────────
 
 // ── FOLLOWER GROWTH GRAPH ─────────────────────────────────────────────────
-const FollowerGraph = ({ accountId, color, colorSoft }: { accountId?: string; color: string; colorSoft: string }) => {
+const FollowerGraph = ({ accountId, color, colorSoft, externalRange, onRangeChange }: { accountId?: string; color: string; colorSoft: string; externalRange?: string; onRangeChange?: (r: string) => void }) => {
   const [data, setData] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [range, setRange] = useState('30');
@@ -1460,6 +1466,10 @@ const FollowerGraph = ({ accountId, color, colorSoft }: { accountId?: string; co
   const svgRef = useRef<SVGSVGElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
   const [w, setW] = useState(300);
+
+  useEffect(() => {
+    if (externalRange && externalRange !== range) setRange(externalRange);
+  }, [externalRange]);
 
   const GRAPH_PERIODS = [
     { id: '1', label: 'day' },
@@ -1601,7 +1611,7 @@ const FollowerGraph = ({ accountId, color, colorSoft }: { accountId?: string; co
           <PeriodPill
             periods={GRAPH_PERIODS}
             value={range}
-            onChange={(val: string) => { setRange(val); setHovered(null); setHoverX(null); }}
+            onChange={(val: string) => { setRange(val); setHovered(null); setHoverX(null); if (onRangeChange) onRangeChange(val); }}
             color={color}
           />
         </div>
@@ -1609,8 +1619,8 @@ const FollowerGraph = ({ accountId, color, colorSoft }: { accountId?: string; co
 
       {/* SVG graph */}
       <div ref={containerRef} style={{ width: '100%' }}>
-      <svg ref={svgRef} viewBox={`0 0 ${w} ${h}`} height={h}
-        style={{ display: 'block', width: '100%', overflow: 'visible', cursor: 'crosshair', touchAction: 'none' }}
+      <svg ref={svgRef} viewBox={`0 0 ${w} ${h}`}
+        style={{ display: 'block', width: '100%', height: 'auto', overflow: 'visible', cursor: 'crosshair', touchAction: 'none' }}
         onMouseMove={handleMouseMove}
         onMouseLeave={handleMouseLeave}
         onTouchStart={handleTouchStart}
@@ -1700,16 +1710,25 @@ const FollowerGraph = ({ accountId, color, colorSoft }: { accountId?: string; co
           <div>
             <div style={{ fontSize: 9, color: '#8a8078', fontFamily: "'DM Mono', monospace", textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: 2 }}>{formatDate(hovered.date)}</div>
             <div style={{ fontSize: 21, fontWeight: 700, fontFamily: "'Fraunces', serif", color: '#1e1a16', letterSpacing: '-0.02em' }}>{hovered.followers.toLocaleString()}</div>
+            <div style={{ fontSize: 10, color: '#8a8078', fontFamily: "'DM Mono', monospace", marginTop: 1 }}>followers</div>
           </div>
-          {hovered.delta !== 0 && (
-            <div style={{
-              background: hovered.delta > 0 ? '#5a9e6618' : '#c4849a18',
-              borderRadius: 100, padding: '5px 14px',
-              fontSize: 14, fontWeight: 700, fontFamily: "'Fraunces', serif",
-              color: hovered.delta > 0 ? '#5a9e66' : '#c4849a',
-            }}>
-              {hovered.delta > 0 ? '+' : ''}{hovered.delta}
+          {hovered.delta !== 0 ? (
+            <div style={{ textAlign: 'right' }}>
+              <div style={{
+                background: hovered.delta > 0 ? '#5a9e6618' : '#c4849a18',
+                borderRadius: 100, padding: '5px 14px',
+                fontSize: 14, fontWeight: 700, fontFamily: "'Fraunces', serif",
+                color: hovered.delta > 0 ? '#5a9e66' : '#c4849a',
+                marginBottom: 2,
+              }}>
+                {hovered.delta > 0 ? '+' : ''}{hovered.delta}
+              </div>
+              <div style={{ fontSize: 9, color: hovered.delta > 0 ? '#5a9e66' : '#c4849a', fontFamily: "'DM Mono', monospace", textTransform: 'uppercase', letterSpacing: '0.08em' }}>
+                {hovered.delta > 0 ? 'gained' : 'unfollowed'}
+              </div>
             </div>
+          ) : (
+            <div style={{ fontSize: 10, color: '#c0b8ae', fontFamily: "'DM Mono', monospace" }}>no change</div>
           )}
         </div>
       )}
@@ -1756,6 +1775,18 @@ function applyTimePeriodFromHistory(history: any[], periodId: string): { value: 
 
 const UnifiedAccountView = ({ acc, igData, goal, setGoal }: { acc: any; igData: any; goal: number; setGoal: (v: number) => void }) => {
   const [timePeriod, setTimePeriod] = useState('week');
+  const [graphRange, setGraphRange] = useState('7');
+  const periodToRange: Record<string, string> = { day: '1', week: '7', month: '30', year: '365' };
+  const rangeToPeriod: Record<string, string> = { '1': 'day', '7': 'week', '30': 'month', '365': 'year' };
+
+  const handlePeriodChange = (id: string) => {
+    setTimePeriod(id);
+    setGraphRange(periodToRange[id] ?? '7');
+  };
+  const handleRangeChange = (r: string) => {
+    setGraphRange(r);
+    setTimePeriod(rangeToPeriod[r] ?? 'week');
+  };
   const [goalPlatform, setGoalPlatform] = useState(acc.platform.toLowerCase());
 
   const metrics = igData?.metrics;
@@ -1889,7 +1920,7 @@ const UnifiedAccountView = ({ acc, igData, goal, setGoal }: { acc: any; igData: 
               <PeriodPill
                 periods={TIME_PERIODS.map((tp: any) => ({ id: tp.id, label: tp.label }))}
                 value={timePeriod}
-                onChange={setTimePeriod}
+                onChange={handlePeriodChange}
               />
             </div>
           </div>
@@ -1905,8 +1936,8 @@ const UnifiedAccountView = ({ acc, igData, goal, setGoal }: { acc: any; igData: 
       {isLive && (
         <div style={{ background: 'rgba(255,255,255,0.88)', backdropFilter: 'blur(16px)', WebkitBackdropFilter: 'blur(16px)', border: `1px solid rgba(255,255,255,0.65)`, borderRadius: 18, marginBottom: 10, boxShadow: P.shadowMd, position: 'relative', overflow: 'hidden' }}>
           <div style={{ position: 'absolute', top: 0, left: 0, right: 0, height: 3, background: `linear-gradient(90deg, ${acc.color}, ${acc.colorDeep})`, borderRadius: '18px 18px 0 0', zIndex: 2 }} />
-          <div style={{ padding: '18px 18px 0', maxWidth: 680, margin: '0 auto' }}>
-            <FollowerGraph color={acc.colorDeep} colorSoft={acc.colorSoft} accountId={acc.dbId} />
+          <div style={{ padding: '14px 14px 0', maxWidth: '100%', margin: '0 auto' }}>
+            <FollowerGraph color={acc.colorDeep} colorSoft={acc.colorSoft} accountId={acc.dbId} externalRange={graphRange} onRangeChange={handleRangeChange} />
           </div>
           <div style={{ height: 14 }} />
         </div>
@@ -3109,9 +3140,6 @@ export default function AdariCommandCenter() {
                   cursor: 'pointer', whiteSpace: 'nowrap', fontFamily: F.body,
                   display: 'flex', alignItems: 'center', gap: 5,
                 }}>
-                {tab.avatar && (
-                  <span style={{ width: 16, height: 16, borderRadius: '50%', background: accentColor, display: 'inline-flex', alignItems: 'center', justifyContent: 'center', fontSize: 7, fontWeight: 700, color: P.white, boxShadow: active ? `0 2px 8px ${accentColor}50` : 'none', transition: `box-shadow 0.2s ${smooth}` }}>{<SimpleAccountAvatar handle={getClientAvatarSource(tab.client).handle} platform={getClientAvatarSource(tab.client).platform} src={getClientAvatarSource(tab.client).src} size={32} />}</span>
-                )}
                 {tab.label}
               </button>
             );
